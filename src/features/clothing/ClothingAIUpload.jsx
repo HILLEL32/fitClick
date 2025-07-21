@@ -1,26 +1,75 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+
+const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98";
 
 export default function ClothingAIUpload() {
-  const [image, setImage] = useState(null);
-  const [detectedClothing, setDetectedClothing] = useState('');
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-
-  const handleImageUpload = (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
-      setDetectedClothing('');
-      setLoading(true);
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setResult(null);
+    }
+  };
 
-      // זיהוי מדומה — יוחלף בחיבור ל־AI בשלב הבא
-      setTimeout(() => {
-        const options = ['חולצה', 'מכנסיים', 'שמלה', 'חצאית', 'בגד לא מזוהה'];
-        const random = options[Math.floor(Math.random() * options.length)];
-        setDetectedClothing(random);
-        setLoading(false);
-      }, 2000);
+  const uploadToLykdat = async () => {
+    if (!imageFile) {
+      alert('בחרי תמונה קודם');
+      return;
+    }
+
+    setLoading(true);
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    try {
+      const response = await axios.post(
+        'https://cloudapi.lykdat.com/v1/detection/tags',
+        formData,
+        {
+          headers: {
+            'x-api-key': API_KEY,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      const data = response.data.data;
+      const labels = data.labels || [];
+      const items = data.items || [];
+      const colors = data.colors || [];
+
+      const extractLabels = (category) =>
+        labels
+          .filter((label) => label.classification === category)
+          .map((label) => label.name);
+
+      const simplified = {
+        type: [...new Set(items.filter(i => i.confidence > 0.6).map(i => i.name))],
+        colors: colors.filter(c => c.confidence > 0.2).map(c => c.name),
+        style: [...extractLabels("silhouette"), ...extractLabels("textile pattern")],
+        details: [
+          ...extractLabels("garment parts"),
+          ...extractLabels("opening type"),
+          ...extractLabels("nickname")
+        ],
+        length: extractLabels("length"),
+        waistline: extractLabels("waistline")
+      };
+
+      setResult(simplified);
+    } catch (error) {
+      console.error("API Error:", error);
+      alert("אירעה שגיאה בזיהוי הבגד");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,28 +80,63 @@ export default function ClothingAIUpload() {
       <input
         type="file"
         accept="image/*"
-        capture="environment"
-        onChange={handleImageUpload}
-        className="form-control mt-4"
+        onChange={handleImageChange}
+        className="form-control mt-3"
       />
 
-      {image && (
+      {previewUrl && (
         <div className="mt-4">
-          <img src={image} alt="בגד שהועלה" style={{ maxWidth: '300px' }} />
+          <img
+            src={previewUrl}
+            alt="תצוגת תמונה"
+            style={{ maxWidth: '300px', borderRadius: '10px' }}
+          />
         </div>
       )}
 
-      {loading && <p className="mt-3">מזהה סוג בגד...</p>}
+      <button
+        className="btn btn-success mt-3"
+        onClick={uploadToLykdat}
+        disabled={loading || !imageFile}
+      >
+        {loading ? 'מזהה...' : 'זהה את הבגד'}
+      </button>
 
-      {!loading && detectedClothing && (
-        <p className="mt-3">
-          זוהה סוג בגד: <strong>{detectedClothing}</strong>
-        </p>
+      {result && (
+        <div className="mt-5 text-start">
+          <h4 strong>result</h4>
+          <ul className="list-group">
+
+            <li className="list-group-item">
+              <strong>Type:</strong> {result.type.length > 0 ? result.type.join(', ') : 'Not detected'}
+            </li>
+
+            <li className="list-group-item">
+              <strong>Colors:</strong> {result.colors.length > 0 ? result.colors.join(', ') : 'None'}
+            </li>
+
+            <li className="list-group-item">
+              <strong>Style:</strong> {result.style.length > 0 ? result.style.join(', ') : 'None'}
+            </li>
+
+            <li className="list-group-item">
+              <strong>Details:</strong> {result.details.length > 0 ? result.details.join(', ') : 'None'}
+            </li>
+
+            <li className="list-group-item">
+              <strong>Length:</strong> {result.length.length > 0 ? result.length.join(', ') : 'None'}
+            </li>
+
+            <li className="list-group-item">
+              <strong>Waistline:</strong> {result.waistline.length > 0 ? result.waistline.join(', ') : 'None'}
+            </li>
+
+          </ul>
+        </div>
       )}
-      <Link to="/app_home" className="btn btn-success btn-lg floating-button">
-        back to home
-      </Link>
 
+
+      <Link to="/app_home" className="btn btn-secondary mt-4">חזרה לדף הבית</Link>
     </div>
   );
 }
