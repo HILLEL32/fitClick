@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase/firebase'; // ודא שזה הנתיב לקובץ שלך
+import { auth } from '../firebase/firebase' 
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
@@ -13,7 +13,7 @@ export default function Log_in() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       alert('התחברת בהצלחה!');
-      navigate('/'); // נווט לעמוד הבית או כל עמוד שתרצה
+      navigate('/app_home'); // נווט לעמוד הבית או כל עמוד שתרצה
     } catch (error) {
       alert('אירעה שגיאה: ' + error.message);
     }

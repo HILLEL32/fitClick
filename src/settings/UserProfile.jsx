@@ -62,7 +62,7 @@ export default function UserProfile() {
         <li className="list-group-item"><strong>מספר בגדים שהועלו:</strong> {userData.clothes?.length || 0}</li>
       </ul>
       <Link to="/edit_profile" className="btn btn-outline-primary mt-3">ערוך פרופיל</Link>
-      <Link to="/" className="btn btn-success btn-lg floating-button">
+      <Link to="/app_home" className="btn btn-success btn-lg floating-button">
         back to home
       </Link>
 

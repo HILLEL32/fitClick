@@ -13,6 +13,7 @@ import UserProfile from './settings/UserProfile'
 import EditProfile from './settings/EditProfile'
 import AddClothing from './features/clothing/AddClothing'
 import ClothingAIUpload from './features/clothing/ClothingAIUpload'
+import AppHome from './appPages/AppHome'
 
 function App() {
 
@@ -32,6 +33,7 @@ function App() {
           <Route path="/edit_profile" element={<EditProfile />} />
           <Route path="/add_clothing" element={<AddClothing />} />
           <Route path="/clothing_ai" element={<ClothingAIUpload />} />
+          <Route path="/app_home" element={<AppHome />} />
 
 
         </Routes>

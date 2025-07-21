@@ -35,7 +35,7 @@ export default function Gender() {
           <strong>You selected: {selectedGender}</strong>
         </div>
       )}
-      <Link to="/" className="btn btn-success btn-lg floating-button">
+      <Link to="/app_home" className="btn btn-success btn-lg floating-button">
         back to home
       </Link>
 

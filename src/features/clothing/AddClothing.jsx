@@ -67,7 +67,7 @@ export default function AddClothing() {
       {detectionResult && (
         <p className="mt-3 fw-bold text-info">{detectionResult}</p>
       )}
-      <Link to="/" className="btn btn-success btn-lg floating-button">
+      <Link to="/app_home" className="btn btn-success btn-lg floating-button">
         back to home
       </Link>
 

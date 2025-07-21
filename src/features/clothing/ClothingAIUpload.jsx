@@ -49,7 +49,7 @@ export default function ClothingAIUpload() {
           זוהה סוג בגד: <strong>{detectedClothing}</strong>
         </p>
       )}
-      <Link to="/" className="btn btn-success btn-lg floating-button">
+      <Link to="/app_home" className="btn btn-success btn-lg floating-button">
         back to home
       </Link>
 

@@ -1,6 +1,6 @@
 
 header nav ul a {
-  color:black;
+  color:rgb(143, 6, 6);
   text-decoration: none;
   padding:0 8px;
   /* השינוי יתבצע באנימציה
@@ -9,7 +9,7 @@ header nav ul a {
 }
 
 header nav ul a:hover {
-  color: #00ffff;
+  color: #eaf1f1;
 }
 
 
@@ -19,6 +19,10 @@ header nav ul a:hover {
   left: 20px;
   z-index: 1000;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0);
+  box-shadow: 0 4px 6px rgba(231, 44, 44, 0.64);
+}
+
+.custom-green-button {
+  background-color: #a64e00;
 }
 

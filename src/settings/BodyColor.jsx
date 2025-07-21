@@ -39,7 +39,7 @@ export default function BodyColor() {
           }}
         ></div>
         <div className="mt-2"><code>{selectedColor}</code></div>
-        <Link to="/" className="btn btn-success btn-lg floating-button">
+        <Link to="/app_home" className="btn btn-success btn-lg floating-button">
           back to home
         </Link>
 
