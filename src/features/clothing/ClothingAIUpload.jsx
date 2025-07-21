@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, db, storage } from "../../firebase/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98";
 
@@ -65,12 +68,40 @@ export default function ClothingAIUpload() {
       };
 
       setResult(simplified);
+      await saveClothingToFirebase(imageFile, simplified);
     } catch (error) {
       console.error("API Error:", error);
       alert("אירעה שגיאה בזיהוי הבגד");
     } finally {
       setLoading(false);
     }
+  };
+
+  const saveClothingToFirebase = async (imageFile, metadata) => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("המשתמש לא מחובר");
+      return;
+    }
+
+    const imageRef = ref(storage, `clothingImages/${user.uid}/${imageFile.name}`);
+    const snapshot = await uploadBytes(imageRef, imageFile);
+    const downloadURL = await getDownloadURL(snapshot.ref);
+
+    const clothingDoc = {
+      uid: user.uid,
+      imageUrl: downloadURL,
+      type: metadata.type || [],
+      colors: metadata.colors || [],
+      style: metadata.style || [],
+      details: metadata.details || [],
+      length: metadata.length || [],
+      waistline: metadata.waistline || [],
+      createdAt: serverTimestamp()
+    };
+
+    await addDoc(collection(db, "clothing"), clothingDoc);
+    alert("הבגד נוסף לארון!");
   };
 
   return (
@@ -104,7 +135,7 @@ export default function ClothingAIUpload() {
 
       {result && (
         <div className="mt-5 text-start">
-          <h4 strong>result</h4>
+          <h4>result</h4>
           <ul className="list-group">
 
             <li className="list-group-item">
@@ -135,8 +166,9 @@ export default function ClothingAIUpload() {
         </div>
       )}
 
-
-      <Link to="/app_home" className="btn btn-secondary mt-4">חזרה לדף הבית</Link>
+      <Link to="/wardrobe" className="btn btn-outline-primary mt-4">
+        מעבר לארון שלי
+      </Link>
     </div>
   );
 }

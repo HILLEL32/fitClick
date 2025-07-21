@@ -19,7 +19,7 @@ export default function AppHome() {
       }
     });
 
-    return () => unsubscribe(); // ניקוי מאזין
+    return () => unsubscribe(); 
   }, []);
 
   return (
@@ -31,6 +31,7 @@ export default function AppHome() {
       <Link to="/user_profile" className="btn btn-success btn-lg custom-green-button">user profile</Link>
       <Link to="/add_clothing" className="btn btn-success btn-lg custom-green-button">add clothing</Link>
       <Link to="/clothing_ai" className="btn btn-success btn-lg custom-green-button">AI garment inspection</Link>
+      <Link to="/wardrobe" className="btn btn-success btn-lg custom-green-button">my wardrobe </Link>
     </div>
   );
 }
