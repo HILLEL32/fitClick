@@ -19,7 +19,7 @@ header nav ul a:hover {
   left: 20px;
   z-index: 1000;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(231, 44, 44, 0.64);
+  box-shadow: 0 4px 6px rgba(200, 6, 6, 0.64);
 }
 
 .custom-green-button {

@@ -7,13 +7,12 @@ import { Link } from 'react-router-dom';
 export default function Log_in() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate(); // מאפשר ניווט לאחר התחברות
-
+  const navigate = useNavigate(); 
   const handleLogin = async () => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       alert('התחברת בהצלחה!');
-      navigate('/app_home'); // נווט לעמוד הבית או כל עמוד שתרצה
+      navigate('/app_home'); 
     } catch (error) {
       alert('אירעה שגיאה: ' + error.message);
     }
