@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, db, storage } from "../../firebase/firebase";
+import { auth, db } from "../../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 
 const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98";
@@ -68,7 +67,7 @@ export default function ClothingAIUpload() {
       };
 
       setResult(simplified);
-      await saveClothingToFirebase(imageFile, simplified);
+      await saveClothingLocallyAndToFirestore(imageFile, simplified);
     } catch (error) {
       console.error("API Error:", error);
       alert("אירעה שגיאה בזיהוי הבגד");
@@ -77,31 +76,36 @@ export default function ClothingAIUpload() {
     }
   };
 
-  const saveClothingToFirebase = async (imageFile, metadata) => {
+  const saveClothingLocallyAndToFirestore = async (imageFile, metadata) => {
     const user = auth.currentUser;
     if (!user) {
       alert("המשתמש לא מחובר");
       return;
     }
 
-    const imageRef = ref(storage, `clothingImages/${user.uid}/${imageFile.name}`);
-    const snapshot = await uploadBytes(imageRef, imageFile);
-    const downloadURL = await getDownloadURL(snapshot.ref);
+    const reader = new FileReader();
+    const imageId = `img-${Date.now()}`;
 
-    const clothingDoc = {
-      uid: user.uid,
-      imageUrl: downloadURL,
-      type: metadata.type || [],
-      colors: metadata.colors || [],
-      style: metadata.style || [],
-      details: metadata.details || [],
-      length: metadata.length || [],
-      waistline: metadata.waistline || [],
-      createdAt: serverTimestamp()
+    reader.onloadend = async () => {
+      localStorage.setItem(imageId, reader.result); // שמירה ב־localStorage
+
+      const clothingDoc = {
+        uid: user.uid,
+        imageId: imageId,
+        type: metadata.type || ["בגד לא מזוהה"],
+        colors: metadata.colors || [],
+        style: metadata.style || [],
+        details: metadata.details || [],
+        length: metadata.length || [],
+        waistline: metadata.waistline || [],
+        createdAt: serverTimestamp()
+      };
+
+      await addDoc(collection(db, "clothingItems"), clothingDoc);
+      alert("הבגד נוסף לארון שלך (התמונה שמורה מקומית בלבד)");
     };
 
-    await addDoc(collection(db, "clothing"), clothingDoc);
-    alert("הבגד נוסף לארון!");
+    reader.readAsDataURL(imageFile); // ממיר ל־Base64
   };
 
   return (
@@ -137,31 +141,12 @@ export default function ClothingAIUpload() {
         <div className="mt-5 text-start">
           <h4>result</h4>
           <ul className="list-group">
-
-            <li className="list-group-item">
-              <strong>Type:</strong> {result.type.length > 0 ? result.type.join(', ') : 'Not detected'}
-            </li>
-
-            <li className="list-group-item">
-              <strong>Colors:</strong> {result.colors.length > 0 ? result.colors.join(', ') : 'None'}
-            </li>
-
-            <li className="list-group-item">
-              <strong>Style:</strong> {result.style.length > 0 ? result.style.join(', ') : 'None'}
-            </li>
-
-            <li className="list-group-item">
-              <strong>Details:</strong> {result.details.length > 0 ? result.details.join(', ') : 'None'}
-            </li>
-
-            <li className="list-group-item">
-              <strong>Length:</strong> {result.length.length > 0 ? result.length.join(', ') : 'None'}
-            </li>
-
-            <li className="list-group-item">
-              <strong>Waistline:</strong> {result.waistline.length > 0 ? result.waistline.join(', ') : 'None'}
-            </li>
-
+            <li className="list-group-item"><strong>Type:</strong> {result.type.join(', ')}</li>
+            <li className="list-group-item"><strong>Colors:</strong> {result.colors.join(', ')}</li>
+            <li className="list-group-item"><strong>Style:</strong> {result.style.join(', ')}</li>
+            <li className="list-group-item"><strong>Details:</strong> {result.details.join(', ')}</li>
+            <li className="list-group-item"><strong>Length:</strong> {result.length.join(', ')}</li>
+            <li className="list-group-item"><strong>Waistline:</strong> {result.waistline.join(', ')}</li>
           </ul>
         </div>
       )}
