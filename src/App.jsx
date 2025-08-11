@@ -15,6 +15,7 @@ import AddClothing from './features/clothing/AddClothing'
 import ClothingAIUpload from './features/clothing/ClothingAIUpload'
 import AppHome from './appPages/AppHome'
 import Wardrobe from './features/clothing/Wardrobe'
+import MatchingClothes from './features/clothing/MatchingClothes'
 
 function App() {
 
@@ -36,6 +37,7 @@ function App() {
           <Route path="/clothing_ai" element={<ClothingAIUpload />} />
           <Route path="/app_home" element={<AppHome />} />
           <Route path="/wardrobe" element={<Wardrobe />} />
+          <Route path="/match_clothes" element={<MatchingClothes />} />
 
 
         </Routes>
