@@ -4,6 +4,31 @@ import { auth, db } from '../../firebase/firebase';
 import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 import MatchingClothes from './MatchingClothes';
+import EditClothing from './EditClothing';
+
+// === עזר ידני: ניקוי ונרמול למטה-קייס בלי Set/map/filter מתקדמים ===
+function uniqCleanSimple(arr) {
+  let result = [];
+  for (let i = 0; i < (arr ? arr.length : 0); i++) {
+    let value = arr[i];
+    if (value == null) continue;
+    value = String(value).trim();
+    if (value === '') continue;
+    value = value.toLowerCase(); // נרמול
+    if (!result.includes(value)) result.push(value);
+  }
+  return result;
+}
+
+function normalizeItemFields(item) {
+  return {
+    ...item,
+    type: uniqCleanSimple(item?.type || []),
+    colors: uniqCleanSimple(item?.colors || []),
+    style: uniqCleanSimple(item?.style || []),
+  };
+}
+// ===================================================================
 
 export default function Wardrobe() {
   const [clothingItems, setClothingItems] = useState([]);
@@ -11,6 +36,10 @@ export default function Wardrobe() {
   const [selectedPants, setSelectedPants] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
+
+  // למודאל העריכה
+  const [editOpen, setEditOpen] = useState(false);
+  const [editItem, setEditItem] = useState(null);
 
   useEffect(() => {
     const fetchClothingItems = async () => {
@@ -22,7 +51,11 @@ export default function Wardrobe() {
 
       const q = query(collection(db, 'clothingItems'), where('uid', '==', user.uid));
       const querySnapshot = await getDocs(q);
-      const items = querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+      const items = [];
+      for (let i = 0; i < querySnapshot.docs.length; i++) {
+        const d = querySnapshot.docs[i];
+        items.push(normalizeItemFields({ id: d.id, ...d.data() }));
+      }
       setClothingItems(items);
       setLoading(false);
     };
@@ -32,22 +65,23 @@ export default function Wardrobe() {
   const getImageDataUrl = (item) => (item?.imageId ? localStorage.getItem(item.imageId) : null);
 
   const handleDelete = async (item) => {
-    if (!item?.id)
-      return;
+    if (!item?.id) return;
     const ok = window.confirm('למחוק את הפריט מהארון? אי אפשר לבטל.');
-    if (!ok) 
-      return;
+    if (!ok) return;
 
     try {
       setDeletingId(item.id);
-      // מחיקה מ־Firestore
       await deleteDoc(doc(db, 'clothingItems', item.id));
-      // מחיקת התמונה המקומית (אם קיימת)
       if (item.imageId) localStorage.removeItem(item.imageId);
-      // עדכון מצב מקומי
-      setClothingItems((prev) => prev.filter((x) => x.id !== item.id));
 
-      // אם מחקנו פריט שהיה מוצג כבחירה – ננקה את הבחירה
+      setClothingItems((prev) => {
+        const next = [];
+        for (let i = 0; i < prev.length; i++) {
+          if (prev[i].id !== item.id) next.push(prev[i]);
+        }
+        return next;
+      });
+
       setSelectedShirt((s) => (s?.id === item.id ? null : s));
       setSelectedPants((p) => (p?.id === item.id ? null : p));
     } catch (err) {
@@ -58,7 +92,28 @@ export default function Wardrobe() {
     }
   };
 
-  if (loading) 
+  const handleOpenEdit = (item) => {
+    setEditItem(item);
+    setEditOpen(true);
+  };
+
+  const handleSavedEdit = (updated) => {
+    // נרמול גם אחרי שמירה, כדי לשמור על עקביות
+    const norm = normalizeItemFields(updated);
+
+    setClothingItems((prev) => {
+      const next = [];
+      for (let i = 0; i < prev.length; i++) {
+        next.push(prev[i].id === norm.id ? norm : prev[i]);
+      }
+      return next;
+    });
+
+    setSelectedShirt((s) => (s?.id === norm.id ? norm : s));
+    setSelectedPants((p) => (p?.id === norm.id ? norm : p));
+  };
+
+  if (loading)
     return <div className="container mt-5 text-center">טוען ארון...</div>;
 
   return (
@@ -114,13 +169,21 @@ export default function Wardrobe() {
 
                 <div className="card-body">
                   <h5 className="card-title">
-                    <strong>סוג</strong>: {item.type?.join(', ') || '—'}
+                    <strong>סוג</strong>: {item.type && item.type.join(', ') || '—'}
                   </h5>
-                  <p className="card-text"><strong>צבעים</strong> : {item.colors?.join(', ') || '—'}</p>
-                  <p className="card-text"><strong>סגנון</strong> : {item.style?.join(', ') || '—'}</p>
+                  <p className="card-text"><strong>צבעים</strong> : {item.colors && item.colors.join(', ') || '—'}</p>
+                  <p className="card-text"><strong>סגנון</strong> : {item.style && item.style.join(', ') || '—'}</p>
                 </div>
 
                 <div className="card-footer d-flex gap-2 bg-light">
+                  <button
+                    className="btn btn-outline-primary"
+                    onClick={() => handleOpenEdit(item)}
+                    aria-label="עריכת פריט"
+                  >
+                    ערוך
+                  </button>
+
                   <button
                     className="btn btn-outline-danger ms-auto"
                     onClick={() => handleDelete(item)}
@@ -135,6 +198,14 @@ export default function Wardrobe() {
           );
         })}
       </div>
+
+      {/* מודאל עריכה */}
+      <EditClothing
+        open={editOpen}
+        onClose={() => setEditOpen(false)}
+        item={editItem}
+        onSaved={handleSavedEdit}
+      />
     </div>
   );
 }
