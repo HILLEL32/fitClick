@@ -37,7 +37,9 @@ function App() {
           <Route path="/clothing_ai" element={<ClothingAIUpload />} />
           <Route path="/app_home" element={<AppHome />} />
           <Route path="/wardrobe" element={<Wardrobe />} />
-          <Route path="/match_clothes" element={<MatchingClothes />} />
+          {/* <Route path="/match_clothes" element={<MatchingClothes />} /> */}
+          <Route path="/match" element={<MatchingClothes />} />
+
 
 
         </Routes>

@@ -1,105 +1,54 @@
-import React, { useEffect, useState } from 'react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
-import { auth, db } from '../../firebase/firebase';
+// src/features/wardrobe/RandomClothingPicker.jsx
+import React, { useMemo, useState } from 'react';
 
-// טבלת צבעים מתאימים
-const colorCompatibility = {
-  red: ['black', 'white', 'denim'],
-  blue: ['white', 'gray', 'beige'],
-  green: ['brown', 'white'],
-  black: ['white', 'red', 'pink'],
-  white: ['black', 'red', 'blue', 'everything'],
-  yellow: ['navy', 'white'],
-  pink: ['white', 'gray', 'beige'],
-  purple: ['black', 'gray'],
-  beige: ['brown', 'green'],
-  gray: ['black', 'white', 'blue'],
-  brown: ['beige', 'white'],
-  orange: ['navy', 'white'],
-};
+export default function MatchingClothes({ clothingItems, onSelectShirt, onSelectPants }) {
+  const [message, setMessage] = useState('');
 
-// שלב 1: חילוץ צבע עיקרי ממחרוזת
-function extractBaseColor(colorString) {
-  if (!colorString) return '';
-  const knownColors = ['black', 'white', 'gray', 'blue', 'red', 'green', 'yellow', 'pink', 'purple', 'beige', 'brown', 'orange', 'denim'];
-  const lower = colorString.toLowerCase();
+  const matchByKeywords = (item, keywords) => {
+    const types = (item?.type || []).map((t) => String(t).toLowerCase());
+    return types.some((t) => keywords.some((k) => t.includes(k)));
+  };
 
-  for (const color of knownColors) {
-    if (lower.includes(color)) {
-      return color;
+  const isShirt = (item) =>
+    matchByKeywords(item, [
+      'shirt','t-shirt','tee','top','blouse','button-down','henley','polo','jersey',
+      'overshirt','camisole','tank','chemise','crewneck','v-neck',
+      'חולצה','טישירט','טי-שירט','טופ'
+    ]);
+
+  const isJeans = (item) =>
+    matchByKeywords(item, [
+      'jeans','denim','ג׳ינס','גינס'
+    ]);
+
+  const shirts = useMemo(() => clothingItems.filter(isShirt), [clothingItems]);
+  const jeans  = useMemo(() => clothingItems.filter(isJeans), [clothingItems]);
+
+  const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  // כלל ההתאמה: כל צבע חולצה מתאים למכנס ג'ינס
+  const handlePickMatchingPair = () => {
+    if (!jeans.length) {
+      setMessage('לא נמצאו מכנסי ג׳ינס בארון.');
+      return;
     }
-  }
-
-  return ''; // לא נמצא צבע מתאים
-}
-
-// שלב 2: החזרת בגדים שמתאימים לצבע
-function getMatchingClothes(baseColor, wardrobe) {
-  const normalizedBase = extractBaseColor(baseColor);
-  const compatibleColors = colorCompatibility[normalizedBase];
-
-  if (!compatibleColors) {
-    // fallback: בגדים בצבעים נייטרליים
-    return wardrobe.filter(item =>
-      ['white', 'black', 'denim'].includes(extractBaseColor(item.mainColor))
-    );
-  }
-
-  return wardrobe.filter(item =>
-    compatibleColors.includes(extractBaseColor(item.mainColor))
-  );
-}
-
-// קומפוננטה ראשית
-export default function MatchingClothes() {
-  const [wardrobe, setWardrobe] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedColor, setSelectedColor] = useState('blue');
-
-  useEffect(() => {
-    const fetchClothing = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      const q = query(collection(db, 'clothing'), where('uid', '==', user.uid));
-      const snapshot = await getDocs(q);
-      const clothes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setWardrobe(clothes);
-      setLoading(false);
-    };
-
-    fetchClothing();
-  }, []);
-
-  const matches = getMatchingClothes(selectedColor, wardrobe);
+    if (!shirts.length) {
+      setMessage('לא נמצאו חולצות בארון.');
+      return;
+    }
+    setMessage('');
+    const chosenPants = pickRandom(jeans);
+    const chosenShirt = pickRandom(shirts);
+    onSelectPants?.(chosenPants);
+    onSelectShirt?.(chosenShirt);
+  };
 
   return (
-    <div className="container mt-4">
-      <h3>הבגדים שמתאימים לצבע: {selectedColor}</h3>
-
-      <select
-        className="form-select w-25 my-3"
-        value={selectedColor}
-        onChange={(e) => setSelectedColor(e.target.value)}
-      >
-        {Object.keys(colorCompatibility).map((color) => (
-          <option key={color} value={color}>{color}</option>
-        ))}
-      </select>
-
-      {loading ? (
-        <p>טוען את הבגדים מהארון...</p>
-      ) : (
-        <div className="d-flex flex-wrap gap-3 mt-3">
-          {matches.map((item) => (
-            <div key={item.id} style={{ textAlign: 'center' }}>
-              <img src={item.imageUrl} alt={item.type} width={100} />
-              <p>{item.type} - {extractBaseColor(item.mainColor)}</p>
-            </div>
-          ))}
-          {matches.length === 0 && <p>לא נמצאו התאמות</p>}
-        </div>
-      )}
+    <div className="d-flex gap-2 justify-content-center mb-4 flex-wrap">
+      <button className="btn btn-primary" onClick={handlePickMatchingPair}>
+        לבוש יום יומי
+      </button>
+      {message && <div className="w-100 text-center text-danger mt-2">{message}</div>}
     </div>
   );
 }
