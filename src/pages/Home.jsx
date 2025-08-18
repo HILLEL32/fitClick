@@ -4,7 +4,7 @@ import '../css/design.css';
 export default function Home() {
   return (
     <div className='container mt-5 text-center'>
-      <h3>wellcome to </h3>
+      <h3>ברוכים הבאים ל  </h3>
       <h1 className='line'>fitClick</h1>
 
       <div className="d-flex flex-wrap justify-content-center gap-3 mt-4">

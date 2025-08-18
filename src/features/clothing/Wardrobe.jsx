@@ -126,7 +126,7 @@ export default function Wardrobe() {
         onSelectPants={setSelectedPants}
       />
 
-      <Link to="/app_home" className="btn btn-success mb-4"> HOME </Link>
+      <Link to="/app_home" className="btn btn-success mb-4"> חזרה לדף הבית </Link>
 
       {/* תצוגת חולצה ומכנס שנבחרו */}
       {selectedShirt && (

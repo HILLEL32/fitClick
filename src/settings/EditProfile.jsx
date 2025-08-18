@@ -116,7 +116,7 @@ export default function EditProfile() {
   </div>
 
   <Link to="/app_home" className="btn btn-success btn-lg floating-button">
-    back to home
+    חזרה לדף הבית
   </Link>
 </div>
 

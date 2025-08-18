@@ -22,10 +22,11 @@ export default function AppHome() {
   }, []);
   return (
     <div className='container mt-5 text-center'>
-      <h3>{username} welcome to fitclick !! </h3>
-      <Link to="/user_profile" className="btn btn-success btn-lg custom-green-button">user profile</Link>
-      <Link to="/clothing_ai" className="btn btn-success btn-lg custom-green-button">AI garment inspection</Link>
-      <Link to="/wardrobe" className="btn btn-success btn-lg custom-green-button">my wardrobe </Link>
+      {/* <h3>{username}ברוכים הבאים ל fitclick !! </h3> */}
+      <h3>!!! fitclick ברוכים הבאים ל {username}</h3>
+      <Link to="/user_profile" className="btn btn-success btn-lg custom-green-button">פרופיל</Link>
+      <Link to="/clothing_ai" className="btn btn-success btn-lg custom-green-button">לזיהוי בגד</Link>
+      <Link to="/wardrobe" className="btn btn-success btn-lg custom-green-button">ארון הבגדים שלי </Link>
     </div>
   );
 }

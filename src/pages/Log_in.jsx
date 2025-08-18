@@ -39,7 +39,7 @@ export default function Log_in() {
         <button onClick={handleLogin}>Log In</button>
       </div>
       <Link to="/" className="btn btn-success btn-lg floating-button">
-        back to home
+        חזרה לעמוד הראשי
       </Link>
 
     </div>

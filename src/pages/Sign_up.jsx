@@ -85,7 +85,7 @@ export default function Sign_up() {
           <option value="נקבה">נקבה</option>
           <option value="אחר">אחר / לא לציין</option>
         </select>
-{/* 
+        {/* 
         <label className="form-label mt-3">צבע גוף:</label>
         <input type="color" value={bodyColor}
           onChange={(e) => setBodyColor(e.target.value)}
@@ -96,7 +96,7 @@ export default function Sign_up() {
 
       {message && <div className="alert alert-info mt-3">{message}</div>}
       <Link to="/" className="btn btn-success btn-lg floating-button">
-        back to home
+        חזרה לעמוד הראשי
       </Link>
 
     </div>
