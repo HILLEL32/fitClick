@@ -110,7 +110,7 @@ export default function ClothingAIUpload() {
 
   return (
     <div className="container text-center mt-5">
-      <h2>העלאת בגד לניתוח בינה מלאכותית</h2>
+      <h2 className="mb-4 text-center">העלאת בגד לזיהוי </h2>
 
       <input
         type="file"
@@ -151,7 +151,7 @@ export default function ClothingAIUpload() {
         </div>
       )}
 
-      <Link to="/wardrobe" className="btn btn-outline-primary mt-4">
+      <Link to="/wardrobe" className="btn btn-outline-warning mt-3">
         מעבר לארון שלי
       </Link>
 

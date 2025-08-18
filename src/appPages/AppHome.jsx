@@ -22,7 +22,7 @@ export default function AppHome() {
   }, []);
   return (
     <div className='container mt-5 text-center'>
-      <h3>welcome to {username}</h3>
+      <h3>{username} welcome to fitclick !! </h3>
       <Link to="/user_profile" className="btn btn-success btn-lg custom-green-button">user profile</Link>
       <Link to="/clothing_ai" className="btn btn-success btn-lg custom-green-button">AI garment inspection</Link>
       <Link to="/wardrobe" className="btn btn-success btn-lg custom-green-button">my wardrobe </Link>

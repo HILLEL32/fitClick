@@ -37,36 +37,35 @@ export default function UserProfile() {
   if (!userData) return <div className="text-center text-danger">לא נמצא משתמש מחובר.</div>;
 
   return (
-    <div className="container my-4">
-      <h2 className="mb-4">פרופיל המשתמש</h2>
-      <ul className="list-group">
-        <li className="list-group-item"><strong>שם משתמש:</strong> {userData.username}</li>
-        <li className="list-group-item"><strong>אימייל:</strong> {auth.currentUser.email}</li>
-        <li className="list-group-item"><strong>טלפון:</strong> {userData.phone}</li>
-        <li className="list-group-item"><strong>מגדר:</strong> {userData.gender}</li>
-        <li className="list-group-item d-flex align-items-center">
-          <strong className="me-2">צבע גוף:</strong>
-          <div
-            style={{
-              width: '20px',
-              height: '20px',
-              backgroundColor: userData.bodyColor,
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-              marginLeft: '10px'
-            }}
-            title={userData.bodyColor}
-          ></div>
-          <span className="ms-2">{userData.bodyColor}</span>
-        </li>
-        <li className="list-group-item"><strong>מספר בגדים שהועלו:</strong> {userData.clothes?.length || 0}</li>
-      </ul>
-      <Link to="/edit_profile" className="btn btn-outline-primary mt-3">ערוך פרופיל</Link>
+    <div className="container my-4" dir="rtl">
+      <h2 className="mb-4 text-center">פרופיל המשתמש</h2>
+      <div className="mx-auto" style={{ maxWidth: '400px' }}>
+        <ul className="list-group">
+          <li className="list-group-item"><strong>שם משתמש:</strong><br /> {userData.username}</li>
+          <li className="list-group-item"><strong>אימייל:</strong><br /> {auth.currentUser.email}</li>
+          <li className="list-group-item"><strong>טלפון:</strong><br /> {userData.phone}</li>
+          <li className="list-group-item"><strong>מגדר:</strong><br /> {userData.gender}</li>
+          <li className="list-group-item">
+            <strong>צבע גוף:</strong><br />
+            <div
+              style={{
+                width: '20px',
+                height: '20px',
+                backgroundColor: userData.bodyColor,
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                marginTop: '5px'
+              }}
+              title={userData.bodyColor}
+            ></div>
+          </li>
+        </ul>
+
+        <Link to="/edit_profile" className="btn btn-outline-warning mt-3">ערוך פרופיל</Link>
+      </div>
       <Link to="/app_home" className="btn btn-success btn-lg floating-button">
         back to home
       </Link>
-
-
     </div>
   );
 }

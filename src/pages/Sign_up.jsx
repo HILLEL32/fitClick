@@ -11,7 +11,7 @@ export default function Sign_up() {
   const [username, setUsername] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
-  const [bodyColor, setBodyColor] = useState('#f5d3b3');
+  // const [bodyColor, setBodyColor] = useState('#f5d3b3');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
@@ -60,7 +60,7 @@ export default function Sign_up() {
 
   return (
     <div className="container my-4">
-      <h2>הרשמה</h2>
+      <h2 className='line'>sign up</h2>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="שם משתמש" value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -78,18 +78,18 @@ export default function Sign_up() {
           onChange={(e) => setPhone(e.target.value)}
           className="form-control my-2" />
 
-        <label className="form-label mt-3">מגדר:</label>
+        <label className="form-label mt-3"></label>
         <select value={gender} onChange={(e) => setGender(e.target.value)} className="form-control" required>
           <option value="">בחר מגדר</option>
           <option value="זכר">זכר</option>
           <option value="נקבה">נקבה</option>
           <option value="אחר">אחר / לא לציין</option>
         </select>
-
+{/* 
         <label className="form-label mt-3">צבע גוף:</label>
         <input type="color" value={bodyColor}
           onChange={(e) => setBodyColor(e.target.value)}
-          className="form-control form-control-color mb-3" title="בחר צבע גוף" />
+          className="form-control form-control-color mb-3" title="בחר צבע גוף" /> */}
 
         <button type="submit" className="btn btn-success my-2">הירשם</button>
       </form>
