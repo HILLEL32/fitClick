@@ -1,4 +1,3 @@
-// src/pages/ChangePassword.jsx
 import React, { useState } from 'react';
 import { auth } from '../firebase/firebase';
 import {
@@ -49,7 +48,7 @@ export default function ChangePassword() {
 
   return (
     <div className="container mt-3">
-      <h2>שינוי סיסמה</h2>
+      <h6 className='line'>שינוי סיסמה</h6>
       <div className='container'>
         <strong>סיסמה נוכחית:</strong><br />
         <input
