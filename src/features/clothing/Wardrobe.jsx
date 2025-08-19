@@ -5,6 +5,7 @@ import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/fire
 import { Link } from 'react-router-dom';
 import MatchingClothes from './MatchingClothes';
 import EditClothing from './EditClothing';
+import ClothingAIUpload from './ClothingAIUpload';
 
 // === עזר ידני: ניקוי ונרמול למטה-קייס בלי Set/map/filter מתקדמים ===
 function uniqCleanSimple(arr) {
@@ -126,12 +127,13 @@ export default function Wardrobe() {
         onSelectPants={setSelectedPants}
       />
 
-      <Link to="/app_home" className="btn btn-success mb-4"> חזרה לדף הבית </Link>
+      <Link to="/app_home" className="btn btn-success mb-4 me-2"> חזרה לדף הבית </Link> 
+      <Link to="/clothing_ai" className="btn btn-success mb-4"> הוסף בגד לארון </Link>
 
       {/* תצוגת חולצה ומכנס שנבחרו */}
       {selectedShirt && (
         <div className="mb-4">
-          <h4>חולצה שנבחרה:</h4>
+          <h4> חולצה שנבחרה:</h4>
           <img src={getImageDataUrl(selectedShirt)} alt="חולצה" style={{ maxHeight: 200 }} />
         </div>
       )}

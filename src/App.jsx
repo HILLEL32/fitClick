@@ -9,7 +9,7 @@ import AppContextProvider from './context/AppContext'
 import { ToastContainer } from 'react-toastify'
 import Gender from './settings/Gender'
 import BodyColor from './settings/BodyColor'
-import UserProfile from './settings/UserProfile'  
+import UserProfile from './settings/UserProfile'
 import EditProfile from './settings/EditProfile'
 import AddClothing from './features/clothing/AddClothing'
 import ClothingAIUpload from './features/clothing/ClothingAIUpload'
@@ -17,13 +17,14 @@ import AppHome from './appPages/AppHome'
 import Wardrobe from './features/clothing/Wardrobe'
 import MatchingClothes from './features/clothing/MatchingClothes'
 import EditClothing from './features/clothing/EditClothing'
+import ChangePassword from './settings/ChangePassword'
 
 function App() {
 
   return (
     <AppContextProvider>
-      
-      <ToastContainer theme='colored' autoClose={10000} /> 
+
+      <ToastContainer theme='colored' autoClose={10000} />
       <BrowserRouter>
         <Header />
         <Routes>
@@ -41,6 +42,7 @@ function App() {
           {/* <Route path="/match_clothes" element={<MatchingClothes />} /> */}
           <Route path="/match" element={<MatchingClothes />} />
           <Route path="/edit_clothing" element={<EditClothing />} />
+          <Route path="/change_password" element={<ChangePassword />} />
 
 
 
