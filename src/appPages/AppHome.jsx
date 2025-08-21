@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import '../css/design.css';
+import '../css/AppHome.css';   // מחובר לקובץ ה־CSS החדש
 import { auth, db } from '../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -10,7 +10,7 @@ export default function AppHome() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        const docRef = doc(db, 'users', user.uid); 
+        const docRef = doc(db, 'users', user.uid);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           const userData = docSnap.data();
@@ -18,15 +18,22 @@ export default function AppHome() {
         }
       }
     });
-    return () => unsubscribe(); 
+    return () => unsubscribe();
   }, []);
+
   return (
-    <div className='container mt-5 text-center'>
-      {/* <h3>{username}ברוכים הבאים ל fitclick !! </h3> */}
-      <h3>!!! fitclick ברוכים הבאים ל {username}</h3>
-      <Link to="/user_profile" className="btn btn-success btn-lg custom-green-button">פרופיל</Link>
-      <Link to="/clothing_ai" className="btn btn-success btn-lg custom-green-button">לזיהוי בגד</Link>
-      <Link to="/wardrobe" className="btn btn-success btn-lg custom-green-button">ארון הבגדים שלי </Link>
+    <div className="apphome-wrapper">
+      <h1> !!! fitclick ברוכים הבאים ל {username}</h1>
+
+      <div className="apphome-card">
+        <h3 className="apphome-title"></h3>
+
+        <div className="apphome-actions">
+          <Link to="/user_profile" className="fc-btn fc-btn--one">פרופיל</Link>
+          <Link to="/clothing_ai" className="fc-btn fc-btn--two">לזיהוי בגד</Link>
+          <Link to="/wardrobe" className="fc-btn fc-btn--three">ארון הבגדים שלי</Link>
+        </div>
+      </div>
     </div>
   );
 }
