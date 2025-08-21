@@ -23,13 +23,14 @@ export default function AppHome() {
 
   return (
     <div className="apphome-wrapper">
-      <h1> !!! fitclick ברוכים הבאים ל {username}</h1>
+      {/* כותרת עם גופן Miriam Libre */}
+      <h1 className="apphome-heading">!!! fitclick ברוכים הבאים ל {username}</h1>
 
       <div className="apphome-card">
         <h3 className="apphome-title"></h3>
 
         <div className="apphome-actions">
-          <Link to="/user_profile" className="fc-btn fc-btn--one">פרופיל</Link>
+          <Link to="/user_profile" className="fc-btn fc-btn--one -2">פרופיל</Link> 
           <Link to="/clothing_ai" className="fc-btn fc-btn--two">לזיהוי בגד</Link>
           <Link to="/wardrobe" className="fc-btn fc-btn--three">ארון הבגדים שלי</Link>
         </div>

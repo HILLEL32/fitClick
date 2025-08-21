@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase/firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-
+import '../css/EditProfile.css'; // ← קובץ העיצוב החדש
 
 export default function EditProfile() {
   const [userData, setUserData] = useState({
@@ -58,67 +58,66 @@ export default function EditProfile() {
   if (loading) return <div className="text-center my-5">טוען...</div>;
 
   return (
-<div className="container my-4" dir="rtl">
-  <h2 className="mb-4 text-center">עריכת פרופיל</h2>
+    <div className="container edit-wrapper" dir="rtl">
+      <h2 className="edit-heading text-center">עריכת פרופיל</h2>
 
-  {/* מרכז רק את הטופס */}
-  <div className="mx-auto" style={{ maxWidth: '400px' }}>
-    <form onSubmit={handleSubmit}>
-      <label className="form-label">שם משתמש:</label>
-      <input
-        type="text"
-        name="username"
-        className="form-control my-2"
-        value={userData.username}
-        onChange={handleChange}
-        required
-      />
+      {/* מרכז רק את הטופס */}
+      <div className="edit-card mx-auto">
+        <form onSubmit={handleSubmit}>
+          <label className="form-label">שם משתמש:</label>
+          <input
+            type="text"
+            name="username"
+            className="form-control my-2 edit-input"
+            value={userData.username}
+            onChange={handleChange}
+            required
+          />
 
-      <label className="form-label">מספר טלפון:</label>
-      <input
-        type="tel"
-        name="phone"
-        className="form-control my-2"
-        value={userData.phone}
-        onChange={handleChange}
-      />
+          <label className="form-label">מספר טלפון:</label>
+          <input
+            type="tel"
+            name="phone"
+            className="form-control my-2 edit-input"
+            value={userData.phone}
+            onChange={handleChange}
+          />
 
-      <label className="form-label">בחרי את המגדר שלך:</label>
-      <select
-        name="gender"
-        className="form-control"
-        value={userData.gender}
-        onChange={handleChange}
-        required
-      >
-        <option value="">בחר מגדר</option>
-        <option value="זכר">זכר</option>
-        <option value="נקבה">נקבה</option>
-        <option value="אחר">אחר / לא לציין</option>
-      </select>
+          <label className="form-label">בחרי את המגדר שלך:</label>
+          <select
+            name="gender"
+            className="form-control edit-input"
+            value={userData.gender}
+            onChange={handleChange}
+            required
+          >
+            <option value="">בחר מגדר</option>
+            <option value="זכר">זכר</option>
+            <option value="נקבה">נקבה</option>
+            <option value="אחר">אחר / לא לציין</option>
+          </select>
 
-      <label className="form-label mt-3">בחרי את צבע גוון הגוף שלך:</label>
-      <input
-        type="color"
-        name="bodyColor"
-        className="form-control form-control-color mb-3"
-        value={userData.bodyColor}
-        onChange={handleChange}
-        title="בחר צבע גוף"
-      />
+          <label className="form-label mt-3">בחרי את צבע גוון הגוף שלך:</label>
+          <input
+            type="color"
+            name="bodyColor"
+            className="form-control form-control-color mb-3 edit-color"
+            value={userData.bodyColor}
+            onChange={handleChange}
+            title="בחר צבע גוף"
+          />
 
-      <button type="submit" className="btn btn-outline-warning mt-3">
-        שמור שינויים
-      </button>
-    </form>
+          <button type="submit" className="btn btn-save mt-3">
+            שמור שינויים
+          </button>
+        </form>
 
-    {message && <div className="alert alert-info mt-3">{message}</div>}
-  </div>
+        {message && <div className="alert alert-info mt-3">{message}</div>}
+      </div>
 
-  <Link to="/app_home" className="btn btn-success btn-lg floating-button">
-    חזרה לדף הבית
-  </Link>
-</div>
-
+      <Link to="/app_home" className="btn btn-home floating-button">
+        חזרה לדף הבית
+      </Link>
+    </div>
   );
 }

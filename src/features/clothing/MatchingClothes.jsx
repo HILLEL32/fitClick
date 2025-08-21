@@ -1,5 +1,6 @@
 // src/features/wardrobe/RandomClothingPicker.jsx
 import React, { useMemo, useState } from 'react';
+import '../../css/MatchingClothes.css';
 
 export default function MatchingClothes({ clothingItems, onSelectShirt, onSelectPants }) {
   const [message, setMessage] = useState('');
@@ -57,7 +58,7 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     orange:['white','black','navy','blue','denim','brown'],
   };
 
-  // ממפה HEX לקטגוריית צבע בסיסית (קירוב טוב מספיק לשילובים)
+  // ממפה HEX לקטגוריית צבע בסיסית
   const hexToBase = (hex) => {
     try {
       const h = hex.replace('#','');
@@ -86,24 +87,21 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     } catch { return ''; }
   };
 
-  // נרמול צבע חכם: גוונים/עברית/אנגלית/HEX/צירופים "olive green", "lisbon brown" וכו'
+  // נרמול צבע חכם
   const resolveBaseColor = (text) => {
     if (!text) return '';
     const lower = String(text).toLowerCase().trim();
 
-    // 1) HEX?
     const hexMatch = lower.match(/#([0-9a-f]{3}|[0-9a-f]{6})/i);
     if (hexMatch) {
       const fromHex = hexToBase(hexMatch[0]);
       if (fromHex) return fromHex;
     }
 
-    // 2) התאמה ישירה מתוך הטבלאות
     for (const [base, aliases] of Object.entries(KNOWN_COLORS)) {
       if (aliases.some(a => lower.includes(a))) return base;
     }
 
-    // 3) פיצול למילים ובדיקה (תופס lisbon/brown, off/white, וכו')
     const parts = lower.split(/[\s\-_/]+/g);
     for (const part of parts) {
       for (const [base, aliases] of Object.entries(KNOWN_COLORS)) {
@@ -111,7 +109,6 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
       }
     }
 
-    // 4) תבניות נפוצות
     const PATTERNS = [
       [/olive|khaki|army|sage|mint|forest/, 'green'],
       [/burgundy|maroon|wine|oxblood/, 'red'],
@@ -127,10 +124,10 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
       if (re.test(lower)) return base;
     }
 
-    return ''; // לא זוהה
+    return '';
   };
 
-  // קורא קודם baseColor (אם נשמר במסד), אחר כך colors/color, ואח"כ מטוקנים
+  // צבע של פריט
   const getItemBaseColor = (item) => {
     const fromBase = resolveBaseColor(item?.baseColor);
     if (fromBase) return fromBase;
@@ -152,12 +149,12 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     return '';
   };
 
-  // כללי התאמת צבעים
+  // התאמת צבעים
   const isColorMatch = (top, bottom) => {
     const cTop = getItemBaseColor(top);
     const cBot = getItemBaseColor(bottom);
-    if (!cTop || !cBot) return true;                // חסר מידע? לא חוסמים
-    if (cTop === cBot) return true;                 // מונוכרום
+    if (!cTop || !cBot) return true;
+    if (cTop === cBot) return true;
     if (NEUTRALS.has(cTop) || NEUTRALS.has(cBot)) return true;
     const rule = COLOR_COMPATIBILITY[cTop];
     if (!rule) return false;
@@ -165,7 +162,6 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     return rule.includes(cBot);
   };
 
-  // בוחר רק זוגות שעוברים isColorMatch
   const pickCompatiblePair = (tops, bottoms) => {
     const pairs = [];
     for (const t of tops) for (const b of bottoms) {
@@ -190,10 +186,8 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
   const handlePickMatchingPair = () => {
     if (!jeans.length)  return setMessage('לא נמצאו מכנסי ג׳ינס בארון.');
     if (!shirts.length) return setMessage('לא נמצאו חולצות בארון.');
-
     const pair = pickCompatiblePair(shirts, jeans);
     if (!pair) return setMessage('נמצאו חולצות וג׳ינסים אך בלי התאמת צבע. הוסיפו תגיות צבע (black/navy/blue/תכלת וכו\').');
-
     const [top, bottom] = pair;
     setMessage('');
     onSelectPants?.(bottom);
@@ -229,17 +223,15 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
   const handlePickElegantPair = () => {
     if (!elegantBottoms.length) return setMessage('לא נמצאו מכנסיים מחוייטים או חצאיות בארון.');
     if (!elegantTops.length)    return setMessage('לא נמצאו חולצות אלגנטיות בארון.');
-
     const pair = pickCompatiblePair(elegantTops, elegantBottoms);
     if (!pair) return setMessage('נמצאו פריטי אלגנט אך בלי התאמת צבע. רצוי להוסיף/לתקן תגיות צבע.');
-
     const [top, bottom] = pair;
     setMessage('');
     onSelectPants?.(bottom);
     onSelectShirt?.(top);
   };
 
-  // Occasion (Shabbat/Holiday/Event)
+  // Occasion
   const isDress = (item) =>
     matchByKeywords(item, [
       'dress','evening dress','cocktail dress','midi dress','maxi dress','wrap dress','sheath dress',
@@ -274,17 +266,15 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     }
     if (!occasionBottoms.length) return setMessage('לא נמצאו תחתונים מתאימים לשבת/חג/אירוע.');
     if (!occasionTops.length)    return setMessage('לא נמצאו עליוניות חגיגיות לשבת/חג/אירוע.');
-
     const pair = pickCompatiblePair(occasionTops, occasionBottoms);
     if (!pair) return setMessage('נמצאו פריטי אירוע אך בלי התאמת צבע. הוסיפו תגיות צבע לפריטים.');
-
     const [top, bottom] = pair;
     setMessage('');
     onSelectPants?.(bottom);
     onSelectShirt?.(top);
   };
 
-  // Sport (STRICT + Color-aware)
+  // Sport
   const hasSportStyle = (item) =>
     matchByKeywords(item, [
       'sport','sports','athletic','athleisure','gym','workout','training','active',
@@ -331,25 +321,21 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
   };
 
   return (
-    <div className="d-flex gap-2 justify-content-center mb-4 flex-wrap">
-      <button className="btn btn-outline-primary" onClick={handlePickMatchingPair} title="ג׳ינס + חולצה עם התאמת צבע">
-        לבוש יום יומי
-      </button>
-      <button className="btn btn-outline-dark" onClick={handlePickElegantPair} title="מחויט/חצאית + חולצה אלגנטית עם התאמת צבע">
-        לבוש אלגנטי
-      </button>
-      <button className="btn btn-outline-warning" onClick={handlePickOccasionPair} title="שמלה / חצאית/מחויט עם חולצה – מותאם צבע">
-        לשבת/חג/אירוע
-      </button>
-      <button
-        className="btn btn-outline-danger"
-        title="שילוב לאימון/ריצה/חדר כושר עם התאמת צבע"
-        onClick={handlePickSportPair}
-      >
+    <div className="d-flex gap-2 justify-content-center mb-4 flex-wrap rcp-toolbar" dir="rtl">
+      <button className="matching-btn sport-btn" onClick={handlePickSportPair}>
         לבוש ספורט
       </button>
+      <button className="matching-btn event-btn" onClick={handlePickOccasionPair}>
+        לשבת/חג/אירוע
+      </button>
+      <button className="matching-btn elegant-btn" onClick={handlePickElegantPair}>
+        לבוש אלגנטי
+      </button>
+      <button className="matching-btn casual-btn" onClick={handlePickMatchingPair}>
+        לבוש יום יומי
+      </button>
 
-      {message && <div className="w-100 text-center text-danger mt-2">{message}</div>}
+      {message && <div className="w-100 text-center rcp-message mt-2">{message}</div>}
     </div>
   );
 }

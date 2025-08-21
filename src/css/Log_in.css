@@ -1,0 +1,131 @@
+:root{
+  --brand: #B5693A;       /* חום־כתום */
+  --brand-dark: #8C4320;  /* כהה */
+  --accent: #E78A90;      /* ורוד ביניים */
+  --accent-light: #FFD6DB;/* ורוד בהיר */
+  --bg-light: #F8F4F2;    /* רקע */
+  --surface: #FFFFFF;
+  --border: #EAD9D2;
+}
+
+/* רקע כללי */
+.login-page{
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(1200px 600px at 50% -100px, #ffe9ee 0%, transparent 60%),
+              linear-gradient(135deg, var(--bg-light) 0%, #f9f5f2 100%);
+  padding: 2rem 1rem;
+}
+
+/* כרטיס */
+.login-card{
+  width: 100%;
+  max-width: 440px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 2rem 1.6rem;
+  box-shadow:
+    0 20px 40px rgba(181,105,58,0.10),
+    0 4px 12px rgba(0,0,0,0.05);
+  position: relative;
+}
+
+/* כותרת */
+.login-title{
+  font-family: 'Miriam Libre', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Hebrew", sans-serif;
+  font-weight: 800;
+  font-size: 1.9rem;
+  text-align: center;
+  margin-bottom: 1.2rem;
+  color: var(--brand-dark);
+  letter-spacing: .3px;
+}
+
+/* טופס */
+.login-form{ display: grid; gap: .65rem; }
+
+.fc-input{
+  border: 2px solid var(--border);
+  background: #fff;
+  border-radius: 14px;
+  padding: .7rem .9rem;
+  font-weight: 600;
+  outline: none;
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.fc-input:focus{
+  border-color: var(--brand);
+  box-shadow: 0 0 0 4px rgba(181,105,58,0.12);
+}
+.fc-input::placeholder{ color: #9c8f88; font-weight: 500; }
+
+.login-label{
+  font-weight: 700;
+  color: var(--brand-dark);
+}
+
+/* כפתור ראשי (כניסה) */
+.btn-auth-primary{
+  background: var(--brand);
+  color: #fff !important;
+  border: none;
+  border-radius: 16px;
+  padding: .75rem 1.2rem;
+  font-weight: 800;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+  box-shadow: 0 8px 18px rgba(181,105,58,0.28);
+}
+.btn-auth-primary:hover,
+.btn-auth-primary:focus-visible{
+  background: var(--brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(140,67,32,0.35);
+}
+
+/* כפתורי משניים (Outline שקוף) */
+.btn-ghost{
+  background: transparent;
+  color: var(--brand-dark) !important;
+  border: 2px solid var(--brand);
+  border-radius: 14px;
+  padding: .6rem 1rem;
+  font-weight: 800;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+.btn-ghost:hover,
+.btn-ghost:focus-visible{
+  background: var(--brand);
+  color: #fff !important;
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(181,105,58,0.25);
+}
+
+/* כפתור חזרה קבוע בפינה – אחיד לכל האתר */
+.floating-button{
+  position: fixed;
+  inset-inline-start: 1rem;  /* RTL: שמאל */
+  inset-block-end: 1rem;     /* תחתית */
+  background: transparent;
+  color: var(--brand-dark) !important;
+  border: 2px solid var(--brand);
+  border-radius: 14px;
+  padding: .6rem 1rem;
+  font-weight: 800;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+.floating-button:hover,
+.floating-button:focus-visible{
+  background: var(--brand);
+  color: #fff !important;
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(181,105,58,0.25);
+}
+
+/* מובייל */
+@media (max-width: 420px){
+  .login-card{ padding: 1.6rem 1.2rem; }
+}

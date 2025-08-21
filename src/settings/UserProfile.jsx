@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-
+import '../css/UserProfile.css'; // ← קובץ העיצוב החדש
 
 export default function UserProfile() {
   const [userData, setUserData] = useState(null);
@@ -16,10 +16,8 @@ export default function UserProfile() {
           setLoading(false);
           return;
         }
-
         const userRef = doc(db, 'users', user.uid);
         const userSnap = await getDoc(userRef);
-
         if (userSnap.exists()) {
           setUserData(userSnap.data());
         }
@@ -29,7 +27,6 @@ export default function UserProfile() {
         setLoading(false);
       }
     };
-
     fetchUserProfile();
   }, []);
 
@@ -37,33 +34,37 @@ export default function UserProfile() {
   if (!userData) return <div className="text-center text-danger">לא נמצא משתמש מחובר.</div>;
 
   return (
-    <div className="container my-4" dir="rtl">
-      <h2 className="mb-4 text-center">פרופיל המשתמש</h2>
-      <div className="mx-auto" style={{ maxWidth: '400px' }}>
-        <ul className="list-group">
-          <li className="list-group-item"><strong>שם משתמש:</strong><br /> {userData.username}</li>
-          <li className="list-group-item"><strong>אימייל:</strong><br /> {auth.currentUser.email}</li>
-          <li className="list-group-item"><strong>טלפון:</strong><br /> {userData.phone}</li>
-          <li className="list-group-item"><strong>מגדר:</strong><br /> {userData.gender}</li>
-          <li className="list-group-item">
+    <div className="container profile-wrapper" dir="rtl">
+      <h2 className="profile-heading text-center">פרופיל המשתמש</h2>
+
+      <div className="profile-card mx-auto">
+        <ul className="list-group profile-list">
+          <li className="list-group-item profile-item">
+            <strong>שם משתמש:</strong><br /> {userData.username}
+          </li>
+          <li className="list-group-item profile-item">
+            <strong>אימייל:</strong><br /> {auth.currentUser.email}
+          </li>
+          <li className="list-group-item profile-item">
+            <strong>טלפון:</strong><br /> {userData.phone}
+          </li>
+          <li className="list-group-item profile-item">
+            <strong>מגדר:</strong><br /> {userData.gender}
+          </li>
+          <li className="list-group-item profile-item">
             <strong>צבע גוף:</strong><br />
             <div
-              style={{
-                width: '20px',
-                height: '20px',
-                backgroundColor: userData.bodyColor,
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                marginTop: '5px'
-              }}
+              className="bodycolor-swatch"
+              style={{ backgroundColor: userData.bodyColor }}
               title={userData.bodyColor}
-            ></div>
+            />
           </li>
         </ul>
 
-        <Link to="/edit_profile" className="btn btn-outline-warning mt-3">ערוך פרופיל</Link>
+        <Link to="/edit_profile" className="btn btn-edit mt-3">ערוך פרופיל</Link>
       </div>
-      <Link to="/app_home" className="btn btn-success btn-lg floating-button">
+
+      <Link to="/app_home" className="btn btn-home floating-button">
         חזרה לדף הבית
       </Link>
     </div>

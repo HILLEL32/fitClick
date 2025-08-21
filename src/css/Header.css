@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
+.logo-title {
+  font-family:'albertus', 'Lobster', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Hebrew", sans-serif;
+  font-size: 1.8rem;
+  color: white; /* שיראה ברור על הרקע הכתום */
+  margin: 0;
+}
+/* @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+
+.logo-title{
+  font-family:'albertus','Lobster',system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew",sans-serif;
+  font-size:1.8rem;
+  color:#fff;
+  margin:0;
+} */

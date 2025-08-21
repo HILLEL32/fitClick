@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { auth, db } from "../../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import '../../css/ClothingAIUpload.css'; // ← קובץ העיצוב החדש
 
 const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98";
 
@@ -87,7 +88,7 @@ export default function ClothingAIUpload() {
     const imageId = `img-${Date.now()}`;
 
     reader.onloadend = async () => {
-      localStorage.setItem(imageId, reader.result); // שמירה ב־localStorage
+      localStorage.setItem(imageId, reader.result);
 
       const clothingDoc = {
         uid: user.uid,
@@ -105,57 +106,55 @@ export default function ClothingAIUpload() {
       alert("הבגד נוסף לארון שלך (התמונה שמורה מקומית בלבד)");
     };
 
-    reader.readAsDataURL(imageFile); // ממיר ל־Base64
+    reader.readAsDataURL(imageFile);
   };
 
   return (
-    <div className="container text-center mt-5">
-      <h2 className="mb-4 text-center">העלאת בגד לזיהוי </h2>
+    <div className="container aiu-wrapper text-center mt-5" dir="rtl">
+      <h2 className="aiu-heading mb-4 text-center">העלאת בגד לזיהוי</h2>
 
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        className="form-control mt-3"
-      />
+      <div className="aiu-card mx-auto">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          className="form-control aiu-input"
+        />
 
-      {previewUrl && (
-        <div className="mt-4">
-          <img
-            src={previewUrl}
-            alt="תצוגת תמונה"
-            style={{ maxWidth: '300px', borderRadius: '10px' }}
-          />
+        {previewUrl && (
+          <div className="aiu-preview">
+            <img src={previewUrl} alt="תצוגת תמונה" className="aiu-preview-img" />
+          </div>
+        )}
+
+        <button
+          className="btn aiu-btn mt-3"
+          onClick={uploadToLykdat}
+          disabled={loading || !imageFile}
+        >
+          {loading ? 'מזהה...' : 'זהה את הבגד'}
+        </button>
+
+        {result && (
+          <div className="aiu-result mt-4 text-start">
+            <h4 className="aiu-result-title">תוצאות זיהוי</h4>
+            <ul className="list-group aiu-list">
+              <li className="list-group-item aiu-item"><strong>Type:</strong> {result.type.join(', ')}</li>
+              <li className="list-group-item aiu-item"><strong>Colors:</strong> {result.colors.join(', ')}</li>
+              <li className="list-group-item aiu-item"><strong>Style:</strong> {result.style.join(', ')}</li>
+              <li className="list-group-item aiu-item"><strong>Details:</strong> {result.details.join(', ')}</li>
+              <li className="list-group-item aiu-item"><strong>Length:</strong> {result.length.join(', ')}</li>
+              <li className="list-group-item aiu-item"><strong>Waistline:</strong> {result.waistline.join(', ')}</li>
+            </ul>
+          </div>
+        )}
+
+        <div className="aiu-actions">
+          <Link to="/wardrobe" className="btn aiu-link-outline mt-3">מעבר לארון שלי</Link>
         </div>
-      )}
+      </div>
 
-      <button
-        className="btn btn-success mt-3"
-        onClick={uploadToLykdat}
-        disabled={loading || !imageFile}
-      >
-        {loading ? 'מזהה...' : 'זהה את הבגד'}
-      </button>
-
-      {result && (
-        <div className="mt-5 text-start">
-          <h4>result</h4>
-          <ul className="list-group">
-            <li className="list-group-item"><strong>Type:</strong> {result.type.join(', ')}</li>
-            <li className="list-group-item"><strong>Colors:</strong> {result.colors.join(', ')}</li>
-            <li className="list-group-item"><strong>Style:</strong> {result.style.join(', ')}</li>
-            <li className="list-group-item"><strong>Details:</strong> {result.details.join(', ')}</li>
-            <li className="list-group-item"><strong>Length:</strong> {result.length.join(', ')}</li>
-            <li className="list-group-item"><strong>Waistline:</strong> {result.waistline.join(', ')}</li>
-          </ul>
-        </div>
-      )}
-
-      <Link to="/wardrobe" className="btn btn-outline-warning mt-3">
-        מעבר לארון שלי
-      </Link>
-
-      <Link to="/app_home" className="btn btn-success btn-lg floating-button">
+      <Link to="/app_home" className="btn btn-home floating-button">
         חזרה לדף הבית
       </Link>
     </div>

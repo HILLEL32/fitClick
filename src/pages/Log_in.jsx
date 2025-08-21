@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase/firebase';
 import { useNavigate, Link } from 'react-router-dom';
-// import { Alert } from "antd";
+import '../css/Log_in.css'; // ← קובץ העיצוב החדש
 
 export default function Log_in() {
   const [email, setEmail] = useState('');
@@ -34,37 +34,46 @@ export default function Log_in() {
   };
 
   return (
-    <div className='container mt-3'>
-      <h1 className='line'>Log In</h1>
-      <div className='container'>
-        <strong>Email:</strong> <br />
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        /> <br />
+    <div className="container login-page" dir="rtl">
+      <div className="login-card">
+        <h1 className="login-title">כניסה</h1>
 
-        <strong>Password:</strong> <br />
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        /> <br /><br />
+        <div className="login-form">
+          <label className="form-label login-label">אימייל</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="form-control fc-input"
+          />
 
-        <div className="d-flex gap-2 flex-wrap">
-          <button onClick={handleLogin} className='btn btn-success mb-4'>Log In</button>
-          <button onClick={handleForgotPassword} className='btn btn-outline-secondary mb-4'>
-            שכחתי סיסמה
-          </button>
-          <Link to="/change_password" className="btn btn-outline-primary mb-4">
-            שינוי סיסמה (למחוברים)
-          </Link>
+          <label className="form-label login-label mt-2">סיסמה</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="form-control fc-input"
+          />
+
+          <div className="d-flex gap-2 flex-wrap mt-3">
+            <button onClick={handleLogin} className="btn btn-auth-primary">
+              Log In
+            </button>
+
+            <button onClick={handleForgotPassword} className="btn btn-ghost">
+              שכחתי סיסמה
+            </button>
+
+            <Link to="/change_password" className="btn btn-ghost">
+              שינוי סיסמה (למחוברים)
+            </Link>
+          </div>
         </div>
-      </div>
 
-      <Link to="/" className="btn btn-success btn-lg floating-button">
-        חזרה לעמוד הראשי
-      </Link>
+        <Link to="/" className="btn floating-button">
+          חזרה לעמוד הראשי
+        </Link>
+      </div>
     </div>
   );
 }

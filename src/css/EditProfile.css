@@ -1,0 +1,114 @@
+:root{
+  --brand: #B5693A;       /* חום־כתום */
+  --brand-dark: #8C4320;  /* כהה */
+  --accent: #E78A90;      /* ורוד ביניים */
+  --accent-light: #FFD6DB;/* ורוד בהיר */
+  --bg-light: #F8F4F2;    /* רקע */
+  --surface: #FFFFFF;
+  --text: #1E1E1E;
+  --border: #EAD9D2;
+}
+
+/* עטיפת העמוד */
+.edit-wrapper{
+  padding-block: 2rem 4rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-light) 0%, var(--accent-light) 100%);
+}
+
+/* כותרת */
+.edit-heading{
+  font-family: 'Miriam Libre', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Hebrew", sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--brand-dark);
+  letter-spacing: .5px;
+  margin-bottom: 1.25rem;
+}
+
+/* כרטיס מרכזי */
+.edit-card{
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.25rem 1.25rem 1.5rem;
+  box-shadow: 0 16px 32px rgba(181,105,58,0.12), 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* שדות טופס */
+.edit-input{
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: .6rem .8rem;
+  outline: none;
+  box-shadow: none;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+/* צבע גוף – שמירה על גודל יפה */
+.edit-color{
+  width: 64px;
+  height: 42px;
+  padding: 0;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+/* פוקוס יפה בצבע המותג */
+.edit-input:focus,
+.edit-color:focus{
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(181, 105, 58, .15);
+}
+
+/* כפתור שמירה */
+.btn-save{
+  background-color: var(--brand);
+  color: #fff !important;
+  border: none;
+  border-radius: 14px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(181,105,58,0.28);
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.btn-save:hover,
+.btn-save:focus-visible{
+  background-color: var(--brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(140,67,32,0.35);
+}
+
+/* כפתור חזרה (קבוע, קומפקטי, שמאל-למטה) */
+.floating-button{
+  position: fixed;
+  left: 1rem;
+  bottom: 1rem;
+  background-color: var(--brand);
+  color: #fff !important;
+  border: none;
+  border-radius: 16px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  width: auto;           /* לא תופס רוחב מלא */
+  text-align: center;
+  box-shadow:
+    0 12px 30px rgba(181,105,58,0.25),
+    0 2px 8px rgba(0,0,0,0.06);
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+  z-index: 1000;
+}
+.floating-button:hover,
+.floating-button:focus-visible{
+  background-color: var(--brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(140,67,32,0.34);
+}
+
+/* רספונסיבי */
+@media (max-width: 420px){
+  .edit-card{ padding: 1rem 1rem 1.25rem; }
+}

@@ -1,0 +1,122 @@
+/* אם כבר הגדרת משתני צבעים ב-AppHome.css – אפשר למחוק את :root כאן.
+   אחרת, השאירי אותם כדי לעבוד לבד. */
+:root{
+  --brand: #B5693A;       /* חום־כתום */
+  --brand-dark: #8C4320;  /* כהה */
+  --accent: #E78A90;      /* ורוד ביניים */
+  --accent-light: #FFD6DB;/* ורוד בהיר */
+  --bg-light: #F8F4F2;    /* רקע */
+  --surface: #FFFFFF;
+  --text: #1E1E1E;
+  --border: #EAD9D2;
+}
+
+/* עטיפה כללית */
+.profile-wrapper{
+  padding-block: 2rem 4rem;
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--bg-light) 0%, var(--accent-light) 100%);
+}
+
+/* כותרת */
+.profile-heading{
+  font-family: 'Miriam Libre', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Hebrew", sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--brand-dark);
+  letter-spacing: .5px;
+  margin-bottom: 1.25rem;
+}
+
+/* כרטיס הפרופיל */
+.profile-card{
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 1.25rem 1.25rem 1.5rem;
+  box-shadow: 0 16px 32px rgba(181,105,58,0.12), 0 4px 12px rgba(0,0,0,0.06);
+}
+
+/* רשימת פריטים */
+.profile-list{
+  border: none;
+}
+
+.profile-item{
+  border: 0;
+  border-bottom: 1px dashed var(--border);
+  padding: 0.85rem 0.5rem;
+  color: var(--text);
+  background: transparent;
+}
+.profile-item:last-child{
+  border-bottom: 0;
+}
+
+/* דוגם צבע גוף */
+.bodycolor-swatch{
+  width: 28px;
+  height: 28px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-top: 6px;
+  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.45);
+}
+
+/* כפתור עריכה */
+.btn-edit{
+  background-color: var(--brand);
+  color: #fff !important;
+  border: none;
+  border-radius: 14px;
+  padding: 0.7rem 1.2rem;
+  font-weight: 700;
+  box-shadow: 0 8px 18px rgba(181,105,58,0.28);
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.btn-edit:hover,
+.btn-edit:focus-visible{
+  background-color: var(--brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(140,67,32,0.35);
+}
+
+/* כפתור חזרה הביתה (צף) */
+.floating-button {
+  position: fixed;
+  left: 1rem;          /* בצד שמאל */
+  bottom: 1rem;        /* למטה */
+  background-color: var(--brand);
+  color: #fff !important;
+  border: none;
+  border-radius: 16px;
+  padding: 0.6rem 1.2rem; /* מרווח פנימי נעים */
+  font-size: 1rem;
+  font-weight: 700;
+  width: auto;         /* הכפתור מתאים את עצמו לאורך הטקסט */
+  text-align: center;
+  box-shadow:
+    0 12px 30px rgba(181,105,58,0.25),
+    0 2px 8px rgba(0,0,0,0.06);
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+  z-index: 1000;       /* לוודא שהוא מעל כל התוכן */
+}
+
+.floating-button:hover {
+  background-color: var(--brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(140,67,32,0.34);
+}
+
+.floating-button:hover,
+.floating-button:focus-visible{
+  background-color: var(--brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(140,67,32,0.34);
+}
+
+/* רספונסיבי */
+@media (max-width: 420px){
+  .profile-card{ padding: 1rem 1rem 1.25rem; }
+}

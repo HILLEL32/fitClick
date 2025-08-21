@@ -1,0 +1,145 @@
+:root{
+  --brand: #B5693A;       /* חום־כתום */
+  --brand-dark: #8C4320;  /* כהה */
+  --accent: #E78A90;      /* ורוד ביניים */
+  --accent-light: #FFD6DB;/* ורוד בהיר */
+  --bg-light: #F8F4F2;    /* רקע */
+  --surface: #FFFFFF;
+  --text: #1E1E1E;
+  --border: #EAD9D2;
+}
+
+/* רקע וראשי */
+.wardrobe-wrapper{
+  background: linear-gradient(135deg, var(--bg-light) 0%, var(--accent-light) 100%);
+  padding-bottom: 2rem;
+}
+.wardrobe-heading{
+  font-family: 'Miriam Libre', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Hebrew", sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--brand-dark);
+  letter-spacing: .5px;
+}
+
+/* פעולות עליונות */
+.wardrobe-actions{
+  display: flex;
+  gap: .75rem;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 1.25rem 0;
+}
+.btn-home-ghost{
+  background: transparent;
+  color: var(--brand-dark) !important;
+  border: 2px solid var(--brand);
+  border-radius: 14px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+.btn-home-ghost:hover,
+.btn-home-ghost:focus-visible{
+  background: var(--brand);
+  color: #fff !important;
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(181,105,58,0.25);
+}
+/* שיהיה זהה ל־btn-home-ghost */
+.btn-add{
+  background: transparent;
+  color: var(--brand-dark) !important;
+  border: 2px solid var(--brand);
+  border-radius: 14px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+  box-shadow: none; /* בלי צל של כפתור מלא */
+}
+.btn-add:hover,
+.btn-add:focus-visible{
+  background: var(--brand);
+  color: #fff !important;
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(181,105,58,0.25);
+}
+
+/* תמונות בחירה */
+.selected-img{
+  max-height: 200px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 18px rgba(181,105,58,0.12);
+}
+
+/* כרטיסי פריטים */
+.wardrobe-card{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 16px 32px rgba(181,105,58,0.12), 0 4px 12px rgba(0,0,0,0.06);
+}
+.wardrobe-card-img{
+  height: 300px;
+  object-fit: cover;
+}
+.wardrobe-card-fallback{
+  height: 300px;
+  background: #f0f0f0;
+  display: grid;
+  place-items: center;
+  color: #999 !important;
+  font-size: .95rem;
+}
+.wardrobe-card-footer{
+  background: #fff5f6; /* רמיזה ורודה בהירה */
+  border-top: 1px solid var(--border);
+}
+
+/* כפתורי עריכה/מחיקה בכרטיס */
+.btn-edit{
+  background: transparent;
+  color: var(--brand-dark) !important;
+  border: 2px solid var(--brand);
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+.btn-edit:hover,
+.btn-edit:focus-visible{
+  background: var(--brand);
+  color: #fff !important;
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(181,105,58,0.25);
+}
+
+.btn-delete{
+  background: #fff0f2;
+  color: #b23a48 !important; /* אדמדם עדין למחיקה */
+  border: 2px solid #ffc2cc;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+.btn-delete:hover,
+.btn-delete:focus-visible{
+  background: #ffdee5;
+  border-color: #ffb1be;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 161, 178, 0.3);
+}
+
+/* רספונסיבי */
+@media (max-width: 420px){
+  .wardrobe-actions{
+    flex-direction: column;
+    gap: .6rem;
+  }
+}

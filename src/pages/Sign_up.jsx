@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
 import { Link } from 'react-router-dom';
-
+import '../css/Sign_up.css'; // ← קובץ העיצוב החדש
 
 export default function Sign_up() {
   const [email, setEmail] = useState('');
@@ -37,7 +37,7 @@ export default function Sign_up() {
           username,
           phone,
           gender,
-          bodyColor,
+          bodyColor,   // נשאר כפי שהוא – אין שינויי לוגיקה
           clothes: [],
           createdAt: new Date()
         });
@@ -59,46 +59,81 @@ export default function Sign_up() {
   };
 
   return (
-    <div className="container my-4">
-      <h2 className='line'>sign up</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="שם משתמש" value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="form-control my-2" required />
+    <div className="container sign-up-page" dir="rtl">
+      <div className="sign-up-card">
+        <h2 className="sign-up-title">הרשמה</h2>
 
-        <input type="email" placeholder="אימייל" value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="form-control my-2" required />
+        <form onSubmit={handleSubmit} className="sign-up-form">
+          <input
+            type="text"
+            placeholder="שם משתמש"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="form-control fc-input"
+            required
+          />
 
-        <input type="password" placeholder="סיסמה" value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="form-control my-2" required />
+          <input
+            type="email"
+            placeholder="אימייל"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="form-control fc-input"
+            required
+          />
 
-        <input type="tel" placeholder="טלפון" value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="form-control my-2" />
+          <input
+            type="password"
+            placeholder="סיסמה"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="form-control fc-input"
+            required
+          />
 
-        <label className="form-label mt-3"></label>
-        <select value={gender} onChange={(e) => setGender(e.target.value)} className="form-control" required>
-          <option value="">בחר מגדר</option>
-          <option value="זכר">זכר</option>
-          <option value="נקבה">נקבה</option>
-          <option value="אחר">אחר / לא לציין</option>
-        </select>
-        {/* 
-        <label className="form-label mt-3">צבע גוף:</label>
-        <input type="color" value={bodyColor}
-          onChange={(e) => setBodyColor(e.target.value)}
-          className="form-control form-control-color mb-3" title="בחר צבע גוף" /> */}
+          <input
+            type="tel"
+            placeholder="טלפון"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className="form-control fc-input"
+          />
 
-        <button type="submit" className="btn btn-success my-2">הירשם</button>
-      </form>
+          <label className="form-label sign-up-label mt-2">מגדר</label>
+          <select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            className="form-control fc-input"
+            required
+          >
+            <option value="">בחר מגדר</option>
+            <option value="זכר">זכר</option>
+            <option value="נקבה">נקבה</option>
+            <option value="אחר">אחר / לא לציין</option>
+          </select>
 
-      {message && <div className="alert alert-info mt-3">{message}</div>}
-      <Link to="/" className="btn btn-success btn-lg floating-button">
-        חזרה לעמוד הראשי
-      </Link>
+          {/* 
+          <label className="form-label sign-up-label mt-3">צבע גוף</label>
+          <input
+            type="color"
+            value={bodyColor}
+            onChange={(e) => setBodyColor(e.target.value)}
+            className="form-control form-control-color fc-color"
+            title="בחר צבע גוף"
+          /> 
+          */}
 
+          <button type="submit" className="btn btn-auth-primary mt-3">
+            הירשם
+          </button>
+        </form>
+
+        {message && <div className="alert alert-info mt-3 text-center">{message}</div>}
+
+        <Link to="/" className="btn btn-success btn-lg floating-button">
+          חזרה לעמוד הראשי
+        </Link>
+      </div>
     </div>
   );
 }

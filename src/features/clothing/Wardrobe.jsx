@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import MatchingClothes from './MatchingClothes';
 import EditClothing from './EditClothing';
 import ClothingAIUpload from './ClothingAIUpload';
+import '../../css/Wardrobe.css'; // ← קובץ העיצוב החדש
 
 // === עזר ידני: ניקוי ונרמול למטה-קייס בלי Set/map/filter מתקדמים ===
 function uniqCleanSimple(arr) {
@@ -118,8 +119,8 @@ export default function Wardrobe() {
     return <div className="container mt-5 text-center">טוען ארון...</div>;
 
   return (
-    <div className="container mt-5">
-      <h2 className="text-center mb-4">הארון שלי</h2>
+    <div className="container wardrobe-wrapper mt-5" dir="rtl">
+      <h2 className="wardrobe-heading text-center mb-4">הארון שלי</h2>
 
       <MatchingClothes
         clothingItems={clothingItems}
@@ -127,20 +128,22 @@ export default function Wardrobe() {
         onSelectPants={setSelectedPants}
       />
 
-      <Link to="/app_home" className="btn btn-success mb-4 me-2"> חזרה לדף הבית </Link> 
-      <Link to="/clothing_ai" className="btn btn-success mb-4"> הוסף בגד לארון </Link>
+      <div className="wardrobe-actions">
+        <Link to="/app_home" className="btn btn-home-ghost">חזרה לדף הבית</Link>
+        <Link to="/clothing_ai" className="btn btn-add">הוסף בגד לארון</Link>
+      </div>
 
       {/* תצוגת חולצה ומכנס שנבחרו */}
       {selectedShirt && (
         <div className="mb-4">
-          <h4> חולצה שנבחרה:</h4>
-          <img src={getImageDataUrl(selectedShirt)} alt="חולצה" style={{ maxHeight: 200 }} />
+          <h4>חולצה שנבחרה:</h4>
+          <img src={getImageDataUrl(selectedShirt)} alt="חולצה" className="selected-img" />
         </div>
       )}
       {selectedPants && (
         <div className="mb-4">
           <h4>מכנס שנבחר:</h4>
-          <img src={getImageDataUrl(selectedPants)} alt="מכנס" style={{ maxHeight: 200 }} />
+          <img src={getImageDataUrl(selectedPants)} alt="מכנס" className="selected-img" />
         </div>
       )}
 
@@ -152,19 +155,15 @@ export default function Wardrobe() {
 
           return (
             <div className="col-md-4 mb-4" key={item.id}>
-              <div className="card h-100">
+              <div className="card wardrobe-card h-100">
                 {imageDataUrl ? (
                   <img
                     src={imageDataUrl}
-                    className="card-img-top"
+                    className="card-img-top wardrobe-card-img"
                     alt="בגד"
-                    style={{ height: 300, objectFit: 'cover' }}
                   />
                 ) : (
-                  <div
-                    className="card-img-top text-center text-muted pt-5"
-                    style={{ height: 300, background: '#f0f0f0' }}
-                  >
+                  <div className="card-img-top wardrobe-card-fallback text-center text-muted">
                     תמונה לא זמינה
                   </div>
                 )}
@@ -177,9 +176,9 @@ export default function Wardrobe() {
                   <p className="card-text"><strong>סגנון</strong> : {item.style && item.style.join(', ') || '—'}</p>
                 </div>
 
-                <div className="card-footer d-flex gap-2 bg-light">
+                <div className="card-footer wardrobe-card-footer d-flex gap-2">
                   <button
-                    className="btn btn-outline-primary"
+                    className="btn btn-edit"
                     onClick={() => handleOpenEdit(item)}
                     aria-label="עריכת פריט"
                   >
@@ -187,7 +186,7 @@ export default function Wardrobe() {
                   </button>
 
                   <button
-                    className="btn btn-outline-danger ms-auto"
+                    className="btn btn-delete ms-auto"
                     onClick={() => handleDelete(item)}
                     disabled={isDeleting}
                     aria-label="מחיקת פריט"
