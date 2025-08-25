@@ -1,6 +1,258 @@
-.line {
-    color:rgb(165, 87, 42);
-    font-size:150px;
-    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    text-shadow: 10px 6px 9px rgb(237, 118, 118);
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap');
+
+:root {
+  --brand: #B5693A;
+  --brand-dark: #8C4320;
+  --accent: #E78A90;
+  --accent-light: #FFD6DB;
+  --bg-light: #F8F4F2;
+  --surface: #FFFFFF;
+  --text: #1E1E1E;
+  --gold: #C9A86A;
 }
+
+/* רקע כללי עם תנועה וטקסטורה */
+body {
+  font-family: 'Rubik', sans-serif;
+  background: radial-gradient(circle at center, #FFD6DB, #E78A90, #B5693A);
+  background-size: 400% 400%;
+  animation: pulseBackground 8s ease-in-out infinite, waveMotion 20s ease infinite;
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='2' fill='%23E78A90'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+@keyframes pulseBackground {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.05); }
+}
+
+@keyframes waveMotion {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* שכבת טקסטורה מתנפנפת */
+.body-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("https://www.transparenttextures.com/patterns/fabric-of-squares.png");
+  opacity: 0.1;
+  pointer-events: none;
+  animation: floatTexture 30s linear infinite;
+  z-index: 0;
+}
+
+@keyframes floatTexture {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(100px, 100px); }
+}
+
+/* כותרת ראשית */
+.line {
+  font-size: 120px;
+  font-weight: 700;
+  color: var(--brand-dark);
+  text-shadow: 6px 4px 12px rgba(231, 138, 144, 0.6);
+  margin-bottom: 2rem;
+  animation: popIn 1s ease-out;
+  transition: transform 0.3s ease;
+}
+
+.line:hover {
+  transform: scale(1.05);
+  color: var(--accent);
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* כותרת משנה */
+h3 {
+  font-size: 1.8rem;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+/* תת־כותרת */
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--accent);
+  margin-bottom: 2rem;
+  animation: fadeInUp 1.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* כפתורים */
+.custom-green-button {
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  background-size: 200% 200%;
+  border: none;
+  border-radius: 16px;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff !important;
+  box-shadow: 0 10px 10px hsl(0, 100%, 86%);
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  position: relative;
+  animation: floatUp 3s ease-in-out infinite alternate, buttonGradient 4s ease infinite;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+
+@keyframes buttonGradient {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+.custom-green-button:hover,
+.custom-green-button:focus-visible {
+  background: var(--brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgb(245, 81, 5);
+}
+
+.custom-green-button:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 14px rgba(181, 105, 58, 0.3);
+}
+
+/* זוהר בכפתור */
+.custom-green-button::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border-radius: 16px;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.custom-green-button:hover::before {
+  opacity: 1;
+}
+
+/* Tooltip */
+.custom-green-button::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--brand-dark);
+  color: rgb(54, 53, 53);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.custom-green-button:hover::after {
+  opacity: 1;
+}
+
+/* כדור מתגלגל */
+.rolling-ball {
+  position: fixed;
+  bottom: 20px;
+  left: -60px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: rollBall 8s linear infinite;
+  z-index: 0;
+}
+
+@keyframes rollBall {
+  0% { transform: translateX(0) rotate(0deg); }
+  100% { transform: translateX(120vw) rotate(360deg); }
+}
+
+/* קולב מתנדנד */
+.hanger-icon {
+  width: 80px;
+  animation: swing 3s ease-in-out infinite alternate;
+}
+
+@keyframes swing {
+  0% { transform: rotate(-6deg); }
+  100% { transform: rotate(6deg); }
+}
+
+/* כרטיס פריט */
+.clothing-card {
+  background: linear-gradient(135deg, var(--surface), var(--accent-light));
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(75, 46, 46, 0.1);
+  font-family: 'Rubik', sans-serif;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+.clothing-card:hover {
+  transform: scale(1.02);
+}
+
+.clothing-card::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -10px;
+  width: 88px;
+  height: 88px;
+  background: radial-gradient(circle, var(--accent-light), transparent);
+  border-radius: 666%;
+  animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(9); }
+  50% { opacity: 1; transform: scale(9); }
+}
+
+/* רספונסיביות */
+@media (max-width: 768px) {
+  .line {
+    font-size: 72px;
+  }
+
+  h3 {
+    font-size: 1.4rem;
+  }
+
+  .custom-green-button {
+    width: 100%;
+    font-size: 1rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 0.5s;
+  }}

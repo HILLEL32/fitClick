@@ -1,0 +1,28 @@
+בינה מלאכותית של גרוק
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Mon Aug 25 14:59:56 2025 +0300
+#
+# On branch main
+# Your branch is ahead of 'origin/main' by 4 commits.
+#   (use "git push" to publish your local commits)
+#
+# Changes to be committed:
+#	deleted:    .env
+#	modified:   src/AI/AiChat.jsx
+#	modified:   src/AI/GroqChat.jsx
+#	modified:   src/appPages/AppHome.jsx
+#	modified:   src/css/AppHome.css
+#	modified:   src/css/Header.css
+#	modified:   src/css/design.css
+#	modified:   src/features/clothing/EditClothing.jsx
+#	modified:   src/features/clothing/MatchingClothes.jsx
+#	modified:   src/features/clothing/Wardrobe.jsx
+#	modified:   src/pages/Home.jsx
+#	modified:   src/settings/UserProfile.jsx
+#
+# Changes not staged for commit:
+#	modified:   .gitignore
+#
