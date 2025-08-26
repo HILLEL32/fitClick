@@ -60,7 +60,7 @@ body {
   font-size: 120px;
   font-weight: 700;
   color: var(--brand-dark);
-  text-shadow: 6px 4px 12px rgba(231, 138, 144, 0.6);
+  text-shadow: 3px 2px 8px rgba(231, 138, 144, 0.4);
   margin-bottom: 2rem;
   animation: popIn 1s ease-out;
   transition: transform 0.3s ease;
@@ -83,6 +83,14 @@ h3 {
   margin-bottom: 0.5rem;
 }
 
+.welcome {
+  font-size: 2rem;
+  color: var(--brand);
+  margin-bottom: 0.5rem;
+  animation: fadeInUp 1s ease forwards;
+  opacity: 0;
+}
+
 /* תת־כותרת */
 .subtitle {
   font-size: 1.2rem;
@@ -92,10 +100,8 @@ h3 {
 }
 
 @keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 /* כפתורים */
@@ -137,14 +143,13 @@ h3 {
   box-shadow: 0 6px 14px rgba(181, 105, 58, 0.3);
 }
 
-/* זוהר בכפתור */
 .custom-green-button::before {
   content: "";
   position: absolute;
   top: 0; left: 0;
   width: 100%; height: 100%;
   border-radius: 16px;
-  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
   opacity: 0;
   transition: opacity 0.4s ease;
 }
@@ -153,7 +158,6 @@ h3 {
   opacity: 1;
 }
 
-/* Tooltip */
 .custom-green-button::after {
   content: attr(data-tooltip);
   position: absolute;
@@ -238,21 +242,32 @@ h3 {
   50% { opacity: 1; transform: scale(9); }
 }
 
+/* טקסט פתיחה */
+.intro-text {
+
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: right;
+  direction: rtl;
+  animation: fadeInUp 1.2s ease forwards;
+  opacity: 0;
+  color: var(--text);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+  font-family: 'Aharoni', 'Rubik', sans-serif;
+  letter-spacing: 5px;
+  text-shadow: 1px 1px 2px rgba(227, 79, 15, 0.489);
+
+}
+
 /* רספונסיביות */
 @media (max-width: 768px) {
-  .line {
-    font-size: 72px;
+  h4 {
+    font-size: 1.1rem;
+    color: var(--text);
+    margin: 0.3rem 0;
   }
+}
 
-  h3 {
-    font-size: 1.4rem;
-  }
-
-  .custom-green-button {
-    width: 100%;
-    font-size: 1rem;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 1s ease forwards;
-    animation-delay: 0.5s;
-  }}
