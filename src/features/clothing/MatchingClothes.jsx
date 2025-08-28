@@ -1,9 +1,27 @@
-// src/features/wardrobe/RandomClothingPicker.jsx
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import '../../css/MatchingClothes.css';
+import { getUserStyle } from '../../api/UserApi';
 
-export default function MatchingClothes({ clothingItems, onSelectShirt, onSelectPants }) {
+export default function MatchingClothes({
+  clothingItems,
+  onSelectShirt,
+  onSelectPants,
+  onSelectHat,     // ← חדש (אופציונלי)
+  onSelectShoes    // ← חדש (אופציונלי)
+}) {
   const [message, setMessage] = useState('');
+  const [style, setStyle] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const s = await getUserStyle();
+        setStyle(s);
+      } catch (e) {
+        console.error('Failed to load style', e);
+      }
+    })();
+  }, []);
 
   // ========= Helpers =========
   const toArray = (v) => Array.isArray(v) ? v : [v].filter(Boolean);
@@ -58,7 +76,6 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     orange:['white','black','navy','blue','denim','brown'],
   };
 
-  // ממפה HEX לקטגוריית צבע בסיסית
   const hexToBase = (hex) => {
     try {
       const h = hex.replace('#','');
@@ -87,7 +104,6 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     } catch { return ''; }
   };
 
-  // נרמול צבע חכם
   const resolveBaseColor = (text) => {
     if (!text) return '';
     const lower = String(text).toLowerCase().trim();
@@ -127,7 +143,6 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     return '';
   };
 
-  // צבע של פריט
   const getItemBaseColor = (item) => {
     const fromBase = resolveBaseColor(item?.baseColor);
     if (fromBase) return fromBase;
@@ -149,7 +164,6 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     return '';
   };
 
-  // התאמת צבעים
   const isColorMatch = (top, bottom) => {
     const cTop = getItemBaseColor(top);
     const cBot = getItemBaseColor(bottom);
@@ -162,12 +176,133 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     return rule.includes(cBot);
   };
 
-  const pickCompatiblePair = (tops, bottoms) => {
-    const pairs = [];
-    for (const t of tops) for (const b of bottoms) {
-      if (isColorMatch(t, b)) pairs.push([t, b]);
+  // ========= Style-aware scoring =========
+  const scoreItemByStyle = (item, s) => {
+    if (!s) return 0;
+    const tokens = new Set(getTokens(item));
+    const baseColor = getItemBaseColor(item);
+    let score = 0;
+
+    for (const k of (s.keywords || [])) if (tokens.has(String(k).toLowerCase())) score += 3;
+    for (const d of (s.disliked || [])) if (tokens.has(String(d).toLowerCase())) score -= 4;
+
+    if (baseColor && s.colorsFav?.includes(baseColor))   score += 2;
+    if (baseColor && s.colorsAvoid?.includes(baseColor)) score -= 6;
+
+    return score;
+  };
+
+  const dressCodeBoost = (item, s) => {
+    if (!s?.dressCode) return 0;
+    const t = getTokens(item);
+    const has = (arr) => arr.some(x => t.includes(x));
+    switch (s.dressCode) {
+      case 'sport':     return has(['sport','gym','running','athletic']) ? 3 : -1;
+      case 'evening':   return has(['silk','satin','chiffon','lace','organza','dress','evening']) ? 3 : -1;
+      case 'work':      return has(['elegant','trousers','slacks','dress pants','tailored','suit']) ? 2 : 0;
+      case 'religious': return has(['modest','צנוע']) ? 2 : 0;
+      case 'everyday':  return has(['jeans','denim','tee','t-shirt','shirt']) ? 1 : 0;
+      default:          return 0;
     }
-    return pairs.length ? pickRandom(pairs) : null;
+  };
+
+  const hardRulePenalty = (top, bottom) => {
+    const combined = getTokens(top).concat(getTokens(bottom));
+    const isSport = combined.some(t => String(t).includes('sport'));
+    const isSkirt = combined.some(t => t === 'skirt' || t === 'חצאית');
+    const isElegant = combined.some(t => t === 'elegant' || t === 'אלגנט');
+    return (isSport && isSkirt && isElegant) ? -100 : 0;
+  };
+
+  const scorePair = (top, bottom, s) => {
+    let sc = 0;
+    sc += scoreItemByStyle(top, s) + dressCodeBoost(top, s);
+    if (bottom) sc += scoreItemByStyle(bottom, s) + dressCodeBoost(bottom, s);
+    sc += isColorMatch(top, bottom) ? 2 : -5;
+    sc += hardRulePenalty(top, bottom);
+    return sc;
+  };
+
+  const pickBestPair = (tops, bottoms, s) => {
+    let best = null, bestScore = -Infinity;
+    for (const t of tops) for (const b of bottoms) {
+      const sc = scorePair(t, b, s);
+      if (sc > bestScore) { bestScore = sc; best = [t, b]; }
+    }
+    return best;
+  };
+
+  // ========= Accessories (Hats & Shoes) =========
+  const isHeadwear = (item) =>
+    matchByKeywords(item, [
+      'hat','cap','beanie','beret','bucket','visor','headwrap','headscarf','kipah','kippah',
+      'כובע','כיפה','מטפחת','כיסוי ראש'
+    ]);
+
+  const isFootwear = (item) =>
+    matchByKeywords(item, [
+      'shoes','sneakers','trainers','runners','loafers','oxfords','heels','pumps','boots','ankle boots','sandals','flip flops','slippers',
+      'נעל','נעליים','סניקרס','נעלי ספורט','מגפיים','סנדלים','כפכפים','עקב','נעל אלגנט'
+    ]);
+
+  const headwear = useMemo(() => clothingItems.filter(isHeadwear), [clothingItems]);
+  const footwear = useMemo(() => clothingItems.filter(isFootwear), [clothingItems]);
+
+  // affinity צבע: כובע מול העליונית; נעל מול התחתון/שמלה
+  const colorAffinity = (accessory, anchorItem) => {
+    if (!accessory || !anchorItem) return 0;
+    const cA = getItemBaseColor(accessory);
+    const cB = getItemBaseColor(anchorItem);
+    if (!cA || !cB) return 0;
+    if (cA === cB) return 2;
+    if (NEUTRALS.has(cA) || NEUTRALS.has(cB)) return 1;
+    const rule = COLOR_COMPATIBILITY[cA];
+    return rule === 'all' ? 1 : (rule?.includes(cB) ? 1 : -1);
+  };
+
+  const accessoryDressCodeBoost = (item, s, role /* 'hat' | 'shoes' */) => {
+    if (!s?.dressCode) return 0;
+    const t = getTokens(item);
+    const has = (...arr) => arr.some(x => t.includes(x));
+    switch (s.dressCode) {
+      case 'sport':
+        return role === 'shoes'
+          ? (has('sneakers','trainers','running','gym') ? 4 : -1)
+          : (has('cap','כובע','headscarf','מטפחת') ? 1 : 0);
+      case 'evening':
+        return role === 'shoes'
+          ? (has('heels','pumps','oxfords','loafers') ? 4 : -1)
+          : (has('beret','headscarf','מטפחת') ? 2 : 0);
+      case 'work':
+        return role === 'shoes'
+          ? (has('oxfords','loafers','boots') ? 3 : 0)
+          : (has('hat','beret') ? 1 : 0);
+      case 'religious':
+        return role === 'hat'
+          ? (has('kipah','kippah','headscarf','כיפה','מטפחת','כיסוי','headcover') ? 4 : 0)
+          : 0;
+      default:
+        return 0;
+    }
+  };
+
+  const scoreAccessory = (item, s, role, anchorItem) => {
+    if (!item) return -Infinity;
+    let sc = 0;
+    sc += scoreItemByStyle(item, s);
+    sc += accessoryDressCodeBoost(item, s, role);
+    sc += colorAffinity(item, anchorItem);
+    return sc;
+  };
+
+  const pickBestAccessory = (list, s, role, anchorItem, minGain = 2) => {
+    if (!list?.length) return null;
+    let best = null, bestScore = -Infinity;
+    for (const it of list) {
+      const sc = scoreAccessory(it, s, role, anchorItem);
+      if (sc > bestScore) { bestScore = sc; best = it; }
+    }
+    return bestScore >= minGain ? best : null;
   };
 
   // ========= Rulesets =========
@@ -186,12 +321,18 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
   const handlePickMatchingPair = () => {
     if (!jeans.length)  return setMessage('לא נמצאו מכנסי ג׳ינס בארון.');
     if (!shirts.length) return setMessage('לא נמצאו חולצות בארון.');
-    const pair = pickCompatiblePair(shirts, jeans);
-    if (!pair) return setMessage('נמצאו חולצות וג׳ינסים אך בלי התאמת צבע. הוסיפו תגיות צבע (black/navy/blue/תכלת וכו\').');
+    const pair = pickBestPair(shirts, jeans, style);
+    if (!pair) return setMessage('נמצאו חולצות וג׳ינסים אך בלי התאמה מספקת. הוסיפו תגיות צבע/סגנון.');
     const [top, bottom] = pair;
     setMessage('');
     onSelectPants?.(bottom);
     onSelectShirt?.(top);
+
+    // אביזרים (אופציונלי)
+    const hat   = pickBestAccessory(headwear, style, 'hat',   top,    2);
+    const shoes = pickBestAccessory(footwear, style, 'shoes', bottom, 3);
+    onSelectHat?.(hat || null);
+    onSelectShoes?.(shoes || null);
   };
 
   // Elegant (no jeans)
@@ -223,12 +364,18 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
   const handlePickElegantPair = () => {
     if (!elegantBottoms.length) return setMessage('לא נמצאו מכנסיים מחוייטים או חצאיות בארון.');
     if (!elegantTops.length)    return setMessage('לא נמצאו חולצות אלגנטיות בארון.');
-    const pair = pickCompatiblePair(elegantTops, elegantBottoms);
-    if (!pair) return setMessage('נמצאו פריטי אלגנט אך בלי התאמת צבע. רצוי להוסיף/לתקן תגיות צבע.');
+    const pair = pickBestPair(elegantTops, elegantBottoms, style);
+    if (!pair) return setMessage('נמצאו פריטי אלגנט אך בלי התאמה. הוסיפו תגיות צבע/סגנון.');
     const [top, bottom] = pair;
     setMessage('');
     onSelectPants?.(bottom);
     onSelectShirt?.(top);
+
+    // אביזרים (אופציונלי)
+    const hat   = pickBestAccessory(headwear, style, 'hat',   top,    2);
+    const shoes = pickBestAccessory(footwear, style, 'shoes', bottom, 3);
+    onSelectHat?.(hat || null);
+    onSelectShoes?.(shoes || null);
   };
 
   // Occasion
@@ -258,20 +405,36 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
 
   const handlePickOccasionPair = () => {
     if (dresses.length) {
-      const chosenDress = pickRandom(dresses);
+      let bestDress = null, bestScore = -Infinity;
+      for (const d of dresses) {
+        const sc = scoreItemByStyle(d, style) + dressCodeBoost(d, style);
+        if (sc > bestScore) { bestScore = sc; bestDress = d; }
+      }
       setMessage('');
-      onSelectShirt?.(chosenDress);
+      onSelectShirt?.(bestDress);
       onSelectPants?.(null);
+
+      // אביזרים (שמלה כעוגן לשניהם)
+      const hat   = pickBestAccessory(headwear, style, 'hat',   bestDress, 2);
+      const shoes = pickBestAccessory(footwear, style, 'shoes', bestDress, 4); // אירוע → רף גבוה יותר
+      onSelectHat?.(hat || null);
+      onSelectShoes?.(shoes || null);
       return;
     }
     if (!occasionBottoms.length) return setMessage('לא נמצאו תחתונים מתאימים לשבת/חג/אירוע.');
     if (!occasionTops.length)    return setMessage('לא נמצאו עליוניות חגיגיות לשבת/חג/אירוע.');
-    const pair = pickCompatiblePair(occasionTops, occasionBottoms);
-    if (!pair) return setMessage('נמצאו פריטי אירוע אך בלי התאמת צבע. הוסיפו תגיות צבע לפריטים.');
+    const pair = pickBestPair(occasionTops, occasionBottoms, style);
+    if (!pair) return setMessage('נמצאו פריטי אירוע אך בלי התאמה. הוסיפו תגיות צבע/סגנון.');
     const [top, bottom] = pair;
     setMessage('');
     onSelectPants?.(bottom);
     onSelectShirt?.(top);
+
+    // אביזרים (אופציונלי)
+    const hat   = pickBestAccessory(headwear, style, 'hat',   top,    2);
+    const shoes = pickBestAccessory(footwear, style, 'shoes', bottom, 4);
+    onSelectHat?.(hat || null);
+    onSelectShoes?.(shoes || null);
   };
 
   // Sport
@@ -311,13 +474,20 @@ export default function MatchingClothes({ clothingItems, onSelectShirt, onSelect
     if (!sportBottoms.length)
       return setMessage('לא נמצאו תחתוני ספורט. הוסיפו "running shorts", "leggings", "joggers".');
 
-    const pair = pickCompatiblePair(sportTops, sportBottoms);
-    if (!pair) return setMessage('נמצאו פריטי ספורט אך בלי התאמת צבע. נסו להוסיף תגיות צבע (black/navy/blue/תכלת וכו\').');
+    const pair = pickBestPair(sportTops, sportBottoms, style);
+    if (!pair) return setMessage('נמצאו פריטי ספורט אך בלי התאמה. הוסיפו תגיות צבע (black/navy/blue/תכלת וכו\').');
 
     const [top, bottom] = pair;
     onSelectPants?.(bottom);
     onSelectShirt?.(top);
-    setMessage('סט ספורט תואם־צבע נבחר! 💪');
+
+    // אביזרים (אופציונלי)
+    const hat   = pickBestAccessory(headwear, style, 'hat',   top,    1); // מצחייה/כובע ריצה
+    const shoes = pickBestAccessory(footwear, style, 'shoes', bottom, 3); // סניקרס/ריצה
+    onSelectHat?.(hat || null);
+    onSelectShoes?.(shoes || null);
+
+    setMessage('סט ספורט מותאם להעדפות נבחר! 💪');
   };
 
   return (

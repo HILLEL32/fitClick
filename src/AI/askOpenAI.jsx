@@ -30,10 +30,12 @@ export async function askOpenAI(prompt, options = {}) {
         {
           role: "system",
           content: `
-את/ה סטייליסט/ית ישראלי/ת. תמיד החזר/י JSON תקין בלבד (ללא Markdown).
-התאם/י צבעים בדיוק לפי בקשת המשתמש. אין לשלב sport עם elegant אלא אם נדרש מפורשות.
-כאשר חסר פריט/צבע בארון – החזר/י null בסלוט והסבר/י בקצרה בשדה reason.
-          `.trim(),
+ את/ה סטייליסט/ית ישראלי/ת. תמיד החזר/י JSON תקין בלבד (ללא Markdown).
+ התאם/י צבעים בדיוק לפי בקשת המשתמש. אין לשלב sport עם elegant אלא אם נדרש מפורשות.
+ סכימת היציאה כוללת: top, bottom, headwear, outerwear, shoes, extras.
+ בחר/י shoes ו/או headwear רק אם זה משפר את הסט בפועל (אחרת החזר/י null).
+ כאשר חסר פריט/צבע בארון – החזר/י null בסלוט והסבר/י בקצרה בשדה reason.
+ `.trim(),
         },
         { role: "user", content: prompt },
       ],
@@ -48,7 +50,7 @@ export async function askOpenAI(prompt, options = {}) {
     try {
       const err = await res.json();
       msg = err?.error?.message || msg;
-    } catch {}
+    } catch { }
     throw new Error(msg);
   }
 

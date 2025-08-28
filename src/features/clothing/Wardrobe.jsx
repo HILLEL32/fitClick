@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 import MatchingClothes from './MatchingClothes';
 import EditClothing from './EditClothing';
 import ClothingAIUpload from './ClothingAIUpload';
-import '../../css/Wardrobe.css'; 
+import '../../css/Wardrobe.css';
 import GroqChat from '../../AI/GroqChat';
-import { askGroq } from '../../AI/askGroq';
+// import { askGroq } from '../../AI/askGroq';
 import AiChat from '../../AI/AiChat';
 
 // === עזר ידני: ניקוי ונרמול למטה-קייס בלי Set/map/filter מתקדמים ===
@@ -37,20 +37,20 @@ function normalizeItemFields(item) {
 
 // === NEW: מזהי סוגים/צבעים בסיסיים להתאמה ===
 const TOP_KEYWORDS = [
-  'shirt','t-shirt','tee','top','blouse','button-down','camisole','sweater','hoodie',
-  'חולצה','טי שירט','טישרט','טופ','מכופתרת','סוודר','קפוצ\'ון'
+  'shirt', 't-shirt', 'tee', 'top', 'blouse', 'button-down', 'camisole', 'sweater', 'hoodie',
+  'חולצה', 'טי שירט', 'טישרט', 'טופ', 'מכופתרת', 'סוודר', 'קפוצ\'ון'
 ];
 const BOTTOM_KEYWORDS = [
-  'pants','trousers','jeans','slacks','skirt','shorts',
-  'מכנס','מכנסיים','ג\'ינס','מכנסי בד','חצאית','שורטס'
+  'pants', 'trousers', 'jeans', 'slacks', 'skirt', 'shorts',
+  'מכנס', 'מכנסיים', 'ג\'ינס', 'מכנסי בד', 'חצאית', 'שורטס'
 ];
-const DRESS_KEYWORDS = ['dress','שמלה'];
+const DRESS_KEYWORDS = ['dress', 'שמלה'];
 
 const NEUTRAL_COLORS = [
   // EN
-  'black','white','gray','grey','beige','cream','navy','denim','brown','khaki',
+  'black', 'white', 'gray', 'grey', 'beige', 'cream', 'navy', 'denim', 'brown', 'khaki',
   // HE
-  'שחור','לבן','אפור','בז','קרם','כחול כהה','ג\'ינס','חום','חאקי'
+  'שחור', 'לבן', 'אפור', 'בז', 'קרם', 'כחול כהה', 'ג\'ינס', 'חום', 'חאקי'
 ];
 
 // בדיקת שייכות סוג
@@ -64,30 +64,30 @@ function itemIsOf(item, keywords) {
   }
   return false;
 }
-function isTop(item){ return itemIsOf(item, TOP_KEYWORDS); }
-function isBottom(item){ return itemIsOf(item, BOTTOM_KEYWORDS); }
-function isDress(item){ return itemIsOf(item, DRESS_KEYWORDS); }
+function isTop(item) { return itemIsOf(item, TOP_KEYWORDS); }
+function isBottom(item) { return itemIsOf(item, BOTTOM_KEYWORDS); }
+function isDress(item) { return itemIsOf(item, DRESS_KEYWORDS); }
 
 // התאמת צבעים: שיתוף צבע, או אחד מהם ניטרלי
-function hasIntersection(a,b){
-  for (let i=0;i<(a||[]).length;i++){
-    for (let j=0;j<(b||[]).length;j++){
+function hasIntersection(a, b) {
+  for (let i = 0; i < (a || []).length; i++) {
+    for (let j = 0; j < (b || []).length; j++) {
       if (a[i] === b[j]) return true;
     }
   }
   return false;
 }
-function hasNeutral(colors){
-  for (let i=0;i<(colors||[]).length;i++){
+function hasNeutral(colors) {
+  for (let i = 0; i < (colors || []).length; i++) {
     if (NEUTRAL_COLORS.includes(colors[i])) return true;
   }
   return false;
 }
 
-function styleOverlapCount(a,b){
+function styleOverlapCount(a, b) {
   let count = 0;
-  for (let i=0;i<(a||[]).length;i++){
-    for (let j=0;j<(b||[]).length;j++){
+  for (let i = 0; i < (a || []).length; i++) {
+    for (let j = 0; j < (b || []).length; j++) {
       if (a[i] === b[j]) count++;
     }
   }
@@ -95,7 +95,7 @@ function styleOverlapCount(a,b){
 }
 
 // ציון התאמה בסיסי: צבעים + ניטרליות + חפיפת סגנון
-function scoreMatch(base, candidate){
+function scoreMatch(base, candidate) {
   let score = 0;
   if (hasIntersection(base.colors, candidate.colors)) score += 2;
   if (hasNeutral(base.colors) || hasNeutral(candidate.colors)) score += 1;
@@ -109,7 +109,7 @@ export default function Wardrobe() {
   const [selectedPants, setSelectedPants] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
-
+  
   // למודאל העריכה
   const [editOpen, setEditOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -169,7 +169,7 @@ export default function Wardrobe() {
       } else {
         // הסר מועמדים שנמחקו
         const filtered = [];
-        for (let k=0;k<recommendations.length;k++){
+        for (let k = 0; k < recommendations.length; k++) {
           if (recommendations[k]?.item?.id !== item.id) filtered.push(recommendations[k]);
         }
         setRecommendations(filtered);
@@ -230,9 +230,9 @@ export default function Wardrobe() {
     }
 
     // מיון יורד לפי ציון
-    for (let i=0;i<recs.length-1;i++){
-      for (let j=i+1;j<recs.length;j++){
-        if (recs[j].score > recs[i].score){
+    for (let i = 0; i < recs.length - 1; i++) {
+      for (let j = i + 1; j < recs.length; j++) {
+        if (recs[j].score > recs[i].score) {
           const tmp = recs[i]; recs[i] = recs[j]; recs[j] = tmp;
         }
       }
@@ -241,7 +241,7 @@ export default function Wardrobe() {
     // נחזיר עד 6 ראשונים
     const top = [];
     const max = recs.length < 6 ? recs.length : 6;
-    for (let k=0;k<max;k++) top.push(recs[k]);
+    for (let k = 0; k < max; k++) top.push(recs[k]);
     return top;
   };
 
@@ -288,8 +288,8 @@ export default function Wardrobe() {
       <div className="wardrobe-actions">
         <Link to="/app_home" className="btn btn-home-ghost">חזרה לדף הבית</Link>
         <Link to="/clothing_ai" className="btn btn-add">הוסף בגד לארון</Link>
-      <askGroq />
-      <AiChat/>
+        {/* <askGroq /> */}
+        <AiChat />
       </div>
 
       {/* תצוגת חולצה ומכנס שנבחרו */}
@@ -326,7 +326,7 @@ export default function Wardrobe() {
             </div>
             <div className="ms-auto">
               <button className="btn btn-outline-secondary"
-                      onClick={() => { setBaseItem(null); setRecommendations([]); }}>
+                onClick={() => { setBaseItem(null); setRecommendations([]); }}>
                 נקה המלצות
               </button>
             </div>
@@ -410,6 +410,14 @@ export default function Wardrobe() {
                   >
                     מצא התאמות
                   </button>
+
+                  <Link
+                    className="btn btn-outline-primary"
+                    to={`/ai_chat?anchor=${encodeURIComponent(item.id)}`}
+                    aria-label="בקש לוק סביב הפריט (AI)"
+                  >
+                    בקש/י לוק סביב הפריט (AI)
+                  </Link>
 
                   <button
                     className="btn btn-edit"

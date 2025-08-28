@@ -6,6 +6,8 @@ import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import '../../css/ClothingAIUpload.css'; // ← קובץ העיצוב החדש
 
 const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98";
+// const API_KEY = import.meta.env.VITE_LYKDAT_KEY;
+
 
 export default function ClothingAIUpload() {
   const [imageFile, setImageFile] = useState(null);

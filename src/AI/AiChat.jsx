@@ -3,6 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { auth } from "../firebase/firebase";
 import { askOpenAI } from "../AI/askOpenAI.jsx";
 import { getWardrobe } from "../api/wardrobeApi";
+import { getUserStyle } from "../api/UserApi";
+import { useLocation } from "react-router-dom";
 
 // === Helpers (module-scope) ===
 
@@ -72,8 +74,22 @@ const parseUserRequest = (text) => {
 // נרמול ערכים למערך
 const toArr = (v) => (Array.isArray(v) ? v : v ? [v] : []);
 
+// קלאסיפיקציה של פריט לעוגן → לאיזה slot הוא שייך
+const classifySlot = (item) => {
+  const types = toArr(item?.type).map(t => String(t).toLowerCase());
+  const has = (...keys) => types.some(a => keys.some(k => a.includes(k)));
+
+  if (has("dress")) return "top"; // שמלה תופסת top ומבטלת bottom
+  if (has("jacket","coat","cardigan","blazer","overcoat")) return "outerwear";
+  if (has("shirt","top","blouse","t-shirt","tee","hoodie","sweater")) return "top";
+  if (has("pants","jeans","trousers","skirt","shorts","chinos")) return "bottom";
+  if (has("shoes","sneakers","heels","boots","sandals")) return "shoes";
+  if (has("hat","cap","beanie","beret","headscarf","kippah","kipah")) return "headwear";
+  return "extras";
+};
+
 // === Component ===
-export default function AiChat() {
+export default function AiChat({ anchorItemId: anchorFromProps }) {
   const [wardrobe, setWardrobe] = useState([]);
   const [prompt, setPrompt] = useState("חולצה לבנה עם מכנסיים כהים לעבודה");
   const [loadingWardrobe, setLoadingWardrobe] = useState(true);
@@ -83,16 +99,19 @@ export default function AiChat() {
   const [err, setErr] = useState("");
   const [selectedModel, setSelectedModel] = useState("openai-gpt4o-mini");
   const [validationWarnings, setValidationWarnings] = useState([]);
+  const [style, setStyle] = useState(null);
+  const [anchorItemId, setAnchorItemId] = useState(null);
+
+  const location = useLocation?.();
 
   const availableModels = [
     { id: "openai-gpt4o-mini", name: "OpenAI GPT-4o Mini (מומלץ)", api: "openai" }
   ];
 
-  // תמונת הפריט מגיעה מה-localStorage לפי imageId
   const getImageDataUrl = (item) =>
     item?.imageId ? localStorage.getItem(item.imageId) : null;
 
-  // טעינת הארון של המשתמש
+  // ========== useEffect 1: טעינת הארון ==========
   useEffect(() => {
     (async () => {
       try {
@@ -114,6 +133,30 @@ export default function AiChat() {
     })();
   }, []);
 
+  // ========== useEffect 2: טעינת סגנון משתמש ==========
+  useEffect(() => {
+    (async () => {
+      try {
+        const s = await getUserStyle();
+        setStyle(s || null);
+      } catch (e) {
+        console.warn("Load style failed:", e);
+      }
+    })();
+  }, []);
+
+  // ========== useEffect 3: קריאת anchor (פרופס או query) ==========
+  useEffect(() => {
+    if (anchorFromProps) setAnchorItemId(anchorFromProps);
+  }, [anchorFromProps]);
+
+  useEffect(() => {
+    if (!location) return;
+    const p = new URLSearchParams(location.search);
+    const qAnchor = p.get("anchor");
+    if (qAnchor) setAnchorItemId(qAnchor);
+  }, [location]);
+
   // מילון מהיר id -> item
   const byId = useMemo(() => {
     const m = {};
@@ -121,7 +164,32 @@ export default function AiChat() {
     return m;
   }, [wardrobe]);
 
-  // בניית פרומפט משופר
+  // אם נכנסנו עם anchor – מלא אוטומטית prompt נוח
+  useEffect(() => {
+    if (anchorItemId && byId[anchorItemId]) {
+      const it = byId[anchorItemId];
+      const role = classifySlot(it);
+      const niceName = (toArr(it.type)[0] || "פריט");
+      setPrompt(`התאם לוק שלם סביב ${niceName} (id=${it.id}) לעבודה/יציאה לפי הצורך, עם התאמת צבעים מדויקת. הוסף נעליים/כובע רק אם זה משפר את הסט.`);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [anchorItemId, byId]);
+
+  // סיכום סגנון המשתמש לטובת הפרומפט
+  const styleSummary = useMemo(() => {
+    if (!style) return "(no explicit user style)";
+    return `
+UserStyle:
+- Bio: ${style.bio || "-"}
+- Keywords: ${(style.keywords || []).join(", ") || "-"}
+- DressCode: ${style.dressCode || "-"}
+- Likes colors: ${(style.colorsFav || []).join(", ") || "-"}
+- Avoid colors: ${(style.colorsAvoid || []).join(", ") || "-"}
+- Disliked: ${(style.disliked || []).join(", ") || "-"}
+`.trim();
+  }, [style]);
+
+  // בניית פרומפט משופר (כולל כובע+נעליים ועוגן)
   const buildPrompt = () => {
     const requestedSeason = inferSeasonFromPrompt(prompt);
     const currentSeason = getCurrentSeason();
@@ -135,6 +203,13 @@ export default function AiChat() {
     }));
 
     const userRequirements = parseUserRequest(prompt);
+
+    // עוגן (אם יש)
+    let anchor = null;
+    if (anchorItemId && byId[anchorItemId]) {
+      const it = byId[anchorItemId];
+      anchor = { id: it.id, slotHint: classifySlot(it) };
+    }
 
     return `
 את/ה סטייליסט/ית ישראלי/ת דובר/ת עברית. החזר/י אך ורק JSON תקין לפי הסכימה.
@@ -158,6 +233,8 @@ export default function AiChat() {
 - אין לשלב "sport" עם "elegant" אלא אם המשימה דורשת.
 - השתמש/י אך ורק ב-IDs שקיימים ב-wardrobe.
 
+${styleSummary}
+
 Wardrobe:
 ${JSON.stringify(compact)}
 
@@ -171,6 +248,12 @@ items: ${JSON.stringify(userRequirements.items)}
 requestedSeason:
 ${JSON.stringify(requestedSeason)}
 
+${anchor ? `Anchor (חייב להיכלל בהרכב):
+- id: "${anchor.id}"
+- slotHint: "${anchor.slotHint}"
+אם העוגן הוא "dress" אין לבחור bottom.
+` : ""}
+
 פלט נדרש – JSON בלבד בסכימה:
 {
   "selected": {
@@ -178,6 +261,7 @@ ${JSON.stringify(requestedSeason)}
     "bottom": "<id or null>",
     "headwear": "<id or null>",
     "outerwear": "<id or null>",
+    "shoes": "<id or null>",
     "extras": ["<id>", "..."]
   },
   "reason": "הסבר קצר בעברית (3–5 משפטים) על בחירת הפריטים, התאמת צבעים ועונה.",
@@ -186,22 +270,21 @@ ${JSON.stringify(requestedSeason)}
   "missingItems": ["רשימת פריטים/צבעים שביקש המשתמש ולא נמצאו"]
 }
 
+בחר/י shoes/headwear רק אם הם משפרים את הסט (אחרת החזר/י null).
 אם אין התאמה טובה לעונה או לצבע – החזר/י null בסלוט הרלוונטי והסבר/י.
 החזר/י JSON תקין בלבד, ללא Markdown או טקסט נוסף מחוץ ל-JSON.
 `.trim();
   };
 
-  // פענוח תשובה וחילוץ JSON
+  // פענוח תשובה וחילוץ JSON (כולל shoes)
   const parseAndValidateResponse = (text) => {
     try {
       let jsonStr = text;
 
-      // ניסיון 1: קוד-בלוק
       const codeBlockMatch = text.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/);
       if (codeBlockMatch) {
         jsonStr = codeBlockMatch[1];
       } else {
-        // ניסיון 2: בין הסוגר המסולסל הראשון לאחרון
         const start = text.indexOf("{");
         const end = text.lastIndexOf("}");
         if (start >= 0 && end > start) {
@@ -226,6 +309,7 @@ ${JSON.stringify(requestedSeason)}
           bottom: keepId(parsed.selected?.bottom),
           headwear: keepId(parsed.selected?.headwear),
           outerwear: keepId(parsed.selected?.outerwear),
+          shoes: keepId(parsed.selected?.shoes),
           extras: keepIds(parsed.selected?.extras || parsed.selected?.accessories || []),
         },
         confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
@@ -241,7 +325,7 @@ ${JSON.stringify(requestedSeason)}
     }
   };
 
-  // בדיקות אזהרה מול דרישות המשתמש (צבע/סוג)
+  // בדיקות אזהרה מול דרישות המשתמש (וצ’ק לעוגן)
   const validateResponse = (response, userRequirements) => {
     const warnings = [];
     if (!response?.selected) return ["לא נבחרו פריטים"];
@@ -288,6 +372,22 @@ ${JSON.stringify(requestedSeason)}
         warnings.push(`ה-AI לא בחר "${requiredItem}" כמו שביקשת.`);
       }
     });
+
+    // אימות עוגן
+    if (anchorItemId) {
+      const mustId = anchorItemId;
+      const appearsIn =
+        response.selected.top === mustId ||
+        response.selected.bottom === mustId ||
+        response.selected.headwear === mustId ||
+        response.selected.outerwear === mustId ||
+        response.selected.shoes === mustId ||
+        (Array.isArray(response.selected.extras) && response.selected.extras.includes(mustId));
+
+      if (!appearsIn) {
+        warnings.push("⚠️ הפריט שנבחר כעוגן לא שובץ בסט כפי שהתבקש.");
+      }
+    }
 
     return warnings;
   };
@@ -349,7 +449,7 @@ ${JSON.stringify(requestedSeason)}
 
   return (
     <div className="container mt-5" dir="rtl">
-      <h2 className="mb-4 text-center">יועץ האופנה החכם 👗</h2>
+      <h2 className="mb-4 text-center">יועץ האופנה החכם</h2>
 
       {/* בחירת מודל */}
       <div className="mb-3">
@@ -427,7 +527,7 @@ ${JSON.stringify(requestedSeason)}
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5>הסט שנבחר:</h5>
             <div className="d-flex gap-2">
-                              {picked.confidence !== undefined && (
+              {picked.confidence !== undefined && (
                 <span className="badge bg-info">
                   ביטחון: {Math.round(picked.confidence * 100)}%
                 </span>
@@ -481,18 +581,9 @@ ${JSON.stringify(requestedSeason)}
                           </div>
                         )}
                         <div className="small">
-                          <div>
-                            <strong>סוג:</strong>{" "}
-                            {(item.type || []).join(", ") || "—"}
-                          </div>
-                          <div>
-                            <strong>צבעים:</strong>{" "}
-                            {(item.colors || []).join(", ") || "—"}
-                          </div>
-                          <div>
-                            <strong>סגנון:</strong>{" "}
-                            {(item.style || []).join(", ") || "—"}
-                          </div>
+                          <div><strong>סוג:</strong> {(item.type || []).join(", ") || "—"}</div>
+                          <div><strong>צבעים:</strong> {(item.colors || []).join(", ") || "—"}</div>
+                          <div><strong>סגנון:</strong> {(item.style || []).join(", ") || "—"}</div>
                         </div>
                       </div>
                     </div>
@@ -505,7 +596,7 @@ ${JSON.stringify(requestedSeason)}
           {picked.selected?.extras && picked.selected.extras.length > 0 && (
             <div className="mt-3">
               <h6>אקססוריז נוספים:</h6>
-              <div className="d-flex flex-wrap gap-2">
+              <div className="ד-flex flex-wrap gap-2">
                 {picked.selected.extras.map((id) => {
                   const item = byId[id];
                   if (!item) return null;
@@ -517,11 +608,7 @@ ${JSON.stringify(requestedSeason)}
                           src={url}
                           alt="extra"
                           className="rounded"
-                          style={{
-                            width: 80,
-                            height: 80,
-                            objectFit: "cover",
-                          }}
+                          style={{ width: 80, height: 80, objectFit: "cover" }}
                         />
                       ) : (
                         <div
@@ -531,9 +618,7 @@ ${JSON.stringify(requestedSeason)}
                           <span className="small text-muted">אין תמונה</span>
                         </div>
                       )}
-                      <div className="small mt-1">
-                        {(item.type || []).join(", ") || "פריט"}
-                      </div>
+                      <div className="small mt-1">{(item.type || []).join(", ") || "פריט"}</div>
                     </div>
                   );
                 })}
@@ -567,5 +652,5 @@ ${JSON.stringify(requestedSeason)}
     </div>
   );
 }
-             
+
 console.log("API key loaded?", import.meta.env.VITE_OPENAI_API_KEY ? "yes" : "no");

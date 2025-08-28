@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
 import { Link } from 'react-router-dom';
-import '../css/Sign_up.css'; // ← קובץ העיצוב החדש
+import '../css/Sign_up.css'; 
 
 export default function Sign_up() {
   const [email, setEmail] = useState('');
@@ -11,7 +11,7 @@ export default function Sign_up() {
   const [username, setUsername] = useState('');
   const [phone, setPhone] = useState('');
   const [gender, setGender] = useState('');
-  // const [bodyColor, setBodyColor] = useState('#f5d3b3');
+  const [bodyColor, setBodyColor] = useState('#f5d3b3');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {

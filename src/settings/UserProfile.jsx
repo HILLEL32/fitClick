@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import '../css/UserProfile.css'; // ← קובץ העיצוב החדש
+import '../css/UserProfile.css';
+import MyStyle from './MyStyle';
 
 export default function UserProfile() {
   const [userData, setUserData] = useState(null);
@@ -64,6 +65,11 @@ export default function UserProfile() {
         <Link to="/edit_profile" className="btn btn-edit mt-3">ערוך פרופיל</Link>
       </div>
 
+      <div className="mt-4">
+        <h4 className="mb-3">העדפות סגנון</h4>
+        <MyStyle />
+      </div>
+      
       <Link to="/app_home" className="btn btn-home floating-button">
         חזרה לדף הבית
       </Link>

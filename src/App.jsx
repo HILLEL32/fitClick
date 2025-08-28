@@ -1,6 +1,7 @@
 
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
 import Header from './component/Header'
 import Home from './pages/Home'
 import Log_in from './pages/Log_in'
@@ -18,6 +19,9 @@ import Wardrobe from './features/clothing/Wardrobe'
 import MatchingClothes from './features/clothing/MatchingClothes'
 import EditClothing from './features/clothing/EditClothing'
 import ChangePassword from './settings/ChangePassword'
+import MyStyle from './settings/MyStyle'
+import AiChat from './AI/AiChat'
+
 
 function App() {
 
@@ -43,6 +47,8 @@ function App() {
           <Route path="/match" element={<MatchingClothes />} />
           <Route path="/edit_clothing" element={<EditClothing />} />
           <Route path="/change_password" element={<ChangePassword />} />
+          <Route path="/My_style" element={<MyStyle />} />
+          <Route path="/ai_chat" element={<AiChat />} />
 
 
 
