@@ -11,6 +11,50 @@ import GroqChat from '../../AI/GroqChat';
 // import { askGroq } from '../../AI/askGroq';
 import AiChat from '../../AI/AiChat';
 
+function Typewriter({ lines = [], typingSpeed = 45, pause = 1200 }) {
+  const [idx, setIdx] = useState(0);
+  const [text, setText] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+    let i = 0;
+
+    const run = () => {
+      const line = lines[idx % lines.length];
+      if (!mounted) return;
+      if (i <= line.length) {
+        setText(line.slice(0, i));
+        i += 1;
+        setTimeout(run, typingSpeed);
+      } else {
+        setTimeout(() => {
+          const erase = () => {
+            if (!mounted) return;
+            if (i >= 0) {
+              setText(line.slice(0, i));
+              i -= 2;
+              setTimeout(erase, 18);
+            } else {
+              setIdx((p) => (p + 1) % lines.length);
+            }
+          };
+          erase();
+        }, pause);
+      }
+    };
+
+    run();
+    return () => { mounted = false; };
+  }, [idx, lines, typingSpeed, pause]);
+
+  return (
+    <span className="tw">
+      {text}
+      <span className="tw-caret" />
+    </span>
+  );
+}
+
 // === עזר ידני: ניקוי ונרמול למטה-קייס בלי Set/map/filter מתקדמים ===
 function uniqCleanSimple(arr) {
   let result = [];
@@ -275,8 +319,24 @@ export default function Wardrobe() {
     return <div className="container mt-5 text-center">טוען ארון...</div>;
 
   return (
-    <div className="container wardrobe-wrapper mt-5" dir="rtl">
+    <div className="container wardrobe-wrapper" dir="rtl">
       <h2 className="wardrobe-heading text-center mb-4">הארון שלי</h2>
+      <div className="wardrobe-tips glass-card">
+        <div className="tips-line">
+          <Typewriter
+            lines={[
+              'שלבו טופ בהיר עם תחתון כהה למראה מאוזן ונקי.',
+              'ניטרלי + צבע דומיננטי: תנו לפריט אחד “לדבר”.',
+              'חום/בז משתלב מצוין עם ורוד פודרה או לבן שבור.',
+              'אם יש לכם ג׳קט – נסו לוק של שכבות מעל טי-שירט.',
+              'לוק ספורטיבי? לכו על נעל פשוטה בצבעים ניטרליים.',
+              'אין מכנס מתאים? בקשו מה-AI לוק סביב החולצה שבחרתם.',
+            ]}
+            typingSpeed={45}
+            pause={1200}
+          />
+        </div>
+      </div> <br/>
 
       {/* <MatchingClothes
         clothingItems={clothingItems}

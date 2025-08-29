@@ -575,8 +575,9 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
   };
 
   return (
-    <div className="container mt-5" dir="rtl">
-      <div className="container aichat-container mt-5">
+    <div className="aichat-page" dir="rtl">
+      <div className="aichat-overlay" />
+      <div className="container aichat-container">
         <h2 className="mb-4 text-center">יועץ האופנה החכם</h2>
 
         {/* קלט המשתמש */}
@@ -635,13 +636,12 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                 )}
                 {picked.colorMatch && (
                   <span
-                    className={`badge aichat-badge ${
-                      picked.colorMatch === "perfect"
+                    className={`badge aichat-badge ${picked.colorMatch === "perfect"
                         ? "aichat-badge-success"
                         : picked.colorMatch === "partial"
-                        ? "aichat-badge-warn"
-                        : "aichat-badge-danger"
-                    }`}
+                          ? "aichat-badge-warn"
+                          : "aichat-badge-danger"
+                      }`}
                   >
                     התאמת צבעים: {picked.colorMatch}
                   </span>

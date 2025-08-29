@@ -1,10 +1,40 @@
+// src/pages/MyStyle.jsx  (או איפה שאצלך)
+// שמרי את הלוגיקה כמו שהיא — רק עטפתי בעיצוב ותתי־קומפוננטות קטנות
 import { useEffect, useState } from "react";
-import { initUserProfileIfNeeded, getUserStyle, updateUserStyle } from "../api/UserApi";
+import {
+  initUserProfileIfNeeded,
+  getUserStyle,
+  updateUserStyle,
+} from "../api/UserApi";
+import "../css/MyStyle.css";
 
 const PRESETS = {
-  keywords: ["casual","classic","streetwear","boho","elegant","sport","modest","preppy","minimal"],
-  dressCodes: ["everyday","work","religious","evening","sport"],
-  colors: ["black","white","navy","beige","brown","green","blue","red","yellow","pink","purple","gray"]
+  keywords: [
+    "casual",
+    "classic",
+    "streetwear",
+    "boho",
+    "elegant",
+    "sport",
+    "modest",
+    "preppy",
+    "minimal",
+  ],
+  dressCodes: ["everyday", "work", "religious", "evening", "sport"],
+  colors: [
+    "black",
+    "white",
+    "navy",
+    "beige",
+    "brown",
+    "green",
+    "blue",
+    "red",
+    "yellow",
+    "pink",
+    "purple",
+    "gray",
+  ],
 };
 
 export default function MyStyle() {
@@ -21,8 +51,8 @@ export default function MyStyle() {
   useEffect(() => {
     (async () => {
       try {
-        await initUserProfileIfNeeded();            // יוצר פרופיל אם אין
-        const s = await getUserStyle();             // ← זה במקום getUserProfile()
+        await initUserProfileIfNeeded();
+        const s = await getUserStyle();
         setBio(s.bio || "");
         setKeywords(s.keywords || []);
         setDisliked(s.disliked || []);
@@ -38,89 +68,155 @@ export default function MyStyle() {
   }, []);
 
   const toggle = (arr, setArr, v) =>
-    setArr(arr.includes(v) ? arr.filter(x => x !== v) : [...arr, v]);
+    setArr(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
 
   const onSave = async (e) => {
     e.preventDefault();
     setMsg("");
     setErr("");
     try {
-      await updateUserStyle({ bio, keywords, disliked, dressCode, colorsFav, colorsAvoid });
+      await updateUserStyle({
+        bio,
+        keywords,
+        disliked,
+        dressCode,
+        colorsFav,
+        colorsAvoid,
+      });
       setMsg("נשמר!");
     } catch (e) {
       setErr(e.message || String(e));
     }
   };
 
-  if (loading) return <div>טוען…</div>;
+  if (loading) return <div className="style-loader">טוען…</div>;
 
   return (
-    <form onSubmit={onSave} className="space-y-4" dir="rtl">
-      <label className="d-block mb-2">
-        <div className="mb-1">ספר/י על הטעם האופנתי שלך</div>
-        <textarea className="form-control" rows={4}
-          value={bio} onChange={e=>setBio(e.target.value)} />
-      </label>
-
-      <div className="mb-2">
-        <div className="mb-1">מאפייני סגנון</div>
-        <div className="d-flex flex-wrap gap-2">
-          {PRESETS.keywords.map(k =>
-            <button type="button" key={k}
-              onClick={()=>toggle(keywords,setKeywords,k)}
-              className={`btn btn-sm ${keywords.includes(k) ? "btn-primary" : "btn-outline-primary"}`}>
-              {k}
-            </button>
-          )}
-        </div>
+    <form onSubmit={onSave} className="mystyle wrapper glass-card" dir="rtl">
+      {/* כותרת קטנה + הסבר */}
+      <div className="mystyle-head">
+        <h4 className="mystyle-title">כרטיס סגנון אישי</h4>
+        <p className="mystyle-sub">
+          זה המקום לתאר את הוייב שלך, לבחור מאפייני סגנון, וקודים/צבעים מועדפים.
+        </p>
       </div>
 
-      <div className="mb-2">
-        <div className="mb-1">דברים שלא אוהבים</div>
-        <input className="form-control"
-          placeholder="למשל: סקיני, צהוב"
-          value={disliked.join(", ")}
-          onChange={e=>setDisliked(e.target.value.split(",").map(s=>s.trim()).filter(Boolean))}
+      {/* ביוגרפיה/טעם */}
+      <div className="mystyle-section">
+        <label className="mystyle-label">ספר/י על הטעם האופנתי שלך</label>
+        <textarea
+          className="form-control fc-input mystyle-textarea"
+          rows={4}
+          value={bio}
+          onChange={(e) => setBio(e.target.value)}
+          placeholder="למשל: אוהב/ת בסיסי עם נגיעות ורודות, מחפש/ת לוקים לעבודה ויציאה..."
         />
       </div>
 
-      <div className="mb-2">
-        <div className="mb-1">קוד לבוש עיקרי</div>
-        <select className="form-control" value={dressCode ?? ""} onChange={e=>setDressCode(e.target.value || null)}>
-          <option value="">(ללא)</option>
-          {PRESETS.dressCodes.map(dc => <option value={dc} key={dc}>{dc}</option>)}
-        </select>
-      </div>
-
-      <div className="mb-2">
-        <div className="mb-1">צבעים אהובים</div>
-        <div className="d-flex flex-wrap gap-2">
-          {PRESETS.colors.map(c =>
-            <button type="button" key={c}
-              onClick={()=>toggle(colorsFav,setColorsFav,c)}
-              className={`btn btn-sm ${colorsFav.includes(c) ? "btn-success" : "btn-outline-success"}`}>
-              {c}
+      {/* מאפייני סגנון */}
+      <div className="mystyle-section">
+        <div className="mystyle-label">מאפייני סגנון</div>
+        <div className="chip-row">
+          {PRESETS.keywords.map((k) => (
+            <button
+              type="button"
+              key={k}
+              onClick={() => toggle(keywords, setKeywords, k)}
+              className={`chip ${keywords.includes(k) ? "chip--on" : ""}`}
+            >
+              {k}
             </button>
-          )}
+          ))}
         </div>
       </div>
 
-      <div className="mb-3">
-        <div className="mb-1">צבעים להימנע</div>
-        <div className="d-flex flex-wrap gap-2">
-          {PRESETS.colors.map(c =>
-            <button type="button" key={c}
-              onClick={()=>toggle(colorsAvoid,setColorsAvoid,c)}
-              className={`btn btn-sm ${colorsAvoid.includes(c) ? "btn-danger" : "btn-outline-danger"}`}>
-              {c}
-            </button>
-          )}
+      {/* דברים שלא אוהבים */}
+      <div className="mystyle-section">
+        <div className="mystyle-label">דברים שלא אוהבים</div>
+        <input
+          className="form-control fc-input"
+          placeholder="למשל: סקיני, צהוב"
+          value={disliked.join(", ")}
+          onChange={(e) =>
+            setDisliked(
+              e.target.value
+                .split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            )
+          }
+        />
+      </div>
+
+      {/* קוד לבוש */}
+      <div className="mystyle-section">
+        <div className="mystyle-label">קוד לבוש עיקרי</div>
+        <div className="chip-row chip-row--select">
+          <select
+            className="form-control fc-input mystyle-select"
+            value={dressCode ?? ""}
+            onChange={(e) => setDressCode(e.target.value || null)}
+          >
+            <option value="">(ללא)</option>
+            {PRESETS.dressCodes.map((dc) => (
+              <option value={dc} key={dc}>
+                {dc}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      <button className="btn btn-dark">שמור/י</button>
-      {msg && <div className="text-success mt-2">{msg}</div>}
-      {err && <div className="text-danger mt-2">{err}</div>}
+      {/* צבעים אהובים */}
+      <div className="mystyle-section">
+        <div className="mystyle-label">צבעים אהובים</div>
+        <div className="chip-row">
+          {PRESETS.colors.map((c) => (
+            <button
+              type="button"
+              key={c}
+              onClick={() => toggle(colorsFav, setColorsFav, c)}
+              className={`chip chip--color ${
+                colorsFav.includes(c) ? "chip--on" : ""
+              }`}
+              data-color={c}
+              title={c}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* צבעים להימנע */}
+      <div className="mystyle-section">
+        <div className="mystyle-label">צבעים להימנע</div>
+        <div className="chip-row">
+          {PRESETS.colors.map((c) => (
+            <button
+              type="button"
+              key={c}
+              onClick={() => toggle(colorsAvoid, setColorsAvoid, c)}
+              className={`chip chip--avoid ${
+                colorsAvoid.includes(c) ? "chip--on" : ""
+              }`}
+              data-color={c}
+              title={c}
+            >
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* שמירה + הודעות */}
+      <div className="mystyle-actions">
+        <button className="fc-btn fc-btn--two" type="submit">
+          שמור/י
+        </button>
+        {msg && <div className="mystyle-msg ok">{msg}</div>}
+        {err && <div className="mystyle-msg err">{err}</div>}
+      </div>
     </form>
   );
 }

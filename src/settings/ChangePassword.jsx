@@ -6,6 +6,7 @@ import {
   EmailAuthProvider
 } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
+import '../css/ChangePassword.css'; // ← קובץ העיצוב החדש
 
 export default function ChangePassword() {
   const [currentPwd, setCurrentPwd] = useState('');
@@ -33,11 +34,11 @@ export default function ChangePassword() {
         return;
       }
 
-      // אימות מחדש לפני שינוי סיסמה
+      // אימות מחדש
       const cred = EmailAuthProvider.credential(user.email, currentPwd);
       await reauthenticateWithCredential(user, cred);
 
-      // שינוי הסיסמה
+      // שינוי סיסמה
       await updatePassword(user, newPwd);
       alert('הסיסמה עודכנה בהצלחה!');
       navigate('/app_home');
@@ -47,39 +48,59 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="container mt-3">
-      <h6 className='line'>שינוי סיסמה</h6>
-      <div className='container'>
-        <strong>סיסמה נוכחית:</strong><br />
-        <input
-          type="password"
-          value={currentPwd}
-          onChange={(e) => setCurrentPwd(e.target.value)}
-        /><br />
+    <div className="cp-page" dir="rtl">
+      {/* שכבת טקסטורה ועדינות */}
+      <div className="cp-overlay" />
+      {/* דקורציות בלובס */}
+      <div className="blob b1" />
+      <div className="blob b2" />
+      <div className="blob b3" />
 
-        <strong>סיסמה חדשה:</strong><br />
-        <input
-          type="password"
-          value={newPwd}
-          onChange={(e) => setNewPwd(e.target.value)}
-        /><br />
+      {/* כרטיס הזכוכית */}
+      <div className="cp-card glass-card">
+        <h1 className="cp-title">שינוי סיסמה</h1>
 
-        <strong>אימות סיסמה חדשה:</strong><br />
-        <input
-          type="password"
-          value={confirmPwd}
-          onChange={(e) => setConfirmPwd(e.target.value)}
-        /><br /><br />
+        <div className="cp-form">
+          <label className="cp-label">סיסמה נוכחית</label>
+          <input
+            type="password"
+            value={currentPwd}
+            onChange={(e) => setCurrentPwd(e.target.value)}
+            className="cp-input"
+            placeholder="••••••••"
+          />
 
-        <div className="d-flex gap-2 flex-wrap">
-          <button onClick={handleChangePassword} className="btn btn-success mb-4">
-            עדכון סיסמה
-          </button>
-          <Link to="/app_home" className="btn btn-outline-secondary mb-4">
-            חזרה
-          </Link>
+          <label className="cp-label">סיסמה חדשה</label>
+          <input
+            type="password"
+            value={newPwd}
+            onChange={(e) => setNewPwd(e.target.value)}
+            className="cp-input"
+            placeholder="מינימום 6 תווים"
+          />
+
+          <label className="cp-label">אימות סיסמה חדשה</label>
+          <input
+            type="password"
+            value={confirmPwd}
+            onChange={(e) => setConfirmPwd(e.target.value)}
+            className="cp-input"
+            placeholder="הזיני שוב את הסיסמה"
+          />
+
+          <div className="cp-actions">
+            <button onClick={handleChangePassword} className="btn btn-cta">
+              עדכון סיסמה
+            </button>
+            <Link to="/app_home" className="btn btn-ghost">
+              חזרה
+            </Link>
+          </div>
         </div>
       </div>
+
+      {/* כפתור תחתון עקבי (אופציונלי) */}
+      <Link to="/" className="btn back-btn">חזרה לעמוד הראשי</Link>
     </div>
   );
 }

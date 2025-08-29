@@ -1,122 +1,154 @@
-/* אם כבר הגדרת משתני צבעים ב-AppHome.css – אפשר למחוק את :root כאן.
-   אחרת, השאירי אותם כדי לעבוד לבד. */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap');
+
 :root{
-  --brand: #B5693A;       /* חום־כתום */
-  --brand-dark: #8C4320;  /* כהה */
-  --accent: #E78A90;      /* ורוד ביניים */
-  --accent-light: #FFD6DB;/* ורוד בהיר */
-  --bg-light: #F8F4F2;    /* רקע */
-  --surface: #FFFFFF;
-  --text: #1E1E1E;
-  --border: #EAD9D2;
+  --brand:#B5693A; --brand-700:#8C4320;
+  --accent:#E78A90; --accent-100:#FFD6DB;
+  --bg:#F8F4F2; --surface:#FFFFFF; --text:#1E1E1E; --border:#EAD9D2;
+  --shadow-lg:0 22px 50px rgba(181,105,58,.18), 0 6px 18px rgba(0,0,0,.06);
+  --shadow-md:0 12px 28px rgba(181,105,58,.14), 0 3px 10px rgba(0,0,0,.05);
+  --r-xl:24px; --r-lg:18px; --r-md:14px;
 }
 
-/* עטיפה כללית */
-.profile-wrapper{
-  padding-block: 2rem 4rem;
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--bg-light) 0%, var(--accent-light) 100%);
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{ margin:0; font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,Arial,'Noto Sans Hebrew',sans-serif; color:var(--text) }
+
+/* ===== עמוד מלא עם רקע חי ===== */
+.profile-page{
+  min-height:100dvh;
+  display:flex; flex-direction:column; gap:1rem;
+  position:relative; overflow:hidden;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, var(--accent-100) 0%, rgba(255,214,219,0) 60%),
+    radial-gradient(900px 420px at 10% 110%, #ffe5d1 0%, rgba(255,229,209,0) 60%),
+    linear-gradient(135deg, var(--bg) 0%, #fff 100%);
 }
 
-/* כותרת */
+.profile-overlay{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.08;
+  background-image:url("https://www.transparenttextures.com/patterns/fabric-of-squares.png");
+  animation:floatTexture 30s linear infinite;
+}
+@keyframes floatTexture{ from{transform:translate(0,0)} to{transform:translate(120px,80px)} }
+
+/* בלובים */
+.blob{
+  position:absolute; filter:blur(18px); opacity:.35; z-index:0; pointer-events:none;
+  mix-blend-mode:multiply; border-radius:50%;
+}
+.b1{ width:520px; height:520px; background:#ffd9de; right:-160px; top:5%; animation:blob 18s ease-in-out infinite }
+.b2{ width:380px; height:380px; background:#ffcaa5; left:-160px; bottom:10%; animation:blob 22s ease-in-out infinite reverse }
+.b3{ width:320px; height:320px; background:#d3a17e; right:10%; bottom:-120px; animation:blob 26s ease-in-out infinite }
+@keyframes blob{ 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(20px,-30px) scale(1.08)} }
+
+/* קונטיינר רוחב */
+.container-xl{ width:min(1100px, 94vw); margin:0 auto; position:relative; z-index:1 }
+
+/* ===== כותרת ===== */
+.profile-hero{
+  text-align:center;
+  margin-top:min(3vh, 24px);
+  margin-bottom:clamp(1rem, 2.5vw, 2rem);
+}
 .profile-heading{
-  font-family: 'Miriam Libre', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Hebrew", sans-serif;
-  font-weight: 700;
-  font-size: 2rem;
-  color: var(--brand-dark);
-  letter-spacing: .5px;
-  margin-bottom: 1.25rem;
+  margin:0;
+  font-weight:900;
+  font-size: clamp(1.6rem, 4.8vw, 3rem);
+  color:var(--brand-700);
+  letter-spacing:.5px;
+  text-shadow:0 8px 22px rgba(231,138,144,.35);
+}
+.brand{ color:var(--accent); filter:drop-shadow(0 8px 20px rgba(231,138,144,.35)); }
+.profile-sub{
+  margin:.4rem auto 0;
+  max-width:740px;
+  color:#6d5b54;
+  font-size:clamp(.95rem, 2.2vw, 1.06rem);
+  line-height:1.55;
 }
 
-/* כרטיס הפרופיל */
-.profile-card{
-  max-width: 420px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 1.25rem 1.25rem 1.5rem;
-  box-shadow: 0 16px 32px rgba(181,105,58,0.12), 0 4px 12px rgba(0,0,0,0.06);
+/* ===== כרטיסים ===== */
+.glass-card{
+  background:rgba(255,255,255,.62);
+  border:1px solid var(--border);
+  backdrop-filter: blur(8px);
+  border-radius:var(--r-xl);
+  box-shadow:var(--shadow-lg);
+  padding:clamp(1.2rem, 3.2vw, 2rem);
+  animation:popIn .7s ease-out both;
+}
+@keyframes popIn{ from{opacity:0; transform:translateY(10px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
+
+.profile-card{ margin-bottom: clamp(.6rem, 2.2vw, 1.2rem); }
+.style-card{ margin-top: clamp(.6rem, 2.2vw, 1.2rem); }
+
+/* גריד שדות */
+.profile-grid{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: clamp(.6rem, 2vw, 1rem);
+}
+@media (max-width: 720px){
+  .profile-grid{ grid-template-columns: 1fr; }
 }
 
-/* רשימת פריטים */
-.profile-list{
-  border: none;
+.profile-field{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:1rem 1.2rem;
+  box-shadow: var(--shadow-md);
+}
+.profile-field .label{
+  font-weight:800; color:#6d5b54; margin-bottom:.25rem;
+}
+.profile-field .value{
+  font-weight:700; color:#3f2f2a;
 }
 
-.profile-item{
-  border: 0;
-  border-bottom: 1px dashed var(--border);
-  padding: 0.85rem 0.5rem;
-  color: var(--text);
-  background: transparent;
+/* סוואץ’ צבע גוף */
+.swatch-field .value{
+  display:flex; align-items:center; gap:.6rem;
 }
-.profile-item:last-child{
-  border-bottom: 0;
-}
-
-/* דוגם צבע גוף */
 .bodycolor-swatch{
-  width: 28px;
-  height: 28px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  margin-top: 6px;
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,0.45);
+  width:36px; height:36px; border-radius:10px;
+  border:1px solid var(--border); box-shadow:0 4px 10px rgba(0,0,0,.06);
 }
+.swatch-code{ font-size:.95rem; color:#6d5b54; }
 
-/* כפתור עריכה */
-.btn-edit{
-  background-color: var(--brand);
-  color: #fff !important;
-  border: none;
-  border-radius: 14px;
-  padding: 0.7rem 1.2rem;
-  font-weight: 700;
-  box-shadow: 0 8px 18px rgba(181,105,58,0.28);
-  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+/* כפתורים */
+.profile-actions{
+  display:flex; flex-wrap:wrap; gap:.6rem; margin-top:1rem;
 }
-.btn-edit:hover,
-.btn-edit:focus-visible{
-  background-color: var(--brand-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px rgba(140,67,32,0.35);
+.fc-btn{
+  border:none; cursor:pointer; font-weight:900; letter-spacing:.12em;
+  border-radius:16px; padding:.9rem 1.3rem; transition:.18s;
+  text-transform:uppercase; text-decoration:none;
+  display:inline-flex; align-items:center; justify-content:center;
+  color:#fff !important; box-shadow:var(--shadow-md);
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  background-size:200% 200%;
+  animation:buttonGradient 5s ease infinite, floatUp 3s ease-in-out infinite alternate;
 }
+.fc-btn--one{ background:linear-gradient(135deg, #B5693A, #E78A90) }
+.fc-btn--two{ background:linear-gradient(135deg, #E78A90, #FF9D66) }
+.fc-btn:hover{ transform:translateY(-3px); box-shadow:0 16px 36px rgba(245,81,5,.28) }
+@keyframes buttonGradient{ from{background-position:0% 50%} to{background-position:100% 50%} }
+@keyframes floatUp{ from{transform:translateY(0)} to{transform:translateY(-6px)} }
 
-/* כפתור חזרה הביתה (צף) */
-.floating-button {
-  position: fixed;
-  left: 1rem;          /* בצד שמאל */
-  bottom: 1rem;        /* למטה */
-  background-color: var(--brand);
-  color: #fff !important;
-  border: none;
-  border-radius: 16px;
-  padding: 0.6rem 1.2rem; /* מרווח פנימי נעים */
-  font-size: 1rem;
-  font-weight: 700;
-  width: auto;         /* הכפתור מתאים את עצמו לאורך הטקסט */
-  text-align: center;
-  box-shadow:
-    0 12px 30px rgba(181,105,58,0.25),
-    0 2px 8px rgba(0,0,0,0.06);
-  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
-  z-index: 1000;       /* לוודא שהוא מעל כל התוכן */
+/* כפתור צף חזרה */
+.floating-button{
+  width:100%; margin-top: .8rem;
+  background:#ffffff; color:#8a5d4b !important;
+  border:1.5px solid var(--border); box-shadow:var(--shadow-md);
+  display:inline-flex; align-items:center; justify-content:center;
+  padding: .9rem 1rem; border-radius:16px; text-decoration:none;
 }
+.floating-button:hover{ background:#fff8f9; transform:translateY(-2px) }
 
-.floating-button:hover {
-  background-color: var(--brand-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 16px 34px rgba(140,67,32,0.34);
+/* מצבי ביניים */
+.profile-loader, .profile-error{
+  width:min(760px, 92vw); margin: 8vh auto 0; text-align:center; font-weight:800;
 }
-
-.floating-button:hover,
-.floating-button:focus-visible{
-  background-color: var(--brand-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 16px 34px rgba(140,67,32,0.34);
-}
-
-/* רספונסיבי */
-@media (max-width: 420px){
-  .profile-card{ padding: 1rem 1rem 1.25rem; }
-}
+.profile-error{ color:#b23a48; background:rgba(255,240,242,.8) }

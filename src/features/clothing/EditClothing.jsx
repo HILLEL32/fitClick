@@ -2,119 +2,71 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase/firebase';
+import '../../css/EditClothingItem.css';
 
-// ===== גרסאות ידניות ופשוטות =====
+// ===== עזר פשוט לניקוי/נרמול =====
 function uniqCleanSimple(arr) {
-  let result = [];
+  const out = [];
   for (let i = 0; i < (arr ? arr.length : 0); i++) {
-    let value = arr[i];
-    if (value == null) continue;        // מדלג על null/undefined
-    value = String(value).trim();       // ממיר למחרוזת ומוריד רווחים
-    if (value === '') continue;         // מדלג על ריקים
-    // נורמליזציה (רשות): לאותיות קטנות כדי לאחד "Jeans"/"jeans"
-    value = value.toLowerCase();
-    if (!result.includes(value)) {
-      result.push(value);               // מוסיף רק אם לא קיים
-    }
+    let v = arr[i];
+    if (v == null) continue;
+    v = String(v).trim().toLowerCase();
+    if (!v) continue;
+    if (!out.includes(v)) out.push(v);
   }
-  return result;
+  return out;
 }
-
 function parseCommaListSimple(str) {
   if (!str) return [];
-  const parts = str.split(',');         // מפצל לפי פסיקים
-  return uniqCleanSimple(parts);        // מנקה ומסיר כפילויות
+  return uniqCleanSimple(str.split(','));
 }
-// ==================================
 
-const TYPE_OPTIONS = [
-  'shirt','t-shirt','blouse','sweater','hoodie',
-  'jeans','pants','shorts','skirt','dress','tights','leggings',
-  'coat','jacket'
-];
-
-const STYLE_OPTIONS = [
-  'casual','sport','elegant','classic','street','boho','business','party'
-];
-
-const COLOR_OPTIONS = [
-  'black','white','gray','blue','red','green','yellow','pink','purple',
-  'beige','brown','orange','denim'
-];
+// ===== אפשרויות =====
+const TYPE_OPTIONS  = ['shirt','t-shirt','blouse','sweater','hoodie','jeans','pants','shorts','skirt','dress','tights','leggings','coat','jacket'];
+const STYLE_OPTIONS = ['casual','sport','elegant','classic','street','boho','business','party'];
+const COLOR_OPTIONS = ['black','white','gray','blue','red','green','yellow','pink','purple','beige','brown','orange','denim'];
 
 export default function EditClothing({ open, onClose, item, onSaved }) {
   const initial = useMemo(() => ({
-    type: uniqCleanSimple(item?.type || []),
+    type:   uniqCleanSimple(item?.type   || []),
     colors: uniqCleanSimple(item?.colors || []),
-    style: uniqCleanSimple(item?.style || []),
+    style:  uniqCleanSimple(item?.style  || []),
   }), [item]);
 
-  const [typeSelected, setTypeSelected] = useState(initial.type);
-  const [typeCustom, setTypeCustom] = useState('');
-
+  const [typeSelected,   setTypeSelected]   = useState(initial.type);
+  const [typeCustom,     setTypeCustom]     = useState('');
   const [colorsSelected, setColorsSelected] = useState(initial.colors);
-  const [colorsCustom, setColorsCustom] = useState('');
-
-  const [styleSelected, setStyleSelected] = useState(initial.style);
-  const [styleCustom, setStyleCustom] = useState('');
-
-  const [saving, setSaving] = useState(false);
+  const [colorsCustom,   setColorsCustom]   = useState('');
+  const [styleSelected,  setStyleSelected]  = useState(initial.style);
+  const [styleCustom,    setStyleCustom]    = useState('');
+  const [saving,         setSaving]         = useState(false);
 
   useEffect(() => {
-    setTypeSelected(initial.type);
-    setTypeCustom('');
-    setColorsSelected(initial.colors);
-    setColorsCustom('');
-    setStyleSelected(initial.style);
-    setStyleCustom('');
+    setTypeSelected(initial.type);   setTypeCustom('');
+    setColorsSelected(initial.colors); setColorsCustom('');
+    setStyleSelected(initial.style); setStyleCustom('');
   }, [initial, open]);
 
   const handleToggle = (value, list, setter) => {
-    // נשמור/נסיר עם נורמליזציה לאותיות קטנות, כדי ש"SHORTS" ו"shorts" יהיו אותו דבר
     const v = String(value).toLowerCase();
-    // בונים רשימה מנורמלת בלי להוסיף ספריות
-    const normalized = [];
-    for (let i = 0; i < list.length; i++) {
-      normalized.push(String(list[i]).toLowerCase());
-    }
-    const exists = normalized.includes(v);
-    if (exists) {
-      // הסרה ידנית
-      const next = [];
-      for (let i = 0; i < normalized.length; i++) {
-        if (normalized[i] !== v) next.push(normalized[i]);
-      }
-      setter(next);
+    const normalized = list.map(x => String(x).toLowerCase());
+    if (normalized.includes(v)) {
+      setter(normalized.filter(x => x !== v));
     } else {
-      // הוספה
-      const next = normalized.slice();
-      next.push(v);
-      setter(uniqCleanSimple(next));
+      setter(uniqCleanSimple([...normalized, v]));
     }
   };
 
   const handleSave = async () => {
-    // מאחדים בחירות + טקסט חופשי (פסיקים), ידנית ופשוט
-    const types = uniqCleanSimple(
-      (typeSelected || []).concat(parseCommaListSimple(typeCustom))
-    );
-    const colors = uniqCleanSimple(
-      (colorsSelected || []).concat(parseCommaListSimple(colorsCustom))
-    );
-    const styles = uniqCleanSimple(
-      (styleSelected || []).concat(parseCommaListSimple(styleCustom))
-    );
+    const types  = uniqCleanSimple([...typeSelected,   ...parseCommaListSimple(typeCustom)]);
+    const colors = uniqCleanSimple([...colorsSelected, ...parseCommaListSimple(colorsCustom)]);
+    const styles = uniqCleanSimple([...styleSelected,  ...parseCommaListSimple(styleCustom)]);
 
     setSaving(true);
     try {
-      const ref = doc(db, 'clothingItems', item.id);
-      await updateDoc(ref, {
-        type: types,
-        colors,
-        style: styles,
-        updatedAt: serverTimestamp(),
+      await updateDoc(doc(db, 'clothingItems', item.id), {
+        type: types, colors, style: styles, updatedAt: serverTimestamp(),
       });
-
       onSaved?.({ ...item, type: types, colors, style: styles });
       onClose?.();
     } catch (e) {
@@ -128,106 +80,91 @@ export default function EditClothing({ open, onClose, item, onSaved }) {
   if (!open) return null;
 
   return (
-    <div
-      className="position-fixed top-0 start-0 w-100 h-100"
-      style={{ background: 'rgba(0,0,0,0.35)', zIndex: 1050 }}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="container h-100 d-flex align-items-center justify-content-center">
-        <div className="card shadow-lg" style={{ maxWidth: 720, width: '100%' }}>
-          <div className="card-header d-flex align-items-center">
-            <h5 className="mb-0">עריכת פריט</h5>
-            <button
-              className="btn btn-sm btn-outline-secondary ms-auto"
-              onClick={onClose}
-              aria-label="סגירה"
-            >
-              X
-            </button>
+    <div className="ec-modal" role="dialog" aria-modal="true" dir="rtl">
+      {/* רקע ובלובים */}
+      <div className="ec-overlay" />
+      <div className="ec-blobs" />
+
+      {/* כרטיס הזכוכית */}
+      <div className="ec-dialog glass-card">
+        <header className="ec-header">
+          <h5 className="ec-title">עריכת פריט</h5>
+          <button className="btn btn-ghost-sm" onClick={onClose} aria-label="סגירה">✕</button>
+        </header>
+
+        {/* רק הגוף גולל */}
+        <div className="ec-body">
+          {/* TYPE */}
+          <div className="ec-field">
+            <label className="ec-label">סוג הבגד (בחר/י כמה שצריך)</label>
+            <div className="ec-chips">
+              {TYPE_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  type="button"
+                  className={`chip chip--type ${typeSelected.includes(opt) ? 'is-active' : ''}`}
+                  onClick={() => handleToggle(opt, typeSelected, setTypeSelected)}
+                >{opt}</button>
+              ))}
+            </div>
+            <input
+              className="form-control fc-input ec-input"
+              placeholder="או הוסיפ/י סוגים ידנית, בפסיקים  (jeans, tights...)"
+              value={typeCustom}
+              onChange={e => setTypeCustom(e.target.value)}
+            />
+            <div className="ec-help">אפשר לשלב: shorts + jeans/tights וכו'.</div>
           </div>
 
-          <div className="card-body">
-            {/* TYPE */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">סוג הבגד (בחרי כמה שצריך)</label>
-              <div className="d-flex flex-wrap gap-2">
-                {TYPE_OPTIONS.map(opt => (
-                  <button
-                    key={opt}
-                    type="button"
-                    className={`btn btn-sm ${typeSelected.includes(opt) ? 'btn-success' : 'btn-outline-success'}`}
-                    onClick={() => handleToggle(opt, typeSelected, setTypeSelected)}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              <input
-                className="form-control mt-2"
-                placeholder="או הוסיפי סוגים ידנית, בפסיקים  (jeans, tights...)"
-                value={typeCustom}
-                onChange={e => setTypeCustom(e.target.value)}
-              />
-              <div className="form-text">אפשר לשלב: shorts + jeans/tights וכו'.</div>
+          {/* COLORS */}
+          <div className="ec-field">
+            <label className="ec-label">צבעים</label>
+            <div className="ec-chips">
+              {COLOR_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  type="button"
+                  className={`chip chip--color ${colorsSelected.includes(opt) ? 'is-active' : ''}`}
+                  onClick={() => handleToggle(opt, colorsSelected, setColorsSelected)}
+                >{opt}</button>
+              ))}
             </div>
-
-            {/* COLORS */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">צבעים</label>
-              <div className="d-flex flex-wrap gap-2">
-                {COLOR_OPTIONS.map(opt => (
-                  <button
-                    key={opt}
-                    type="button"
-                    className={`btn btn-sm ${colorsSelected.includes(opt) ? 'btn-primary' : 'btn-outline-primary'}`}
-                    onClick={() => handleToggle(opt, colorsSelected, setColorsSelected)}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              <input
-                className="form-control mt-2"
-                placeholder="או הוסיפי ידנית, בפסיקים  (light-blue, cream)"
-                value={colorsCustom}
-                onChange={e => setColorsCustom(e.target.value)}
-              />
-            </div>
-
-            {/* STYLE */}
-            <div className="mb-3">
-              <label className="form-label fw-bold">סגנון</label>
-              <div className="d-flex flex-wrap gap-2">
-                {STYLE_OPTIONS.map(opt => (
-                  <button
-                    key={opt}
-                    type="button"
-                    className={`btn btn-sm ${styleSelected.includes(opt) ? 'btn-warning' : 'btn-outline-warning'}`}
-                    onClick={() => handleToggle(opt, styleSelected, setStyleSelected)}
-                  >
-                    {opt}
-                  </button>
-                ))}
-              </div>
-              <input
-                className="form-control mt-2"
-                placeholder="או הוסיפי ידנית, בפסיקים  (vintage, minimal)"
-                value={styleCustom}
-                onChange={e => setStyleCustom(e.target.value)}
-              />
-            </div>
+            <input
+              className="form-control fc-input ec-input"
+              placeholder="או הוסיפ/י ידנית, בפסיקים  (light-blue, cream)"
+              value={colorsCustom}
+              onChange={e => setColorsCustom(e.target.value)}
+            />
           </div>
 
-          <div className="card-footer d-flex gap-2">
-            <button className="btn btn-secondary" onClick={onClose} disabled={saving}>
-              ביטול
-            </button>
-            <button className="btn btn-success ms-auto" onClick={handleSave} disabled={saving}>
-              {saving ? 'שומר…' : 'שמירה'}
-            </button>
+          {/* STYLE */}
+          <div className="ec-field">
+            <label className="ec-label">סגנון</label>
+            <div className="ec-chips">
+              {STYLE_OPTIONS.map(opt => (
+                <button
+                  key={opt}
+                  type="button"
+                  className={`chip chip--style ${styleSelected.includes(opt) ? 'is-active' : ''}`}
+                  onClick={() => handleToggle(opt, styleSelected, setStyleSelected)}
+                >{opt}</button>
+              ))}
+            </div>
+            <input
+              className="form-control fc-input ec-input"
+              placeholder="או הוסף/הוסיפי ידנית, בפסיקים  (vintage, minimal)"
+              value={styleCustom}
+              onChange={e => setStyleCustom(e.target.value)}
+            />
           </div>
         </div>
+
+        <footer className="ec-footer">
+          <button className="btn btn-ghost" onClick={onClose} disabled={saving}>ביטול</button>
+          <button className="btn btn-auth-primary" onClick={handleSave} disabled={saving}>
+            {saving ? 'שומר…' : 'שמירה'}
+          </button>
+        </footer>
       </div>
     </div>
   );

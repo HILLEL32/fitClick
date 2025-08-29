@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../firebase/firebase';
 import { useNavigate, Link } from 'react-router-dom';
-import '../css/Log_in.css'; // ← קובץ העיצוב החדש
+import '../css/Log_in.css'; // קובץ העיצוב החדש
 
 export default function Log_in() {
   const [email, setEmail] = useState('');
@@ -34,8 +34,15 @@ export default function Log_in() {
   };
 
   return (
-    <div className="container login-page" dir="rtl">
-      <div className="login-card">
+    <div className="login-page" dir="rtl">
+      {/* שכבת טקסטורה ועדינות */}
+      <div className="login-overlay" />
+      {/* דקורציות בלובס */}
+      <div className="blob b1" />
+      <div className="blob b2" />
+      <div className="blob b3" />
+
+      <div className="login-card glass-card">
         <h1 className="login-title">כניסה</h1>
 
         <div className="login-form">
@@ -45,6 +52,7 @@ export default function Log_in() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             className="form-control fc-input"
+            placeholder="name@email.com"
           />
 
           <label className="form-label login-label mt-2">סיסמה</label>
@@ -53,9 +61,10 @@ export default function Log_in() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="form-control fc-input"
+            placeholder="••••••••"
           />
 
-          <div className="d-flex gap-2 flex-wrap mt-3">
+          <div className="actions">
             <button onClick={handleLogin} className="btn btn-auth-primary">
               Log In
             </button>
@@ -70,10 +79,10 @@ export default function Log_in() {
           </div>
         </div>
 
+      </div>
         <Link to="/" className="btn floating-button">
           חזרה לעמוד הראשי
         </Link>
-      </div>
     </div>
   );
 }

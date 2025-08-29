@@ -1,3 +1,5 @@
+// src/pages/UserProfile.jsx
+import { useRef } from 'react';
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -8,6 +10,28 @@ import MyStyle from './MyStyle';
 export default function UserProfile() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [typedText, setTypedText] = useState("");
+  const fullText = "כאן תמצא/י את נתוני החשבון שלך והעדפות הסגנון ששמרת.";
+  const idxRef = useRef(0);
+
+  useEffect(() => {
+    setTypedText("");       
+    idxRef.current = 0;
+
+    const interval = setInterval(() => {
+      const i = idxRef.current;
+      if (i < fullText.length) {
+        setTypedText(fullText.slice(0, i + 1));
+        idxRef.current = i + 1;
+      } else {
+        clearInterval(interval);
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+    // שים לב: אין תלותים—רצים פעם אחת בלבד
+  }, []);
+
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -19,9 +43,7 @@ export default function UserProfile() {
         }
         const userRef = doc(db, 'users', user.uid);
         const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          setUserData(userSnap.data());
-        }
+        if (userSnap.exists()) setUserData(userSnap.data());
       } catch (error) {
         console.error('Error fetching user profile:', error);
       } finally {
@@ -31,48 +53,91 @@ export default function UserProfile() {
     fetchUserProfile();
   }, []);
 
-  if (loading) return <div className="text-center my-5">טוען פרופיל...</div>;
-  if (!userData) return <div className="text-center text-danger">לא נמצא משתמש מחובר.</div>;
+  if (loading)
+    return (
+      <div className="profile-page" dir="rtl">
+        <div className="profile-overlay" />
+        <div className="blob b1" /><div className="blob b2" /><div className="blob b3" />
+        <div className="glass-card profile-loader">טוען פרופיל…</div>
+      </div>
+    );
+
+  if (!userData)
+    return (
+      <div className="profile-page" dir="rtl">
+        <div className="profile-overlay" />
+        <div className="blob b1" /><div className="blob b2" /><div className="blob b3" />
+        <div className="glass-card profile-error">לא נמצא משתמש מחובר.</div>
+      </div>
+    );
 
   return (
-    <div className="container profile-wrapper" dir="rtl">
-      <h2 className="profile-heading text-center">פרופיל המשתמש</h2>
+    <div className="profile-page" dir="rtl">
+      {/* שכבת טקסטורה ועדינות */}
+      <div className="profile-overlay" />
+      {/* דקורציות בלובס */}
+      <div className="blob b1" />
+      <div className="blob b2" />
+      <div className="blob b3" />
 
-      <div className="profile-card mx-auto">
-        <ul className="list-group profile-list">
-          <li className="list-group-item profile-item">
-            <strong>שם משתמש:</strong><br /> {userData.username}
-          </li>
-          <li className="list-group-item profile-item">
-            <strong>אימייל:</strong><br /> {auth.currentUser.email}
-          </li>
-          <li className="list-group-item profile-item">
-            <strong>טלפון:</strong><br /> {userData.phone}
-          </li>
-          <li className="list-group-item profile-item">
-            <strong>מגדר:</strong><br /> {userData.gender}
-          </li>
-          <li className="list-group-item profile-item">
-            <strong>צבע גוף:</strong><br />
-            <div
-              className="bodycolor-swatch"
-              style={{ backgroundColor: userData.bodyColor }}
-              title={userData.bodyColor}
-            />
-          </li>
-        </ul>
+      <header className="profile-hero container-xl">
+        <h1 className="profile-heading">
+          פרופיל המשתמש
+        </h1>
+        <p className="profile-sub">{typedText}</p>
+      </header>
 
-        <Link to="/edit_profile" className="btn btn-edit mt-3">ערוך פרופיל</Link>
-      </div>
+      <main className="container-xl">
+        <section className="glass-card profile-card">
+          <div className="profile-grid">
+            <div className="profile-field">
+              <div className="label">שם משתמש</div>
+              <div className="value">{userData.username || '—'}</div>
+            </div>
 
-      <div className="mt-4">
-        <h4 className="mb-3">העדפות סגנון</h4>
-        <MyStyle />
-      </div>
-      
-      <Link to="/app_home" className="btn btn-home floating-button">
-        חזרה לדף הבית
-      </Link>
+            <div className="profile-field">
+              <div className="label">אימייל</div>
+              <div className="value">{auth.currentUser?.email || '—'}</div>
+            </div>
+
+            <div className="profile-field">
+              <div className="label">טלפון</div>
+              <div className="value">{userData.phone || '—'}</div>
+            </div>
+
+            <div className="profile-field">
+              <div className="label">מגדר</div>
+              <div className="value">{userData.gender || '—'}</div>
+            </div>
+
+            {/* <div className="profile-field swatch-field">
+              <div className="label">צבע גוף</div>
+              <div className="value">
+                <span
+                  className="bodycolor-swatch"
+                  style={{ backgroundColor: userData.bodyColor || '#eee' }}
+                  title={userData.bodyColor || ''}
+                />
+                <span className="swatch-code">{userData.bodyColor || '—'}</span>
+              </div>
+            </div> */}
+          </div>
+
+          <div className="profile-actions">
+            <Link to="/edit_profile" className="fc-btn fc-btn--two">ערוך פרופיל</Link>
+            <Link to="/change_password" className="fc-btn fc-btn--one">שינוי סיסמה</Link>
+          </div>
+        </section>
+
+        <section className="glass-card style-card">
+          <h3 className="style-title">העדפות סגנון</h3>
+          <MyStyle />
+        </section>
+      </main>
+
+      <footer className="container-xl">
+        <Link to="/app_home" className="btn floating-button">חזרה לדף הבית</Link>
+      </footer>
     </div>
   );
 }

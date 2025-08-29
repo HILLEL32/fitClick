@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap');
+
+:root{
+  --brand:#B5693A; --brand-700:#8C4320;
+  --accent:#E78A90; --accent-100:#FFD6DB;
+  --bg:#F8F4F2; --surface:#FFFFFF; --text:#1E1E1E; --border:#EAD9D2;
+  --shadow-lg:0 22px 50px rgba(181,105,58,.18), 0 6px 18px rgba(0,0,0,.06);
+  --shadow-md:0 12px 28px rgba(181,105,58,.14), 0 3px 10px rgba(0,0,0,.05);
+  --r-xl:24px;
+}
+
+/* מודאל */
+.ec-modal{
+  position: fixed; inset: 0; z-index: 1050;
+  display: grid; place-items: center;
+  font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,Arial,'Noto Sans Hebrew',sans-serif;
+}
+.ec-overlay{ position:absolute; inset:0; background:rgba(0,0,0,.35); }
+
+/* בלובים */
+.ec-blobs{
+  position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(420px 420px at calc(100% + 60px) 10%, #ffd9de66 0%, transparent 60%),
+    radial-gradient(360px 360px at -60px 85%, #ffcaa566 0%, transparent 60%),
+    radial-gradient(300px 300px at 85% calc(100% + 60px), #d3a17e66 0%, transparent 60%);
+  filter: blur(18px);
+  mix-blend-mode: multiply;
+}
+
+/* כרטיס הזכוכית — פריסה אנכית כדי שהכפתורים יישארו תמיד גלויים */
+.ec-dialog{
+  position:relative; z-index:1;
+  width:min(720px, 94vw);
+  max-height:90vh;
+  display:flex; flex-direction:column;   /* חשוב! */
+  background:rgba(255,255,255,.72);
+  border:1px solid var(--border);
+  backdrop-filter:blur(10px);
+  border-radius:var(--r-xl);
+  box-shadow:var(--shadow-lg);
+  animation:ec-pop .35s ease-out both;
+}
+@keyframes ec-pop{ from{opacity:0; transform:translateY(8px) scale(.98)} to{opacity:1; transform:none} }
+
+/* כותרת ותחתית */
+.ec-header{
+  display:flex; align-items:center; gap:.6rem;
+  padding:1rem 1.2rem;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(255,255,255,.75), rgba(255,255,255,.95));
+  border-top-left-radius:var(--r-xl); border-top-right-radius:var(--r-xl);
+}
+.ec-title{ margin:0; font-weight:900; color:var(--brand-700); font-size:clamp(1.1rem,2.4vw,1.3rem); }
+.btn-ghost-sm{
+  margin-inline-start:auto;
+  border:1.5px solid #ffd6db; background:#fff5f6; color:var(--brand-700);
+  border-radius:12px; padding:.4rem .6rem; cursor:pointer;
+}
+.btn-ghost-sm:hover{ background:#ffe9ee }
+
+/* גוף המודאל — הוא זה שגולל */
+.ec-body{
+  flex:1 1 auto;
+  overflow:auto;              /* רק זה גולל */
+  padding:1rem 1.2rem .6rem;
+}
+.ec-field{ margin-bottom:1rem; }
+.ec-label{ display:block; margin-bottom:.4rem; font-weight:800; color:#6d5b54; }
+.ec-input{ margin-top:.5rem }
+.ec-help{ margin-top:.3rem; color:#8a7a75; font-size:.9rem }
+
+/* צ'יפים */
+.ec-chips{ display:flex; flex-wrap:wrap; gap:.5rem; }
+.chip{
+  border:none; cursor:pointer; font-weight:800; letter-spacing:.06em;
+  padding:.55rem .9rem; border-radius:999px;
+  background:#fff; color:#5a4137; border:1.5px solid var(--border);
+  box-shadow:var(--shadow-md); transition:.18s;
+}
+.chip:hover{ transform:translateY(-2px) }
+.chip.is-active{ color:#fff; }
+.chip--type.is-active{  background:linear-gradient(135deg,#B5693A,#E78A90); border-color:transparent; }
+.chip--color.is-active{ background:linear-gradient(135deg,#E78A90,#FF9D66); border-color:transparent; }
+.chip--style.is-active{ background:linear-gradient(135deg,#D18C5B,#B5693A); border-color:transparent; }
+
+/* תחתית — תמיד גלויה */
+.ec-footer{
+  display:flex; gap:.6rem; justify-content:flex-end; align-items:center;
+  padding:.9rem 1.2rem 1.1rem;
+  border-top:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.95));
+  border-bottom-left-radius:var(--r-xl); border-bottom-right-radius:var(--r-xl);
+}
+
+/* כפתורים (תואם שאר האפליקציה) */
+.btn{
+  border:none; cursor:pointer; font-weight:900; letter-spacing:.12em;
+  border-radius:16px; padding:.85rem 1.2rem; transition:.18s;
+  text-transform:uppercase; text-decoration:none;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.btn-ghost{
+  background:#fff5f6; color:var(--brand-700);
+  border:1.5px solid #ffd6db; box-shadow:var(--shadow-md);
+}
+.btn-ghost:hover{ background:#ffe9ee; transform:translateY(-2px) }
+.btn-auth-primary{
+  background:linear-gradient(135deg,var(--brand),var(--accent));
+  background-size:200% 200%;
+  color:#fff; box-shadow:0 12px 30px rgba(245,81,5,.22);
+}
+.btn-auth-primary:hover{ transform:translateY(-2px); box-shadow:0 16px 36px rgba(245,81,5,.28) }
+
+/* שדות טופס */
+.fc-input{
+  border:1.5px solid var(--border); border-radius:16px;
+  padding:.85rem 1rem; background:#fff; font-size:1rem;
+  outline:none; transition:border-color .18s, box-shadow .18s, transform .18s;
+  box-shadow:0 6px 16px rgba(181,105,58,.06);
+}
+.fc-input:focus{ border-color:var(--accent); box-shadow:0 12px 28px rgba(231,138,144,.25); transform:translateY(-1px); }
+
+/* מובייל */
+@media (max-width:560px){
+  .ec-dialog{ width:min(96vw,720px); }
+  .btn{ width:auto; }
+}

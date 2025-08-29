@@ -1,16 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
-
-.logo-title {
-  font-family:'albertus', 'Lobster', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Hebrew", sans-serif;
-  font-size: 1.8rem;
-  color: white; /* שיראה ברור על הרקע הכתום */
-  margin: 0;
+:root{
+  --brand:#B5693A;
+  --brand-700:#8C4320;
+  --accent:#E78A90;
+  --text:#fff;
 }
-/* @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 
+/* פס עליון מלא */
+.app-header{
+  width:100%;
+  background: var(--brand);
+  box-shadow: 0 4px 14px rgba(0,0,0,.15);
+  position:sticky; top:0; z-index:1000;
+}
+
+/* תוכן פנימי */
+.header-inner{
+  max-width: 1200px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: .6rem 1.4rem;   /* גובה קטן יותר */
+}
+
+/* לוגו */
 .logo-title{
-  font-family:'albertus','Lobster',system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Noto Sans Hebrew",sans-serif;
-  font-size:1.8rem;
-  color:#fff;
   margin:0;
-} */
+  font-size:1.4rem;
+  font-weight:900;
+  color: var(--text);
+  letter-spacing:.5px;
+}
+
+/* ניווט */
+.nav-links ul{
+  list-style:none;
+  display:flex;
+  gap:1rem;
+  margin:0; padding:0;
+}
+.nav-links a{
+  color:var(--text);
+  font-weight:600;
+  text-decoration:none;
+  transition:.2s;
+}
+.nav-links a:hover{
+  color:var(--accent);
+}

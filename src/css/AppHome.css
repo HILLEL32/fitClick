@@ -1,112 +1,150 @@
-:root {
-  --brand: #B5693A;       /* חום־כתום */
-  --brand-dark: #8C4320;  /* כהה */
-  --accent: #E78A90;      /* ורוד ביניים */
-  --accent-light: #FFD6DB;/* ורוד בהיר */
-  --bg-light: #F8F4F2;    /* רקע כללי */
-  --surface: #FFFFFF;
-  --text: #1E1E1E;
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap');
+
+:root{
+  --brand:#B5693A; --brand-700:#8C4320;
+  --accent:#E78A90; --accent-50:#FFF1F4; --accent-100:#FFD6DB;
+  --bg:#F8F4F2; --surface:#FFFFFF; --text:#1E1E1E; --border:#EAD9D2;
+  --shadow-lg:0 22px 50px rgba(181,105,58,.18), 0 6px 18px rgba(0,0,0,.06);
+  --shadow-md:0 12px 28px rgba(181,105,58,.14), 0 3px 10px rgba(0,0,0,.05);
+  --r-xl:24px; --r-lg:18px; --r-md:14px;
 }
 
-/* כותרת ראשית */
-.apphome-heading {
-  font-family: 'Miriam Libre', sans-serif;
-  font-weight: 700;
-  font-size: 2.5rem;
-  color: var(--brand-dark);
-  letter-spacing: 1px;
-  margin-bottom: 1.5rem;
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{ margin:0; font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,Arial,'Noto Sans Hebrew',sans-serif; color:var(--text) }
+
+/* עמוד מלא עם רקע חי */
+.apphome-page{
+  min-height:100dvh;
+  display:flex; flex-direction:column;
+  position:relative; overflow:hidden;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, var(--accent-100) 0%, rgba(255,214,219,0) 60%),
+    radial-gradient(900px 420px at 10% 110%, #ffe5d1 0%, rgba(255,229,209,0) 60%),
+    linear-gradient(135deg, var(--bg) 0%, #fff 100%);
 }
 
-/* רקע העמוד */
-.apphome-wrapper {
-  min-height: 100vh;
-  background: linear-gradient(135deg, var(--bg-light) 0%, var(--accent-light) 100%);
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+/* שכבת טקסטורה עדינה */
+.apphome-overlay{
+  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.08;
+  background-image:url("https://www.transparenttextures.com/patterns/fabric-of-squares.png");
+  animation:floatTexture 30s linear infinite;
+}
+@keyframes floatTexture{ from{transform:translate(0,0)} to{transform:translate(120px,80px)} }
+
+/* בלובים זזים */
+.blob{
+  position:absolute; filter:blur(18px); opacity:.35; z-index:0; pointer-events:none;
+  mix-blend-mode:multiply; border-radius:50%;
+}
+.b1{ width:520px; height:520px; background:#ffd9de; right:-160px; top:5%; animation:blob 18s ease-in-out infinite }
+.b2{ width:380px; height:380px; background:#ffcaa5; left:-160px; bottom:10%; animation:blob 22s ease-in-out infinite reverse }
+.b3{ width:320px; height:320px; background:#d3a17e; right:10%; bottom:-120px; animation:blob 26s ease-in-out infinite }
+@keyframes blob{ 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(20px,-30px) scale(1.08)} }
+
+/* קונטיינר רחב */
+.container-xl{ width:min(1100px, 94vw); margin:0 auto; position:relative; z-index:1 }
+
+/* אזור כותרת עליונה */
+.apphome-hero{
+  text-align:center;
+  margin-top:min(3vh, 24px);
+  margin-bottom:clamp(1rem, 2.5vw, 2rem);
+}
+.apphome-heading{
+  margin:0;
+  font-weight:900;
+  font-size: clamp(1.6rem, 4.8vw, 3rem);
+  color:var(--brand-700);
+  letter-spacing:.5px;
+  text-shadow:0 8px 22px rgba(231,138,144,.35);
+  animation:popIn .7s ease-out both;
+}
+.brand{
+  color:var(--accent);
+  filter:drop-shadow(0 8px 20px rgba(231,138,144,.35));
+}
+.apphome-sub{
+  margin:.4rem auto 0;
+  max-width: 780px;
+  color:#6d5b54;
+  font-size:clamp(.95rem, 2.2vw, 1.1rem);
+  line-height:1.55;
+  animation:fadeInUp .9s ease .15s both;
 }
 
-/* כרטיס */
-.apphome-card {
-  background: var(--surface);
-  border-radius: 24px;
-  padding: 3rem 2.5rem;
-  box-shadow: 0 20px 40px rgba(181, 105, 58, 0.15), 0 4px 12px rgba(0, 0, 0, 0.08);
-  max-width: 600px;
-  width: 100%;
-  border: 1px solid var(--accent-light);
+/* כרטיס זכוכית מרכזי */
+.glass-card{
+  background:rgba(255,255,255,.62);
+  border:1px solid var(--border);
+  backdrop-filter: blur(8px);
+  border-radius:var(--r-xl);
+  box-shadow:var(--shadow-lg);
+  padding:clamp(1.2rem, 3.2vw, 2rem);
+  animation:popIn .7s ease-out both;
 }
+@keyframes popIn{ from{opacity:0; transform:translateY(10px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
+@keyframes fadeInUp{ from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:translateY(0)} }
 
-/* פס דקורטיבי קטן */
-.apphome-title {
-  height: 6px;
-  width: 120px;
-  margin: 0 auto 2rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--brand), var(--accent));
+.apphome-card{
+  margin-top: clamp(.5rem, 1.6vw, 1rem);
+}
+.apphome-title{
+  margin:0 0 1rem;
+  text-align:center;
+  font-weight:800;
+  color:#5a4137;
+  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
 }
 
 /* כפתורים */
-.fc-btn {
-  background-color: var(--brand);
-  color: #FFFFFF !important;
-  border: none;
-  border-radius: 16px;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-decoration: none;
+.apphome-actions{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: clamp(.6rem, 2vw, 1rem);
+}
+@media (max-width:860px){
+  .apphome-actions{ grid-template-columns: 1fr }
+}
+
+.fc-btn{
+  border:none;
+  cursor:pointer;
+  font-weight:900;
+  letter-spacing:.12em;
+  border-radius:16px;
+  padding:1rem 1.4rem;
+  transition:.18s;
+  text-transform:uppercase;
+  text-decoration:none;
+  display:inline-flex; align-items:center; justify-content:center;
+  box-shadow:var(--shadow-md);
+  color:#fff !important;
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  background-size:200% 200%;
+  animation:buttonGradient 5s ease infinite, floatUp 3s ease-in-out infinite alternate;
+}
+
+.typewriter {
   display: inline-block;
-  width: 280px;
-  text-align: center;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
-  box-shadow: 0 8px 18px rgba(181, 105, 58, 0.3);
+  border-left: 3px solid var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  animation: blinkCursor 0.7s steps(44) infinite normal;
 }
 
-/* Hover/Focus */
-.fc-btn:hover,
-.fc-btn:focus-visible {
-  background: var(--brand-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(140, 67, 32, 0.4);
+@keyframes blinkCursor {
+  from { border-color: transparent; }
+  to   { border-color: var(--accent); }
 }
 
-.fc-btn:active {
-  background: var(--brand);
-  transform: translateY(0);
-  box-shadow: 0 6px 14px rgba(181, 105, 58, 0.3);
-}
+.fc-btn:hover{ transform:translateY(-3px); box-shadow:0 16px 36px rgba(245,81,5,.28) }
+@keyframes buttonGradient{ from{background-position:0% 50%} to{background-position:100% 50%} }
+@keyframes floatUp{ from{transform:translateY(0)} to{transform:translateY(-6px)} }
 
-/* רספונסיבי */
-@media (max-width: 420px) {
-  .fc-btn { width: 100%; }
-  .apphome-card { padding: 2rem 1.5rem; }
-}
-
-.apphome-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;   /* רווח גדול וברור בין הכפתורים */
-  align-items: center;
-}
-
-.fc-btn {
-  background-color: var(--brand);
-  color: #FFFFFF !important;
-  border: none;
-  border-radius: 16px;
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-block;
-  width: 280px;
-  text-align: center;
-  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
-  box-shadow: 0 8px 18px rgba(181, 105, 58, 0.3);
-  margin: 0;  /* נאפס כדי שהרווח יישלט רק ע"י gap */
-}
+/* גיווני צבע לפי פעולה (אופציונלי) */
+.fc-btn--one{ background:linear-gradient(135deg, #B5693A, #E78A90) }
+.fc-btn--two{ background:linear-gradient(135deg, #E78A90, #FF9D66) }
+.fc-btn--three{ background:linear-gradient(135deg, #D18C5B, #B5693A) }
+.fc-btn:focus{ outline:2px solid #ffd6db; outline-offset:2px }
