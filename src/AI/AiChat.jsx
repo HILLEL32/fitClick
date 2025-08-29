@@ -628,7 +628,7 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
           <div className="mt-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5 className="aichat-subheading">הסט שנבחר:</h5>
-              <div className="d-flex gap-2">
+              {/* <div className="d-flex gap-2">
                 {picked.confidence !== undefined && (
                   <span className="badge aichat-badge aichat-badge-info">
                     ביטחון: {Math.round(picked.confidence * 100)}%
@@ -646,7 +646,7 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                     התאמת צבעים: {picked.colorMatch}
                   </span>
                 )}
-              </div>
+              </div> */}
             </div>
 
             <div className="row">
