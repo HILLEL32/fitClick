@@ -17,17 +17,18 @@ export default function Home() {
       {/* Features Section */}
 
       <section className="intro-text">
-             <div className="typewriter"> <h3>fitClick – היועץ האישי שלך לסטייל</h3> </div> <br/>
-             <div className="typewriter"> <h4>נמאס לך להתלבט מול הארון?</h4> </div>
-            <div className="typewriter"> <h4>האפליקציה שלנו מזהה את הבגדים שהעלית ומציעה שילובים חכמים לפי צבעים וסגנון</h4></div>  
-            <div className="typewriter">  <h4>כל מה שנשאר לך זה לבחור את השילוב האהוב עליך ולהרגיש טוב עם עצמך!</h4></div>  
-            <div className="typewriter"> <h4>אז למה את/ה מחכה? הצטרף/י אלינו עכשיו ותתחיל/י ליהנות מהסטייל החדש שלך!</h4></div>  
-            <div className="typewriter"> <h4>fitClick - כי כל יום הוא הזדמנות להיראות ולהרגיש נהדר!</h4></div>  
+        <div className="typewriter"> <h3>fitClick – היועץ האישי שלך לסטייל</h3> </div> <br />
+        <div className="typewriter"> <h4>נמאס לך להתלבט מול הארון?</h4> </div>
+        <div className="typewriter"> <h4>האפליקציה שלנו מזהה את הבגדים שהעלית ומציעה שילובים חכמים לפי צבעים וסגנון</h4></div>
+        <div className="typewriter"> <h4>כל מה שצריך לעשות זה להעלות פריטים מארון הבגדים ולכתוב מה באלך ללבוש היום!</h4></div>
+        <div className="typewriter">  <h4>המערכת תתאים לך לוק מהחלומות לפי העדפות סגנון אישי ובקשת לוק</h4></div>
+        <div className="typewriter"> <h4>אז למה את/ה מחכה? הצטרף/י אלינו עכשיו ותתחיל/י ליהנות מהסטייל החדש שלך!</h4></div>
+        <div className="typewriter"> <h4>fitClick - כי כל יום הוא הזדמנות להיראות ולהרגיש נהדר!</h4></div>
       </section>
 
 
 
-      
+
     </div>
   );
 }

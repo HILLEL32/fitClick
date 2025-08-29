@@ -1,0 +1,187 @@
+:root{
+  --brand: #B5693A;        /* חום־כתום */
+  --brand-dark: #8C4320;   /* כהה */
+  --accent: #E78A90;       /* ורוד ביניים */
+  --accent-light: #FFD6DB; /* ורוד בהיר */
+  --bg-light: #F8F4F2;     /* רקע */
+  --surface: #FFFFFF;
+  --text: #1E1E1E;
+  --border: #EAD9D2;
+
+  --focus: #FFB6C1;
+  --shadow-lg: 0 22px 50px rgba(181,105,58,0.18), 0 4px 18px rgba(0,0,0,0.06);
+  --shadow-md: 0 12px 28px rgba(181,105,58,0.14), 0 3px 10px rgba(0,0,0,0.05);
+  --radius-xl: 18px;
+  --radius-lg: 14px;
+  --radius-md: 12px;
+}
+
+/* רקע כללי + מירכוז קונטיינר */
+.aichat-wrapper{
+  background:
+    radial-gradient(900px 420px at 70% -10%, var(--accent-light) 0%, rgba(255,214,219,0) 60%),
+    linear-gradient(135deg, var(--bg-light) 0%, #fff 100%);
+  min-height: 100dvh;
+  padding: 2.5rem 0 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+.aichat-container{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: 2rem 1.4rem;
+  max-width: 960px;
+}
+
+/* כותרות */
+.aichat-heading{
+  font-family: 'Miriam Libre', system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Noto Sans Hebrew", sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--brand-dark);
+  letter-spacing: .3px;
+}
+.aichat-subheading{ font-weight: 700; color: var(--brand-dark); }
+.aichat-subheading-sm{ font-weight: 700; color: var(--brand); }
+
+/* קלט */
+.aichat-input-block{
+  background: #fff7f8;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+}
+.aichat-label{ font-weight: 700; color: var(--brand-dark); }
+.aichat-input{
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border);
+  outline: none;
+  box-shadow: none;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .12s ease;
+}
+.aichat-input:focus{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(231,138,144,.18);
+  transform: translateY(-1px);
+}
+.aichat-hint{ color: #7b5d52; }
+
+/* כפתור שליחה */
+.btn-ai{
+  background: transparent;
+  color: var(--brand-dark) !important;
+  border: 2px solid var(--brand);
+  border-radius: 14px;
+  padding: .65rem 1.3rem;
+  font-weight: 800;
+  letter-spacing: .2px;
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease, color .18s ease, border-color .18s ease;
+}
+.btn-ai:hover,
+.btn-ai:focus-visible{
+  background: var(--brand);
+  color: #fff !important;
+  border-color: var(--brand);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(181,105,58,0.25);
+}
+.btn-ai:disabled{ opacity: .6; cursor: not-allowed; }
+
+/* סטטוסים והתראות */
+.aichat-status{ color: var(--brand-dark); font-weight: 600; }
+.aichat-alert{
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  padding: .85rem 1rem;
+  box-shadow: var(--shadow-md);
+  background: #fff;
+  color: var(--text);
+}
+.aichat-alert-warn{ background: #fff2f2; border-color: #ffd6db; }
+.aichat-alert-danger{ background: #ffe9ec; border-color: #ffc2cc; color: #9b2333; }
+.aichat-alert-info{ background: #fff9f0; border-color: #ffe1b6; }
+.aichat-alert-secondary{ background: #f7f2f1; }
+
+/* כרטיסים */
+.aichat-card{
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.aichat-card:hover{ transform: translateY(-2px); box-shadow: 0 16px 32px rgba(181,105,58,0.14), 0 4px 12px rgba(0,0,0,0.06); }
+.aichat-card-header{
+  background: #fff5f6;
+  border-bottom: 1px solid var(--border);
+  color: var(--brand-dark);
+  font-weight: 700;
+}
+.aichat-card-img{
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(181,105,58,0.12);
+}
+.aichat-card-fallback{
+  width: 160px;
+  height: 160px;
+  display: grid;
+  place-items: center;
+  background: #f0f0f0;
+  color: #999;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+.aichat-meta{ color: #6d5b54; }
+
+/* Extras */
+.aichat-extra-tile{
+  border: 1px solid var(--border);
+  padding: .4rem .55rem;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(181,105,58,0.10);
+}
+.aichat-extra-img{ width: 80px; height: 80px; object-fit: cover; display: block; }
+.aichat-extra-fallback{ width: 80px; height: 80px; background: #f1f1f1; display: grid; place-items: center; color: #888; }
+
+/* Reason */
+.aichat-reason{
+  background: #fff7f8;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+  color: #4a3b36;
+}
+
+/* Badges */
+.aichat-badge{
+  border-radius: 999px;
+  padding: .45rem .75rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+.aichat-badge-info{ background: #ffe6e9; color: var(--brand-dark); border-color: #ffcbd1; }
+.aichat-badge-success{ background: #e8ffe8; color: #256b2c; border-color: #baf5ba; }
+.aichat-badge-warn{ background: #fff6e0; color: #7a5a00; border-color: #ffe2a6; }
+.aichat-badge-danger{ background: #ffe6ea; color: #8f1f2c; border-color: #ffc2cc; }
+
+/* פוקוס */
+:where(.aichat-wrapper) :focus-visible{
+  outline: 3px solid rgba(231,138,144,.45);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* מובייל */
+@media (max-width: 480px){
+  .aichat-container{ padding: 1.25rem 1rem; }
+  .aichat-heading{ font-size: 1.6rem; }
+}

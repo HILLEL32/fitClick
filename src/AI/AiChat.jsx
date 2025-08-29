@@ -5,6 +5,7 @@ import { askOpenAI } from "../AI/askOpenAI.jsx";
 import { getWardrobe } from "../api/wardrobeApi";
 import { getUserStyle } from "../api/UserApi";
 import { useLocation } from "react-router-dom";
+import "../css/AiChat.css"; // <<< חדש: עיצוב ורוד-כתום-חום
 
 // === Helpers (module-scope) ===
 
@@ -80,13 +81,112 @@ const classifySlot = (item) => {
   const has = (...keys) => types.some(a => keys.some(k => a.includes(k)));
 
   if (has("dress")) return "top"; // שמלה תופסת top ומבטלת bottom
-  if (has("jacket","coat","cardigan","blazer","overcoat")) return "outerwear";
-  if (has("shirt","top","blouse","t-shirt","tee","hoodie","sweater")) return "top";
-  if (has("pants","jeans","trousers","skirt","shorts","chinos")) return "bottom";
-  if (has("shoes","sneakers","heels","boots","sandals")) return "shoes";
-  if (has("hat","cap","beanie","beret","headscarf","kippah","kipah")) return "headwear";
+  if (has("jacket", "coat", "cardigan", "blazer", "overcoat")) return "outerwear";
+  if (has("shirt", "top", "blouse", "t-shirt", "tee", "hoodie", "sweater")) return "top";
+  if (has("pants", "jeans", "trousers", "skirt", "shorts", "chinos")) return "bottom";
+  if (has("shoes", "sneakers", "heels", "boots", "sandals")) return "shoes";
+  if (has("hat", "cap", "beanie", "beret", "headscarf", "kippah", "kipah")) return "headwear";
   return "extras";
 };
+
+// === Color base & normalization helpers ===
+const BASE_COLORS = {
+  white: ["white", "ivory", "offwhite", "off-white", "cream", "linen", "bone", "porcelain", "eggshell"],
+  black: ["black", "charcoal", "eerie", "jet", "ink", "onyx"],
+  blue: ["blue", "navy", "denim", "cobalt", "azure", "teal", "skyblue", "sky-blue", "babyblue"],
+  green: ["green", "olive", "mint", "emerald", "sage", "pine", "pinetree", "forest"],
+  red: ["red", "maroon", "burgundy", "crimson", "scarlet"],
+  yellow: ["yellow", "mustard", "gold", "golden"],
+  pink: ["pink", "blush", "rose", "magenta", "fuchsia", "charm pink", "soft pink"],
+  purple: ["purple", "lavender", "violet", "lilac"],
+  brown: ["brown", "beige", "tan", "camel", "khaki", "sand"],
+  gray: ["gray", "grey", "silver", "slate", "ash"]
+};
+
+function cleanColorToken(c) {
+  return String(c || "")
+    .toLowerCase()
+    .replace(/[^a-zא-ת\s-]/g, "")
+    .replace(/[\s-]+/g, "")
+    .trim();
+}
+
+function normalizeColorBase(c) {
+  const token = cleanColorToken(c);
+  if (!token) return null;
+
+  for (const base of Object.keys(BASE_COLORS)) {
+    if (token === base) return base;
+  }
+  for (const [base, variants] of Object.entries(BASE_COLORS)) {
+    if (variants.some(v => {
+      const t = cleanColorToken(v);
+      return token === t || token.includes(t) || t.includes(token);
+    })) return base;
+  }
+
+  if (/כהה|dark/.test(token)) return "black";
+  if (/בהיר|light/.test(token)) return "white";
+  return null;
+}
+
+function expandItemColorsWithBase(colors) {
+  const arr = Array.isArray(colors) ? colors : (colors ? [colors] : []);
+  const out = new Set();
+  for (const c of arr) {
+    const original = String(c || "").toLowerCase();
+    if (original) out.add(original);
+    const base = normalizeColorBase(c);
+    if (base) out.add(base);
+  }
+  return Array.from(out);
+}
+
+const COLOR_SIMILARITY = {
+  pink: ["red", "purple", "white", "beige"],
+  red: ["pink", "brown", "purple"],
+  blue: ["gray", "white", "black"],
+  green: ["blue", "brown", "gray"],
+  yellow: ["beige", "brown", "white"],
+  purple: ["pink", "blue", "black"],
+  brown: ["beige", "yellow", "black"],
+  gray: ["black", "blue", "white"],
+  black: ["gray", "navy", "brown"],
+  white: ["beige", "gray", "pink"]
+};
+
+function isDarkColor(c) {
+  const base = normalizeColorBase(c);
+  if (["black", "navy", "brown", "gray", "purple", "green", "red"].includes(base)) return true;
+  const s = String(c || "").toLowerCase();
+  if (/black|gray|grey|navy|brown|dark/.test(s)) return true;
+  return false;
+}
+
+function isLightColor(c) {
+  const base = normalizeColorBase(c);
+  if (["white", "beige", "yellow", "pink", "blue"].includes(base)) return true;
+  const s = String(c || "").toLowerCase();
+  if (/white|ivory|beige|cream|light|yellow|pink/.test(s)) return true;
+  return false;
+}
+
+// === Filter wardrobe by occasion (e.g. sport) ===
+function filterWardrobeForOccasion(wardrobe, requirements) {
+  const lowerReqs = (requirements.occasions || []).map(r => String(r).toLowerCase());
+  if (lowerReqs.includes("sport")) {
+    return wardrobe.map(item => {
+      const styles = (item.style || []).map(s => String(s).toLowerCase());
+      const isSport = styles.some(s => s.includes("sport") || s.includes("athletic") || s.includes("gym") || s.includes("run"));
+      const slot = classifySlot(item);
+      if (["top", "bottom", "shoes"].includes(slot)) {
+        return isSport ? item : null;
+      }
+      return item;
+    }).filter(Boolean);
+  }
+  return wardrobe;
+}
 
 // === Component ===
 export default function AiChat({ anchorItemId: anchorFromProps }) {
@@ -192,11 +292,10 @@ UserStyle:
   // בניית פרומפט משופר (כולל כובע+נעליים ועוגן)
   const buildPrompt = () => {
     const requestedSeason = inferSeasonFromPrompt(prompt);
-    const currentSeason = getCurrentSeason();
     const compact = wardrobe.map((it) => ({
       id: it.id,
       type: toArr(it.type),
-      colors: toArr(it.colors),
+      colors: expandItemColorsWithBase(it.colors),
       style: toArr(it.style),
       gender: it.gender || null,
       length: toArr(it.length),
@@ -218,10 +317,13 @@ UserStyle:
 1) אם המשתמש ביקש צבעים מפורשים, התאימי בדיוק. אין להחליף בצבע "דומה".
 2) אם צבע נדרש לא קיים בארון – החזר/י null בסלוט הרלוונטי והסבר/י בקצרה.
 3) התאמת צבעים גוברת על התאמת סגנון.
+4) אם אין צבע מדויק בארון למה שהמשתמש ביקש, בחר/י את הצבע הקרוב ביותר והוסף/י ל-"violations" טקסט: 
+closestColor: requested=<requestedBase>, chosen=<chosenBase>.
+5) אם המשתמש מבקש לוק ש"מורכב מצבעים" מסוימים (למשל "לוק ורוד"), לפחות שני פריטים שונים בלוק (top, bottom או shoes) חייבים להיות בצבע המבוקש. אם זה לא אפשרי, החזר/י את מה שיש וציין/י את החסר ב-"missingItems".
 
 חוקי עונות:
-- יש שדה requestedSeason (winter/summer/autumn/spring). אם קיים – הוא מחייב.
-- אם לא קיים, אפשר לשקול את העונה הנוכחית באופן רופף: "${currentSeason}".
+- אם המשתמש ביקש עונה מפורשות (winter/summer/autumn/spring) – היא מחייבת.
+- אם המשתמש לא ביקש עונה – אל תוסיף עונה בעצמך.
 
 מיפוי עונות להעדפות:
 - winter: coat, jacket, sweater, hoodie, cardigan, turtleneck, wool pants, boots, scarf, beanie, gloves.
@@ -231,6 +333,9 @@ UserStyle:
 
 אילוצים:
 - אין לשלב "sport" עם "elegant" אלא אם המשימה דורשת.
+- אם occasion= "sport":
+  * בחר/י top, bottom ו-shoes אך ורק מפריטים שסגנונם כולל "sport".
+  * אם אין פריטים כאלה בארון, החזר/י null בסלוטים המתאימים והוסף/י אותם ל-"missingItems".
 - השתמש/י אך ורק ב-IDs שקיימים ב-wardrobe.
 
 ${styleSummary}
@@ -267,7 +372,9 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
   "reason": "הסבר קצר בעברית (3–5 משפטים) על בחירת הפריטים, התאמת צבעים ועונה.",
   "confidence": 0.85,
   "colorMatch": "perfect|partial|none",
-  "missingItems": ["רשימת פריטים/צבעים שביקש המשתמש ולא נמצאו"]
+  "missingItems": ["רשימת פריטים/צבעים שביקש המשתמש ולא נמצאו"],
+    "violations": ["closestColor: requested=<..>, chosen=<..>"]
+
 }
 
 בחר/י shoes/headwear רק אם הם משפרים את הסט (אחרת החזר/י null).
@@ -315,6 +422,8 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
         confidence: typeof parsed.confidence === "number" ? parsed.confidence : 0.5,
         colorMatch: parsed.colorMatch || "unknown",
         missingItems: Array.isArray(parsed.missingItems) ? parsed.missingItems : [],
+        violations: Array.isArray(parsed.violations) ? parsed.violations : [],
+
       };
 
       return cleaned;
@@ -389,6 +498,24 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
       }
     }
 
+    if (userRequirements.tone === "dark") {
+      const anyDark = selectedItems.some(({ item }) =>
+        toArr(item.colors).some(isDarkColor)
+      );
+      if (!anyDark) {
+        warnings.push("התבקשה פלטה 'כהה' — לא נבחר אף פריט בצבע כהה.");
+      }
+    }
+
+    if (userRequirements.tone === "light") {
+      const anyLight = selectedItems.some(({ item }) =>
+        toArr(item.colors).some(isLightColor)
+      );
+      if (!anyLight) {
+        warnings.push("התבקשה פלטה 'בהירה' — לא נבחר אף פריט בצבע בהיר.");
+      }
+    }
+
     return warnings;
   };
 
@@ -449,195 +576,153 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
 
   return (
     <div className="container mt-5" dir="rtl">
-      <h2 className="mb-4 text-center">יועץ האופנה החכם</h2>
+      <div className="container aichat-container mt-5">
+        <h2 className="mb-4 text-center">יועץ האופנה החכם</h2>
 
-      {/* בחירת מודל */}
-      <div className="mb-3">
-        <label className="form-label">בחר מודל AI:</label>
-        <select
-          className="form-control"
-          value={selectedModel}
-          onChange={(e) => setSelectedModel(e.target.value)}
-          disabled={loadingAsk}
+        {/* קלט המשתמש */}
+        <div className="mb-3 aichat-input-block">
+          <label className="form-label aichat-label">מה תרצה שה-AI יתאים לך?</label>
+          <input
+            type="text"
+            className="form-control aichat-input"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            placeholder="לדוגמה: לוק חורפי לעבודה: חולצה לבנה ומכנס כהה"
+            disabled={loadingAsk}
+          />
+          <div className="form-text aichat-hint">
+            טיפ: ציין צבעים ספציפיים ועונה (למשל: “לוק חורפי / קייצי”) לקבלת התאמה טובה יותר.
+          </div>
+        </div>
+
+        <button
+          className="btn btn-ai"
+          onClick={onAsk}
+          disabled={loadingAsk || loadingWardrobe || wardrobe.length === 0}
         >
-          {availableModels.map((model) => (
-            <option key={model.id} value={model.id}>
-              {model.name}
-            </option>
-          ))}
-        </select>
-      </div>
+          {loadingAsk ? "מבקש מה-AI..." : "בקש לוק מהארון שלי"}
+        </button>
 
-      {/* קלט המשתמש */}
-      <div className="mb-3">
-        <label className="form-label">מה תרצה שה-AI יתאים לך?</label>
-        <input
-          type="text"
-          className="form-control"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder="לדוגמה: לוק חורפי לעבודה: חולצה לבנה ומכנס כהה"
-          disabled={loadingAsk}
-        />
-        <div className="form-text">
-          טיפ: ציין צבעים ספציפיים ועונה (למשל: “לוק חורפי / קייצי”) לקבלת התאמה טובה יותר.
-        </div>
-      </div>
+        {/* סטטוסים */}
+        {loadingWardrobe && <div className="mt-3 aichat-status">טוען את הארון...</div>}
+        {err && <div className="alert aichat-alert aichat-alert-danger mt-3">{err}</div>}
+        {!loadingWardrobe && wardrobe.length === 0 && !err && (
+          <div className="alert aichat-alert aichat-alert-warn mt-3">לא נמצאו פריטים בארון שלך.</div>
+        )}
 
-      <button
-        className="btn btn-primary"
-        onClick={onAsk}
-        disabled={loadingAsk || loadingWardrobe || wardrobe.length === 0}
-      >
-        {loadingAsk ? "מבקש מה-AI..." : "בקש לוק מהארון שלי"}
-      </button>
+        {/* אזהרות ולידציה */}
+        {validationWarnings.length > 0 && (
+          <div className="aichat-alert aichat-alert-warn mt-3">
+            <strong>⚠️ שים לב:</strong>
+            <ul className="mb-0 mt-2">
+              {validationWarnings.map((w, idx) => (
+                <li key={idx}>{w}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      {/* סטטוסים */}
-      {loadingWardrobe && <div className="mt-3">טוען את הארון...</div>}
-      {err && <div className="alert alert-danger mt-3">{err}</div>}
-      {!loadingWardrobe && wardrobe.length === 0 && !err && (
-        <div className="alert alert-warning mt-3">לא נמצאו פריטים בארון שלך.</div>
-      )}
-
-      {/* אזהרות ולידציה */}
-      {validationWarnings.length > 0 && (
-        <div className="alert alert-warning mt-3">
-          <strong>⚠️ שים לב:</strong>
-          <ul className="mb-0 mt-2">
-            {validationWarnings.map((w, idx) => (
-              <li key={idx}>{w}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* תשובה גולמית (דיבוג) */}
-      {answerRaw && (
-        <details className="mt-3">
-          <summary>תשובת AI גולמית (לדיבוג)</summary>
-          <pre className="p-2 bg-light border rounded" style={{ whiteSpace: "pre-wrap" }}>
-            {answerRaw}
-          </pre>
-        </details>
-      )}
-
-      {/* תצוגת הסט שנבחר */}
-      {picked && (
-        <div className="mt-4">
-          <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5>הסט שנבחר:</h5>
-            <div className="d-flex gap-2">
-              {picked.confidence !== undefined && (
-                <span className="badge bg-info">
-                  ביטחון: {Math.round(picked.confidence * 100)}%
-                </span>
-              )}
-              {picked.colorMatch && (
-                <span
-                  className={`badge ${
-                    picked.colorMatch === "perfect"
-                      ? "bg-success"
-                      : picked.colorMatch === "partial"
-                      ? "bg-warning"
-                      : "bg-danger"
-                  }`}
-                >
-                  התאמת צבעים: {picked.colorMatch}
-                </span>
-              )}
+        {/* תצוגת הסט שנבחר */}
+        {picked && (
+          <div className="mt-4">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="aichat-subheading">הסט שנבחר:</h5>
+              <div className="d-flex gap-2">
+                {picked.confidence !== undefined && (
+                  <span className="badge aichat-badge aichat-badge-info">
+                    ביטחון: {Math.round(picked.confidence * 100)}%
+                  </span>
+                )}
+                {picked.colorMatch && (
+                  <span
+                    className={`badge aichat-badge ${
+                      picked.colorMatch === "perfect"
+                        ? "aichat-badge-success"
+                        : picked.colorMatch === "partial"
+                        ? "aichat-badge-warn"
+                        : "aichat-badge-danger"
+                    }`}
+                  >
+                    התאמת צבעים: {picked.colorMatch}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
 
-          <div className="row">
-            {Object.entries(picked.selected)
-              .filter(([slot, id]) => slot !== "extras" && id && byId[id])
-              .map(([slot, id]) => {
-                const item = byId[id];
-                return (
-                  <div className="col-md-3 mb-3" key={slot}>
-                    <div className="card h-100">
-                      <div className="card-header text-center">
-                        <strong>{slot}</strong>
-                      </div>
-                      <div className="card-body text-center">
-                        {getImageDataUrl(item) ? (
-                          <img
-                            src={getImageDataUrl(item)}
-                            alt={slot}
-                            className="img-fluid rounded mb-2"
-                            style={{
-                              width: 160,
-                              height: 160,
-                              objectFit: "cover",
-                              border: "2px solid #dee2e6",
-                            }}
-                          />
-                        ) : (
-                          <div
-                            className="d-flex align-items-center justify-content-center bg-light rounded mb-2"
-                            style={{ width: 160, height: 160 }}
-                          >
-                            <span className="text-muted">אין תמונה</span>
-                          </div>
-                        )}
-                        <div className="small">
-                          <div><strong>סוג:</strong> {(item.type || []).join(", ") || "—"}</div>
-                          <div><strong>צבעים:</strong> {(item.colors || []).join(", ") || "—"}</div>
-                          <div><strong>סגנון:</strong> {(item.style || []).join(", ") || "—"}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-          </div>
-
-          {/* Extras */}
-          {picked.selected?.extras && picked.selected.extras.length > 0 && (
-            <div className="mt-3">
-              <h6>אקססוריז נוספים:</h6>
-              <div className="ד-flex flex-wrap gap-2">
-                {picked.selected.extras.map((id) => {
+            <div className="row">
+              {Object.entries(picked.selected)
+                .filter(([slot, id]) => slot !== "extras" && id && byId[id])
+                .map(([slot, id]) => {
                   const item = byId[id];
-                  if (!item) return null;
-                  const url = getImageDataUrl(item);
                   return (
-                    <div key={id} className="border rounded p-2 text-center">
-                      {url ? (
-                        <img
-                          src={url}
-                          alt="extra"
-                          className="rounded"
-                          style={{ width: 80, height: 80, objectFit: "cover" }}
-                        />
-                      ) : (
-                        <div
-                          className="d-flex align-items-center justify-content-center bg-light rounded"
-                          style={{ width: 80, height: 80 }}
-                        >
-                          <span className="small text-muted">אין תמונה</span>
+                    <div className="col-md-3 mb-3" key={slot}>
+                      <div className="card aichat-card h-100">
+                        <div className="card-header aichat-card-header text-center">
+                          <strong>{slot}</strong>
                         </div>
-                      )}
-                      <div className="small mt-1">{(item.type || []).join(", ") || "פריט"}</div>
+                        <div className="card-body text-center">
+                          {getImageDataUrl(item) ? (
+                            <img
+                              src={getImageDataUrl(item)}
+                              alt={slot}
+                              className="img-fluid rounded mb-2 aichat-card-img"
+                            />
+                          ) : (
+                            <div className="aichat-card-fallback rounded mb-2">
+                              <span className="text-muted">אין תמונה</span>
+                            </div>
+                          )}
+                          <div className="small aichat-meta">
+                            <div><strong>סוג:</strong> {(item.type || []).join(", ") || "—"}</div>
+                            <div><strong>צבעים:</strong> {(item.colors || []).join(", ") || "—"}</div>
+                            <div><strong>סגנון:</strong> {(item.style || []).join(", ") || "—"}</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
+            </div>
+
+            {/* Extras */}
+            {picked.selected?.extras && picked.selected.extras.length > 0 && (
+              <div className="mt-3">
+                <h6 className="aichat-subheading-sm">אקססוריז נוספים:</h6>
+                <div className="d-flex flex-wrap gap-2">
+                  {picked.selected.extras.map((id) => {
+                    const item = byId[id];
+                    if (!item) return null;
+                    const url = getImageDataUrl(item);
+                    return (
+                      <div key={id} className="aichat-extra-tile text-center">
+                        {url ? (
+                          <img
+                            src={url}
+                            alt="extra"
+                            className="rounded aichat-extra-img"
+                          />
+                        ) : (
+                          <div className="aichat-extra-fallback rounded">אין תמונה</div>
+                        )}
+                        <div className="small mt-1">{(item.type || []).join(", ") || "פריט"}</div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* נימוק */}
-          {picked.reason && (
-            <div className="mt-4">
-              <h6>למה הלוק הזה מתאים?</h6>
-              <div className="p-3 bg-light border rounded">{picked.reason}</div>
-            </div>
-          )}
+            {/* נימוק */}
+            {picked.reason && (
+              <div className="mt-4">
+                <h6 className="aichat-subheading-sm">למה הלוק הזה מתאים?</h6>
+                <div className="aichat-reason">{picked.reason}</div>
+              </div>
+            )}
 
-          {/* פריטים חסרים */}
-          {picked.missingItems && picked.missingItems.length > 0 && (
-            <div className="mt-3">
-              <div className="alert alert-info">
+            {/* פריטים חסרים */}
+            {picked.missingItems && picked.missingItems.length > 0 && (
+              <div className="mt-3 aichat-alert aichat-alert-info">
                 <strong>פריטים שלא נמצאו בארון:</strong>
                 <ul className="mb-0 mt-2">
                   {picked.missingItems.map((item, idx) => (
@@ -645,10 +730,22 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                   ))}
                 </ul>
               </div>
-            </div>
-          )}
-        </div>
-      )}
+            )}
+
+            {/* הערות התאמה / חריגות */}
+            {picked.violations && picked.violations.length > 0 && (
+              <div className="mt-3 aichat-alert aichat-alert-secondary">
+                <strong>הערות התאמה/חריגות:</strong>
+                <ul className="mb-0 mt-2">
+                  {picked.violations.map((v, idx) => (
+                    <li key={idx}>{v}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

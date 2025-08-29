@@ -16,7 +16,7 @@ import AddClothing from './features/clothing/AddClothing'
 import ClothingAIUpload from './features/clothing/ClothingAIUpload'
 import AppHome from './appPages/AppHome'
 import Wardrobe from './features/clothing/Wardrobe'
-import MatchingClothes from './features/clothing/MatchingClothes'
+// import MatchingClothes from './features/clothing/MatchingClothes'
 import EditClothing from './features/clothing/EditClothing'
 import ChangePassword from './settings/ChangePassword'
 import MyStyle from './settings/MyStyle'
@@ -44,7 +44,7 @@ function App() {
           <Route path="/app_home" element={<AppHome />} />
           <Route path="/wardrobe" element={<Wardrobe />} />
           {/* <Route path="/match_clothes" element={<MatchingClothes />} /> */}
-          <Route path="/match" element={<MatchingClothes />} />
+          {/* <Route path="/match" element={<MatchingClothes />} /> */}
           <Route path="/edit_clothing" element={<EditClothing />} />
           <Route path="/change_password" element={<ChangePassword />} />
           <Route path="/My_style" element={<MyStyle />} />

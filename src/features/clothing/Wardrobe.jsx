@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { auth, db } from '../../firebase/firebase';
 import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import MatchingClothes from './MatchingClothes';
+// import MatchingClothes from './MatchingClothes';
 import EditClothing from './EditClothing';
 import ClothingAIUpload from './ClothingAIUpload';
 import '../../css/Wardrobe.css';
@@ -109,7 +109,7 @@ export default function Wardrobe() {
   const [selectedPants, setSelectedPants] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
-  
+
   // למודאל העריכה
   const [editOpen, setEditOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
@@ -278,12 +278,11 @@ export default function Wardrobe() {
     <div className="container wardrobe-wrapper mt-5" dir="rtl">
       <h2 className="wardrobe-heading text-center mb-4">הארון שלי</h2>
 
-      <MatchingClothes
+      {/* <MatchingClothes
         clothingItems={clothingItems}
         onSelectShirt={setSelectedShirt}
         onSelectPants={setSelectedPants}
-      />
-
+      /> */}
 
       <div className="wardrobe-actions">
         <Link to="/app_home" className="btn btn-home-ghost">חזרה לדף הבית</Link>
@@ -295,21 +294,21 @@ export default function Wardrobe() {
       {/* תצוגת חולצה ומכנס שנבחרו */}
       {selectedShirt && (
         <div className="mb-4">
-          <h4>חולצה שנבחרה:</h4>
+          <h4 className="h4-bop">חולצה שנבחרה:</h4>
           <img src={getImageDataUrl(selectedShirt)} alt="חולצה" className="selected-img" />
         </div>
       )}
       {selectedPants && (
         <div className="mb-4">
-          <h4>מכנס שנבחר:</h4>
+          <h4 className="h4-bop">מכנס שנבחר:</h4>
           <img src={getImageDataUrl(selectedPants)} alt="מכנס" className="selected-img" />
         </div>
       )}
 
       {/* === NEW: אזור ההמלצות לפי פריט שנבחר === */}
       {baseItem && (
-        <div className="card p-3 mb-4" style={{ backgroundColor: '#f58e084d' }} >
-          <h4 className="mb-3">המלצות עבור: </h4>
+        <div className="card p-3 mb-4 rec-card">
+          <h4 className="mb-3 h4-bop">המלצות עבור: </h4>
           <div className="d-flex align-items-center gap-3 mb-3">
             <div>
               <strong>פריט בסיס</strong>
@@ -355,7 +354,7 @@ export default function Wardrobe() {
                         <div><strong>צבעים:</strong> {cand.colors && cand.colors.join(', ') || '—'}</div>
                         <div><strong>סגנון:</strong> {cand.style && cand.style.join(', ') || '—'}</div>
                       </div>
-                      <div className="card-footer d-flex">
+                      <div className="card-footer d-flex wardrobe-card-footer">
                         <button className="btn btn-edit" onClick={() => handleChooseLook(cand)}>
                           בחר כלוק
                         </button>
@@ -401,15 +400,15 @@ export default function Wardrobe() {
                   <p className="card-text"><strong>סגנון</strong> : {item.style && item.style.join(', ') || '—'}</p>
                 </div>
 
+                {/* === NEW: כפתור מצא התאמות לפריט ספציפי === */}
                 <div className="card-footer wardrobe-card-footer d-flex gap-2">
-                  {/* === NEW: כפתור מצא התאמות לפריט ספציפי === */}
-                  <button
+                  {/* <button
                     className="btn btn-primary"
                     onClick={() => handleFindMatches(item)}
                     aria-label="מצא התאמות לפריט זה"
                   >
                     מצא התאמות
-                  </button>
+                  </button> */}
 
                   <Link
                     className="btn btn-outline-primary"

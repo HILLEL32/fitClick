@@ -4,6 +4,7 @@ const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 
+
 /**
  * Enhanced Groq API call with optimized parameters for fashion styling
  * @param {string} prompt
