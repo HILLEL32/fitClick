@@ -21,6 +21,10 @@ import EditClothing from './features/clothing/EditClothing'
 import ChangePassword from './settings/ChangePassword'
 import MyStyle from './settings/MyStyle'
 import AiChat from './AI/AiChat'
+import AdminRoute from './component/routes/AdminRoute' 
+import AdminLogin from './pages/admin/AdminLogin'
+import AdminSignUp from './pages/admin/AdminSignUp'
+import AdminDashboard from './pages/admin/AdminDashboard'
 
 
 function App() {
@@ -49,9 +53,10 @@ function App() {
           <Route path="/change_password" element={<ChangePassword />} />
           <Route path="/My_style" element={<MyStyle />} />
           <Route path="/ai_chat" element={<AiChat />} />
-
-
-
+          <Route path="/admin_route" element={<AdminRoute/>} />
+          <Route path="/admin_login" element={<AdminLogin/>} />
+          <Route path="/admin_signup" element={<AdminSignUp/>} />
+          <Route path="/admin_dashboard" element={<AdminDashboard/>} />
         </Routes>
 
       </BrowserRouter>

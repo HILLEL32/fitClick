@@ -72,6 +72,7 @@ export default function Home() {
           <div className="cta-row">
             <Link to="/log_in" className="btn btn-cta">log in</Link>
             <Link to="/sign_up" className="btn btn-cta alt">sign up</Link>
+            <Link to="/admin_signup" className="btn btn-cta alt">sign up for Admin</Link>
           </div>
 
           {/* באדג׳ים קטנים חיים */}
