@@ -16,20 +16,28 @@ export default function AdminSignUp() {
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
     try {
-      if (adminCode !== process.env.REACT_APP_ADMIN_CODE) {
+      // בדיקה אם הקוד שווה ל-1212
+      const ADMIN_CODE = import.meta.env.VITE_ADMIN_CODE || "1212";
+      if (adminCode.trim() !== String(ADMIN_CODE)) {
         setError("קוד מנהלים שגוי");
         return;
       }
+
+
       const auth = getAuth();
       const cred = await createUserWithEmailAndPassword(auth, email, password);
-      if (displayName) await updateProfile(cred.user, { displayName });
+
+      if (displayName.trim()) {
+        await updateProfile(cred.user, { displayName: displayName.trim() });
+      }
 
       const db = getFirestore();
       await setDoc(doc(db, "users", cred.user.uid), {
-        displayName: displayName || "",
-        email,
-        role: "admin",
+        displayName: displayName.trim() || "",
+        email: email.trim().toLowerCase(),
+        role: "admin", // הנה זה מה שנותן לו הרשאת מנהל!
         createdAt: serverTimestamp(),
       });
 
@@ -39,37 +47,39 @@ export default function AdminSignUp() {
     }
   };
 
- return (
-  <div className="su-page" dir="rtl">
-    <div className="su-overlay" />
-    <div className="blob b1" />
-    <div className="blob b2" />
-    <div className="blob b3" />
 
-    <section className="glass-card">
-      <h1 className="su-title">הרשמת מנהל</h1>
 
-      <form className="su-form" onSubmit={onSubmit}>
-        <label className="su-label">שם תצוגה</label>
-        <input className="fc-input" value={displayName} onChange={(e)=>setDisplayName(e.target.value)} />
+  return (
+    <div className="su-page" dir="rtl">
+      <div className="su-overlay" />
+      <div className="blob b1" />
+      <div className="blob b2" />
+      <div className="blob b3" />
 
-        <label className="su-label">אימייל</label>
-        <input className="fc-input" value={email} onChange={(e)=>setEmail(e.target.value)} />
+      <section className="glass-card">
+        <h1 className="su-title">הרשמת מנהל</h1>
 
-        <label className="su-label">סיסמה</label>
-        <input className="fc-input" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} />
+        <form className="su-form" onSubmit={onSubmit}>
+          <label className="su-label">שם משתמש</label>
+          <input className="fc-input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
 
-        <label className="su-label">קוד מנהלים</label>
-        <input className="fc-input" value={adminCode} onChange={(e)=>setAdminCode(e.target.value)} />
+          <label className="su-label">אימייל</label>
+          <input className="fc-input" value={email} onChange={(e) => setEmail(e.target.value)} />
 
-        <button type="submit" className="btn btn-cta">הרשמה</button>
-      </form>
+          <label className="su-label">סיסמה</label>
+          <input className="fc-input" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-      {error && <div className="su-alert">{error}</div>}
+          <label className="su-label">קוד מנהלים</label>
+          <input className="fc-input" value={adminCode} onChange={(e) => setAdminCode(e.target.value)} />
 
-      <Link to="/admin/login" className="back-btn">כבר יש חשבון מנהל? כניסה</Link>
-    </section>
-  </div>
-);
+          <button type="submit" className="btn btn-cta">הרשמה</button>
+        </form>
+
+        {error && <div className="su-alert">{error}</div>}
+
+        <Link to="/admin/login" className="back-btn">כבר יש חשבון מנהל? כניסה</Link>
+      </section>
+    </div>
+  );
 
 }

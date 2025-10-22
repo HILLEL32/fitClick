@@ -25,6 +25,8 @@ import AdminRoute from './component/routes/AdminRoute'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminSignUp from './pages/admin/AdminSignUp'
 import AdminDashboard from './pages/admin/AdminDashboard'
+import AdminThanks from './pages/admin/AdminThanks'
+import AdminUsers from './pages/admin/AdminUsers'
 
 
 function App() {
@@ -57,6 +59,8 @@ function App() {
           <Route path="/admin_login" element={<AdminLogin/>} />
           <Route path="/admin_signup" element={<AdminSignUp/>} />
           <Route path="/admin_dashboard" element={<AdminDashboard/>} />
+          <Route path="/admin_thanks" element={<AdminThanks/>} />
+          <Route path="/admin_users" element={<AdminUsers/>} />
         </Routes>
 
       </BrowserRouter>
