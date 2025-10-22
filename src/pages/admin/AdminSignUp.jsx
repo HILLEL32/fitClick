@@ -1,7 +1,7 @@
 // src/pages/admin/AdminSignUp.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from "firebase/auth";
 import { getFirestore, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import "../../css/AdminSignUp.css";
 
@@ -18,16 +18,14 @@ export default function AdminSignUp() {
     setError("");
 
     try {
-      // בדיקה אם הקוד שווה ל-1212
       const ADMIN_CODE = import.meta.env.VITE_ADMIN_CODE || "1212";
       if (adminCode.trim() !== String(ADMIN_CODE)) {
         setError("קוד מנהלים שגוי");
         return;
       }
 
-
       const auth = getAuth();
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
+      const cred = await createUserWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
 
       if (displayName.trim()) {
         await updateProfile(cred.user, { displayName: displayName.trim() });
@@ -37,17 +35,20 @@ export default function AdminSignUp() {
       await setDoc(doc(db, "users", cred.user.uid), {
         displayName: displayName.trim() || "",
         email: email.trim().toLowerCase(),
-        role: "admin", // הנה זה מה שנותן לו הרשאת מנהל!
+        role: "admin",
         createdAt: serverTimestamp(),
       });
 
-      nav("/admin/dashboard");
+      // ✅ חשוב: מתנתקים כדי שהדף "כניסת מנהלים" יהיה באמת תהליך Login
+      await signOut(auth);
+
+      // ✅ מעבירים את המנהל הטרי לדף כניסה, עם הודעת הצלחה ידידותית (אופציונלי)
+      nav("/admin_login", { state: { msg: "נרשמת בהצלחה! התחברי עם פרטי המנהל שלך." } });
+
     } catch (err) {
-      setError(err.message || "שגיאה בהרשמה");
+      setError(err?.message || "שגיאה בהרשמה");
     }
   };
-
-
 
   return (
     <div className="su-page" dir="rtl">
@@ -77,9 +78,8 @@ export default function AdminSignUp() {
 
         {error && <div className="su-alert">{error}</div>}
 
-        <Link to="/admin/login" className="back-btn">כבר יש חשבון מנהל? כניסה</Link>
+        <Link to="/admin_login" className="back-btn">כבר יש חשבון מנהל? כניסה</Link>
       </section>
     </div>
   );
-
 }

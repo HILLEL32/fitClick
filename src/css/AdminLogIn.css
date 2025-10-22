@@ -1,0 +1,32 @@
+/* בתוך AdminSignUp.css (רק אם חסר) */
+.su-alert.success {
+  background: #e6f7ee;
+  color: #1a7f46;
+  border: 1px solid #bfe8cf;
+}
+
+.with-addon {
+  position: relative;
+  padding-right: 0 !important;
+}
+
+.input-addon-btn {
+  position: absolute;
+  inset-inline-end: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.8;
+}
+.input-addon-btn:hover { opacity: 1; }
+
+.meta-links {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
