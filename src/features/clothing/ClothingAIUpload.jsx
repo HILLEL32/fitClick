@@ -5,7 +5,7 @@ import { auth, db } from "../../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import '../../css/ClothingAIUpload.css';
 
-const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98"; // אל תחשפי מפתח — עדיף .env
+const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98"; 
 
 export default function ClothingAIUpload() {
   const [imageFile, setImageFile] = useState(null);
@@ -56,10 +56,16 @@ export default function ClothingAIUpload() {
       const response = await axios.post(
         'https://cloudapi.lykdat.com/v1/detection/tags',
         formData,
-        { headers: { 'x-api-key': API_KEY, 'Content-Type': 'multipart/form-data' } }
+        {
+          headers: {
+            // לא מגדירים Content-Type ידנית עם FormData — Axios מוסיף boundary לבד
+            'x-api-key': API_KEY
+          },
+          timeout: 30000
+        }
       );
 
-      const data = response.data.data || {};
+      const data = response?.data?.data || {};
       const labels = data.labels || [];
       const items = data.items || [];
       const colors = data.colors || [];
@@ -76,11 +82,73 @@ export default function ClothingAIUpload() {
         waistline: extractLabels("waistline")
       };
 
+      // ===== סינון מחמיר: מתקבל רק בגד או אקססוריז ללבישה =====
+
+      // 1) חובה: שיהיו items עם ביטחון סביר (לפחות פריט אחד confidence≥0.6)
+      const strongItems = (items || []).filter(i => (i?.confidence ?? 0) >= 0.6);
+      if (strongItems.length === 0) {
+        // אין בגד מזוהה — גם אם יש צבעים/labels כלליים
+        setImageFile(null);
+        setPreviewUrl(null);
+        setResult(null);
+        alert("נא לבחור בגד או פריט לבוש");
+        return;
+      }
+
+      // 2) בדיקת התאמה לרשימת ביגוד/אקססוריז (כולל עברית)
+      const validClothingKeywords = [
+        // בגדים עיקריים
+        "shirt","t-shirt","top","blouse","dress","gown","skirt","pants","trousers","jeans",
+        "shorts","coat","jacket","sweater","cardigan","hoodie","overcoat","suit","blazer",
+        "vest","sweatshirt","tracksuit","legging","tights",
+        // הנעלה ותיקים
+        "shoe","shoes","sneakers","boots","heels","sandals","flip-flops","bag","handbag","backpack","tote","purse",
+        // אקססוריז/תכשיטים/ראש/עיניים
+        "sunglasses","glasses","eyeglasses","frames","earrings","necklace","bracelet","ring","jewelry","watch","brooch",
+        "scarf","hat","cap","beanie","beret","belt","tie","bow tie","gloves",
+        // עברית
+        "חולצה","טי-שירט","טישרט","שמלה","חצאית","מכנס","מכנסיים","ג׳ינס","ג'ינס","מכנסיים קצרים",
+        "מעיל","ז׳קט","ז'קט","סוודר","קרדיגן","קפוצ׳ון","קפוצ'ון","חליפה","וסט","טרנינג","טייץ",
+        "נעל","נעליים","סניקרס","מגפיים","עקבים","סנדלים","כפכפים","תיק","תיק גב","תיק יד",
+        "שעון","צמיד","עגיל","עגילים","טבעת","שרשרת","תכשיט","תכשיטים","סיכה",
+        "צעיף","כובע","כפפות","חגורה","עניבה","פפיון",
+        "משקפי שמש","משקפי ראייה","משקפיים"
+      ].map(x => x.toLowerCase());
+
+      const itemNames = strongItems.map(i => String(i?.name || "").toLowerCase());
+      const isClothingOrAccessory = itemNames.some(n =>
+        validClothingKeywords.some(k => n.includes(k))
+      );
+
+      if (!isClothingOrAccessory) {
+        setImageFile(null);
+        setPreviewUrl(null);
+        setResult(null);
+        alert("אירעה שגיאה בזיהוי הבגד");
+        return;
+      }
+
+      // ===== סוף סינון =====
+
       setResult(simplified);
       await saveClothingLocallyAndToFirestore(imageFile, simplified);
     } catch (e) {
-      console.error("API Error:", e);
-      alert("אירעה שגיאה בזיהוי הבגד");
+      // שגיאות טכניות (לא קשורות לסינון "לא בגד")
+      const status = e?.response?.status;
+      const msg = e?.response?.data ? JSON.stringify(e.response.data) : e.message;
+      console.error("API Error:", status, msg);
+
+      if (status === 401 || status === 403) {
+        alert("שגיאת הרשאה מול שירות הזיהוי. בדקי את מפתח ה-API.");
+      } else if (status === 415) {
+        alert("פורמט קובץ לא נתמך. נסי JPG/PNG בגודל סביר.");
+      } else if (status === 429) {
+        alert("חרגת ממגבלת הבקשות. נסי שוב מאוחר יותר.");
+      } else if (status === 413) {
+        alert("הקובץ גדול מדי. נסי תמונה קטנה יותר.");
+      } else {
+        alert("תקלה טכנית בזיהוי. נסי שוב מאוחר יותר.");
+      }
     } finally {
       setLoading(false);
     }
