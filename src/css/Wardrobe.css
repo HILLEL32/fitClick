@@ -1,105 +1,154 @@
 /* === Wardrobe.css – fitClick glass & blobs theme (brown–orange–pink) === */
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap');
 
-:root{
-  --brand:#B5693A; --brand-700:#8C4320;
-  --accent:#E78A90; --accent-50:#FFF1F4; --accent-100:#FFD6DB;
-  --bg:#F8F4F2; --surface:#FFFFFF; --text:#1E1E1E; --border:#EAD9D2;
-  --shadow-lg:0 22px 50px rgba(181,105,58,.18), 0 6px 18px rgba(0,0,0,.06);
-  --shadow-md:0 12px 28px rgba(181,105,58,.14), 0 3px 10px rgba(0,0,0,.05);
-  --r-xl:24px; --r-lg:18px; --r-md:14px;
+:root {
+  --brand: #B5693A;
+  --brand-700: #8C4320;
+  --accent: #E78A90;
+  --accent-50: #FFF1F4;
+  --accent-100: #FFD6DB;
+  --bg: #F8F4F2;
+  --surface: #FFFFFF;
+  --text: #1E1E1E;
+  --border: #EAD9D2;
+  --shadow-lg: 0 22px 50px rgba(181, 105, 58, .18), 0 6px 18px rgba(0, 0, 0, .06);
+  --shadow-md: 0 12px 28px rgba(181, 105, 58, .14), 0 3px 10px rgba(0, 0, 0, .05);
+  --r-xl: 24px;
+  --r-lg: 18px;
+  --r-md: 14px;
 }
 
-*{ box-sizing:border-box }
-body{ font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,Arial,'Noto Sans Hebrew',sans-serif; color:var(--text) }
+* {
+  box-sizing: border-box
+}
+
+body {
+  font-family: 'Rubik', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'Noto Sans Hebrew', sans-serif;
+  color: var(--text)
+}
 
 /* ===== רקע עמוד הארון ===== */
-.wardrobe-wrapper{
+/* ===== רקע עמוד הארון – נקי, בלי ורוד, בלי שקיפויות ===== */
+.wardrobe-wrapper {
   position: relative;
-  min-height: 100dvh;
+  min-height: 100vh;
   padding: clamp(1.2rem,3vw,2rem);
   margin-top: 0 !important;
   overflow-x: hidden;
-  background:
-    radial-gradient(1200px 600px at 80% -10%, var(--accent-100) 0%, rgba(255,214,219,0) 60%),
-    radial-gradient(900px 420px at 10% 110%, #ffe5d1 0%, rgba(255,229,209,0) 60%),
-    linear-gradient(135deg, var(--bg) 0%, #fff 100%);
-}
-.wardrobe-wrapper::before{
-  content:"";
-  position:fixed; inset:0; pointer-events:none; z-index:0;
-  opacity:.08;
-  background-image:url("https://www.transparenttextures.com/patterns/fabric-of-squares.png");
-  /* animation:wardrobe-floatTexture 30s linear infinite;  ← הוסר */
+  background: #F8F4F2 !important; /* רקע אחיד בהיר */
+  isolation: isolate;
 }
 
-/* בלובים סטטיים */
-.wardrobe-wrapper::after{
-  content:"";
-  position:absolute; inset:0; z-index:0; pointer-events:none;
+
+.wardrobe-wrapper::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .08;
+  background-image: url("https://www.transparenttextures.com/patterns/fabric-of-squares.png");
+}
+
+.wardrobe-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
   background:
     radial-gradient(420px 420px at calc(100% + 60px) 10%, #ffd9de66 0%, transparent 60%),
     radial-gradient(360px 360px at -60px 85%, #ffcaa566 0%, transparent 60%),
     radial-gradient(300px 300px at 85% calc(100% + 60px), #d3a17e66 0%, transparent 60%);
   filter: blur(18px);
   mix-blend-mode: multiply;
-  /* animation: blobsShift 22s ease-in-out infinite; ← הוסר */
 }
 
 /* ===== כותרת ===== */
-.wardrobe-heading{
+.wardrobe-heading {
   position: relative;
   z-index: 1;
-  margin: 0 0 clamp(1rem,2.6vw,1.6rem);
-  text-align:center;
-  font-weight:900;
+  margin: 0 0 clamp(1rem, 2.6vw, 1.6rem);
+  text-align: center;
+  font-weight: 900;
   font-size: clamp(1.6rem, 4.8vw, 3rem);
-  color:var(--brand-700);
-  letter-spacing:.5px;
-  text-shadow:0 8px 22px rgba(231,138,144,.35);
-  animation:popIn .7s ease-out both;
+  color: var(--brand-700);
+  letter-spacing: .5px;
+  text-shadow: 0 8px 22px rgba(231, 138, 144, .35);
+  animation: popIn .7s ease-out both;
 }
-@keyframes popIn{ from{opacity:0; transform:translateY(10px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.98)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1)
+  }
+}
 
 /* ===== אזור פעולות עליון ===== */
-.wardrobe-actions{
+.wardrobe-actions {
   position: relative;
-  z-index:1;
-  display:flex; gap:.6rem; flex-wrap:wrap;
-  justify-content:center;
+  z-index: 1;
+  display: flex;
+  gap: .6rem;
+  flex-wrap: wrap;
+  justify-content: center;
   margin: 0 auto clamp(1rem, 2.4vw, 1.6rem);
 }
 
-.btn{
-  border:none; cursor:pointer; font-weight:900; letter-spacing:.12em;
-  border-radius:16px; padding:.9rem 1.3rem; transition:.18s;
-  text-transform:uppercase; text-decoration:none;
-  display:inline-flex; align-items:center; justify-content:center;
+.btn {
+  border: none;
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: .12em;
+  border-radius: 16px;
+  padding: .9rem 1.3rem;
+  transition: .18s;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* כפתור “הוסף בגד” */
-.btn.btn-add{
-  color:#fff !important;
+.btn.btn-add {
+  color: #fff !important;
   background: linear-gradient(135deg, var(--brand), var(--accent));
-  background-size:200% 200%;
+  background-size: 200% 200%;
   box-shadow: 0 12px 30px rgba(245, 81, 5, .22);
-  /* animation:buttonGradient 5s ease infinite, floatUp 3s ease-in-out infinite alternate; ← הוסר */
 }
-.btn.btn-add:hover{ transform:translateY(-3px); box-shadow:0 16px 36px rgba(245,81,5,.28) }
+
+.btn.btn-add:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(245, 81, 5, .28)
+}
 
 /* כפתור בית שקוף */
-.btn-home-ghost{
-  background:#fff5f6; color:var(--brand-700) !important;
-  border:1.5px solid #ffd6db; box-shadow:var(--shadow-md);
+.btn-home-ghost {
+  background: #fff5f6;
+  color: var(--brand-700) !important;
+  border: 1.5px solid #ffd6db;
+  box-shadow: var(--shadow-md);
 }
-.btn-home-ghost:hover{ background:#ffe9ee; transform:translateY(-2px) }
 
-/* ===== קלפים / רשימות ===== */
-.card, .wardrobe-card, .rec-card{
+.btn-home-ghost:hover {
+  background: #ffe9ee;
+  transform: translateY(-2px)
+}
+
+/* ===== קלפים / רשימות – בלי לגעת ב-Bootstrap .card ===== */
+.wardrobe-card,
+.rec-card {
   position: relative;
-  z-index:1;
-  background: rgba(255,255,255,.62);
-  border:1px solid var(--border);
+  z-index: 1;
+  background: rgba(255, 255, 255, .62);
+  border: 1px solid var(--border);
   backdrop-filter: blur(8px);
   border-radius: var(--r-xl);
   box-shadow: var(--shadow-lg);
@@ -107,101 +156,159 @@ body{ font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,Arial,'Noto 
 }
 
 /* קלף “המלצות” */
-.rec-card{
+.rec-card {
   padding: clamp(1rem, 2.2vw, 1.4rem) !important;
 }
 
 /* כותרות משנה */
-.h4-bop{
-  font-weight:800; color:#5a4137;
+.h4-bop {
+  font-weight: 800;
+  color: #5a4137;
 }
 
 /* קלף פריט */
-.wardrobe-card{
+.wardrobe-card {
   border-radius: 20px;
   transition: transform .18s ease, box-shadow .18s ease;
 }
-.wardrobe-card:hover{
+
+.wardrobe-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 44px rgba(181,105,58,.20);
+  box-shadow: 0 18px 44px rgba(181, 105, 58, .20);
 }
 
 /* תמונת פריט */
-.wardrobe-card-img{
-  width:100%; height: 260px; object-fit: cover;
-  border-top-left-radius: 20px; border-top-right-radius: 20px;
+.wardrobe-card-img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
-.wardrobe-card-fallback{
-  height: 260px; display:flex; align-items:center; justify-content:center;
+
+.wardrobe-card-fallback {
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: linear-gradient(135deg, var(--surface), var(--accent-50));
-  color:#8f7b74;
+  color: #8f7b74;
 }
 
 /* גוף הקלף */
-.card-body{
+.card-body {
   padding: 0.9rem 1rem 0.6rem;
 }
-.card-footer.wardrobe-card-footer{
+
+.card-footer.wardrobe-card-footer {
   border-top: 1px solid var(--border);
-  display:flex; gap:.5rem; align-items:center;
+  display: flex;
+  gap: .5rem;
+  align-items: center;
   padding: .7rem 1rem 1rem;
-  background: linear-gradient(180deg, rgba(255,255,255,.4), rgba(255,255,255,.8));
+  background: linear-gradient(180deg, rgba(255, 255, 255, .4), rgba(255, 255, 255, .8));
 }
 
 /* כפתורי עריכה/מחיקה */
-.btn-edit{
-  background:#fff5f6; color:var(--brand-700) !important;
-  border:1.5px solid #ffd6db; box-shadow:var(--shadow-md);
-}
-.btn-edit:hover{ background:#ffe9ee; transform:translateY(-2px) }
-
-.btn-delete{
-  background:#fff; color:#b23a48 !important;
-  border:1.5px solid #f3c4cb; box-shadow:var(--shadow-md);
-}
-.btn-delete:hover{ background:#fff0f3; transform:translateY(-2px) }
-
-/* לינק AI */
-.btn.btn-outline-primary{
-  color: var(--brand-700);
-  background:#ffffff;
-  border:1.5px solid var(--border);
+.btn-edit {
+  background: #fff5f6;
+  color: var(--brand-700) !important;
+  border: 1.5px solid #ffd6db;
   box-shadow: var(--shadow-md);
 }
-.btn.btn-outline-primary:hover{ background:#fff8f9; transform:translateY(-2px) }
+
+.btn-edit:hover {
+  background: #ffe9ee;
+  transform: translateY(-2px)
+}
+
+.btn-delete {
+  background: #fff;
+  color: #b23a48 !important;
+  border: 1.5px solid #f3c4cb;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-delete:hover {
+  background: #fff0f3;
+  transform: translateY(-2px)
+}
+
+/* לינק AI */
+.btn.btn-outline-primary {
+  color: var(--brand-700);
+  background: #ffffff;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-md);
+}
+
+.btn.btn-outline-primary:hover {
+  background: #fff8f9;
+  transform: translateY(-2px)
+}
 
 /* תמונת “נבחר” */
-.selected-img{
-  width: 220px; height: 220px; object-fit: cover;
-  border-radius: 18px; border:1px solid var(--border);
-  box-shadow: 0 10px 24px rgba(0,0,0,.08);
+.selected-img {
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .08);
 }
 
 /* ===== רשת ===== */
-.row{ position: relative; z-index: 1; }
-.col-md-4{ display:flex }
-.col-md-4 > .card{ width:100% }
+.row {
+  position: relative;
+  z-index: 1;
+}
+
+.col-md-4 {
+  display: flex
+}
+
+.col-md-4>.wardrobe-card {
+  width: 100%
+}
 
 /* ===== הודעות טעינה/שגיאה ===== */
-.container.text-center{ position:relative; z-index:1 }
+.container.text-center {
+  position: relative;
+  z-index: 1
+}
 
 /* ===== רספונסיביות ===== */
-@media (max-width: 992px){
-  .wardrobe-card-img, .wardrobe-card-fallback{ height: 220px; }
+@media (max-width: 992px) {
+
+  .wardrobe-card-img,
+  .wardrobe-card-fallback {
+    height: 220px;
+  }
 }
-@media (max-width: 560px){
-  .wardrobe-actions{ justify-content:stretch }
-  .btn{ width:100% }
-  .selected-img{ width: 180px; height: 180px; }
+
+@media (max-width: 560px) {
+  .wardrobe-actions {
+    justify-content: stretch
+  }
+
+  .btn {
+    width: 100%
+  }
+
+  .selected-img {
+    width: 180px;
+    height: 180px;
+  }
 }
+
 /* ===== Tips bar (Typewriter) ===== */
-.wardrobe-tips{
+.wardrobe-tips {
   position: relative;
   z-index: 1;
   margin: 0 auto clamp(.8rem, 2vw, 1.2rem);
   padding: .9rem 1.1rem;
   border-radius: var(--r-xl);
-  background: rgba(255,255,255,.62);
+  background: rgba(255, 255, 255, .62);
   border: 1px solid var(--border);
   backdrop-filter: blur(8px);
   box-shadow: var(--shadow-lg);
@@ -211,26 +318,101 @@ body{ font-family:'Rubik',system-ui,-apple-system,'Segoe UI',Roboto,Arial,'Noto 
   align-items: center;
 }
 
-.tips-title{
+.tips-title {
   font-weight: 900;
   color: var(--brand-700);
   white-space: nowrap;
 }
 
-.tips-line{
-  color:#6d5b54;
+.tips-line {
+  color: #6d5b54;
   font-size: clamp(.95rem, 2.1vw, 1.05rem);
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Typewriter caret – תואם לדף הבית */
-.tw{ position:relative; white-space:nowrap }
-.tw-caret{
-  display:inline-block; width:10px; height:1.2em; margin-inline-start:6px;
-  background:linear-gradient(0deg, transparent 0 20%, var(--brand-700) 20% 80%, transparent 80% 100%);
-  animation: aiblink .85s step-end infinite;
-  vertical-align:middle;
+.tw {
+  position: relative;
+  white-space: nowrap
 }
-@keyframes aiblink { 0%,50%{opacity:1} 51%,100%{opacity:0} }
 
+.tw-caret {
+  display: inline-block;
+  width: 10px;
+  height: 1.2em;
+  margin-inline-start: 6px;
+  background: linear-gradient(0deg, transparent 0 20%, var(--brand-700) 20% 80%, transparent 80% 100%);
+  animation: aiblink .85s step-end infinite;
+  vertical-align: middle;
+}
+
+@keyframes aiblink {
+
+  0%,
+  50% {
+    opacity: 1
+  }
+
+  51%,
+  100% {
+    opacity: 0
+  }
+}
+
+/* 1) להפוך את כרטיס ההמלצות לאטום – לא יאסוף ורוד מהרקע */
+.rec-card {
+  background: #fff !important;
+  backdrop-filter: none !important;
+}
+
+/* 2) לבודד שכבת רקע ולרכך את ה-blobs (מונע קו/קצה נראה) */
+.wardrobe-wrapper {
+  isolation: isolate;
+  /* יוצר stacking context */
+}
+
+.wardrobe-wrapper::after {
+  mix-blend-mode: normal;
+  /* היה multiply */
+  opacity: .35;
+  /* היה מלא יותר */
+  filter: blur(14px);
+  /* מעט פחות blur כדי שלא ייראה כמלבן */
+}
+
+/* 3) לוודא שאין “פאנל” לבן בקונטיינר (ליתר ביטחון) */
+.wardrobe-wrapper .container {
+  background: transparent !important;
+}
+
+.rec-card {
+  box-shadow: var(--shadow-lg), 0 0 0 100vmax #fff;
+}
+
+/* ביטול כל גרדיאנט ורוד / מעבר צבע מאחורי הכרטיסים */
+.wardrobe-wrapper {
+  background: var(--bg) !important;
+  /* רקע אחיד */
+}
+
+/* קלף ההמלצות – רקע לבן נקי */
+.rec-card {
+  background: #fff !important;
+  background-image: none !important;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+}
+
+/* כל אלמנט שירש גרדיאנט ישיר – מניעה מוחלטת */
+.wardrobe-card,
+.glass-card,
+.wardrobe-tips {
+  background: #fff !important;
+  background-image: none !important;
+}
+
+/* אם נשאר משהו שקשור לשכבת ורוד (כמו overlay) – מכבים אותה */
+.wardrobe-wrapper::before,
+.wardrobe-wrapper::after {
+  content: none !important;
+}

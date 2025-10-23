@@ -1,50 +1,85 @@
-:root{
-  --brand:#B5693A;
-  --brand-700:#8C4320;
-  --accent:#E78A90;
-  --text:#fff;
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: linear-gradient(180deg, rgba(249,245,242,0.95), rgba(255,255,255,0.9));
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 
-/* פס עליון מלא */
-.app-header{
-  width:100%;
-  background: var(--brand);
-  box-shadow: 0 4px 14px rgba(0,0,0,.15);
-  position:sticky; top:0; z-index:1000;
-}
-
-/* תוכן פנימי */
-.header-inner{
+.header-container {
   max-width: 1200px;
-  margin:0 auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding: .6rem 1.4rem;   /* גובה קטן יותר */
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* לוגו */
-.logo-title{
-  margin:0;
-  font-size:1.4rem;
-  font-weight:900;
-  color: var(--text);
-  letter-spacing:.5px;
+.header-logo {
+  font-weight: 900;
+  font-size: 1.4rem;
+  color: #3d2a24;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: conic-gradient(from 120deg, #b5693a, #e39a76, #b5693a);
+  box-shadow: 0 0 0 3px rgba(181,105,58,0.15);
 }
 
-/* ניווט */
-.nav-links ul{
-  list-style:none;
-  display:flex;
-  gap:1rem;
-  margin:0; padding:0;
+/* === ניווט === */
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
-.nav-links a{
-  color:var(--text);
-  font-weight:600;
-  text-decoration:none;
-  transition:.2s;
+
+.nav-link {
+  text-decoration: none;
+  color: #4a3a34;
+  font-weight: 600;
+  transition: color 0.2s ease, background 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 10px;
 }
-.nav-links a:hover{
-  color:var(--accent);
+.nav-link:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+.nav-btn {
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 14px;
+  transition: all 0.2s ease;
+}
+.nav-btn-primary {
+  background: linear-gradient(135deg, #b5693a, #e39a76);
+  color: white;
+  box-shadow: 0 4px 12px rgba(181,105,58,0.25);
+}
+.nav-btn-primary:hover {
+  filter: brightness(1.05);
+}
+.nav-btn-ghost {
+  background: white;
+  color: #5a433c;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+.nav-btn-ghost:hover {
+  background: #fff6f1;
+}
+
+.user-name {
+  color: #4a3a34;
+  font-weight: 600;
+  margin-left: 10px;
 }
