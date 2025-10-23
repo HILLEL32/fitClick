@@ -1,0 +1,179 @@
+
+.admin-users{
+  direction: rtl;
+  color: var(--text);
+}
+
+.admin-users h1{
+  margin: 0 0 .75rem;
+  font-weight: 800;
+}
+
+/* ===== חיפוש ===== */
+.admin-users form{
+  display: flex;
+  gap: .5rem;
+}
+
+.admin-users form input{
+  width: 100%;
+  padding: .7rem .9rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: .95rem;
+  transition: border-color .2s, box-shadow .2s;
+}
+.admin-users form input:focus{
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 20%, transparent);
+}
+
+.admin-users form button{
+  padding: .7rem 1rem;
+  border: 1px solid var(--brand);
+  background: var(--brand);
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .06s, opacity .2s, box-shadow .2s;
+  box-shadow: var(--shadow-md);
+}
+.admin-users form button:hover{ opacity: .95; }
+.admin-users form button:active{ transform: translateY(1px); }
+
+/* ===== טבלה ===== */
+.admin-users .overflow-auto{
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.admin-users table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: .95rem;
+}
+
+.admin-users thead th{
+  text-align: right;
+  padding: .85rem .75rem;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-100) 80%, #fff 20%), #fff);
+  color: var(--brand-700);
+  font-weight: 800;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-users tbody tr{
+  border-top: 1px solid var(--border);
+  transition: background-color .15s;
+}
+.admin-users tbody tr:hover{
+  background: color-mix(in srgb, var(--accent-100) 25%, transparent);
+}
+
+.admin-users td{
+  padding: .7rem .75rem;
+  text-align: right;
+}
+
+/* ===== כפתורים ===== */
+.admin-users td .flex{
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.admin-users table button{
+  padding: .45rem .8rem;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, transform .06s;
+  white-space: nowrap;
+}
+.admin-users table button:hover{
+  background: color-mix(in srgb, var(--accent-100) 35%, #fff 65%);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border) 60%);
+}
+.admin-users table button:active{ transform: translateY(1px); }
+
+/* ===== כפתור ראשי — קדם למנהל ===== */
+.admin-users table button[title="קדם למנהל"] {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+  box-shadow: var(--shadow-md);
+}
+.admin-users table button[title="קדם למנהל"]:hover {
+  background: var(--brand-700);
+}
+.admin-users table button[title="קדם למנהל"]:active {
+  transform: translateY(1px);
+}
+
+/* ===== כפתור הורדה ממנהל ===== */
+.admin-users table button[title="הורדה ממנהל"] {
+  border-color: #aaa;
+  color: #444;
+}
+
+/* ===== כפתור חסום/שחרר ===== */
+.admin-users table button[title="חסום משתמש"],
+.admin-users table button[title="שחרר חסימה"] {
+  border-color: var(--accent);
+  color: var(--brand-700);
+}
+
+/* ===== פאג'ינציה ===== */
+.admin-users .mt-4{
+  margin-top: 1rem;
+}
+.admin-users .flex.items-center{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-users .flex.items-center button{
+  padding: .6rem 1rem;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color .15s, border-color .15s, transform .06s;
+  box-shadow: var(--shadow-md);
+}
+.admin-users .flex.items-center button:hover{
+  background: color-mix(in srgb, var(--accent-100) 28%, #fff 72%);
+  border-color: color-mix(in srgb, var(--brand) 28%, var(--border) 72%);
+}
+.admin-users .flex.items-center button:active{
+  transform: translateY(1px);
+}
+.admin-users .flex.items-center .disabled\:opacity-50{
+  opacity: .5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ===== מצב "אין נתונים" ===== */
+.admin-users td[colspan]{
+  color: #777;
+  background: #fff;
+}
+
+/* ===== מובייל ===== */
+@media (max-width: 640px){
+  .admin-users h1{ font-size: 1.25rem; }
+  .admin-users form button{ padding: .65rem .85rem; }
+  .admin-users thead th, .admin-users td{ padding: .6rem .55rem; }
+}
