@@ -1,3 +1,4 @@
+// src/features/clothing/ClothingAIUpload.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -7,10 +8,97 @@ import '../../css/ClothingAIUpload.css';
 
 const API_KEY = import.meta.env.VITE_LYKDAT_KEY;
 
+// ===== תרגום אוטומטי עם Fallback =====
+const TRANSLATE_URL = import.meta.env.VITE_TRANSLATE_URL || ''; // LibreTranslate (אופציונלי)
+const TRANSLATE_KEY = import.meta.env.VITE_TRANSLATE_KEY || null;
+
+const memCache = new Map();
+const inFlight = new Map();
+const loadLocalCache = () => {
+  try { return JSON.parse(localStorage.getItem('he-translate-cache') || '{}'); }
+  catch { return {}; }
+};
+const saveLocalCache = (obj) => {
+  try { localStorage.setItem('he-translate-cache', JSON.stringify(obj)); } catch {}
+};
+let localCache = loadLocalCache();
+
+async function providerLibreTranslate(q, target = 'he', source = 'auto') {
+  if (!TRANSLATE_URL) throw new Error('no-libre-url');
+  const res = await fetch(TRANSLATE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ q, source, target, format: 'text', api_key: TRANSLATE_KEY || undefined })
+  });
+  if (!res.ok) throw new Error(`libre-http-${res.status}`);
+  const data = await res.json();
+  const t = data?.translatedText;
+  if (!t) throw new Error('libre-no-text');
+  return t;
+}
+
+async function providerMyMemory(q, target = 'he', source = 'en') {
+  const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(q)}&langpair=${encodeURIComponent(source)}|${encodeURIComponent(target)}`;
+  const res = await fetch(url, { method: 'GET' });
+  if (!res.ok) throw new Error(`mymemory-http-${res.status}`);
+  const data = await res.json();
+  const t = data?.responseData?.translatedText || '';
+  return t || q;
+}
+
+async function translateText(q, target = 'he', source = 'auto') {
+  const key = `${source}->${target}::${q}`;
+  if (memCache.has(key)) return memCache.get(key);
+  if (localCache[key]) { memCache.set(key, localCache[key]); return localCache[key]; }
+  if (inFlight.has(key)) return inFlight.get(key);
+
+  const promise = (async () => {
+    try {
+      if (TRANSLATE_URL) {
+        try {
+          const t = await providerLibreTranslate(q, target, source);
+          memCache.set(key, t); localCache[key] = t; saveLocalCache(localCache);
+          return t;
+        } catch {}
+      }
+      const t2 = await providerMyMemory(q, target, source === 'auto' ? 'en' : source);
+      memCache.set(key, t2); localCache[key] = t2; saveLocalCache(localCache);
+      return t2;
+    } catch {
+      return q; // fallback למקור (נחביא באנגלית בשכבת התצוגה)
+    } finally {
+      inFlight.delete(key);
+    }
+  })();
+
+  inFlight.set(key, promise);
+  return promise;
+}
+
+async function translateList(list, target = 'he', source = 'auto') {
+  const arr = Array.isArray(list) ? list.filter(Boolean) : [];
+  if (arr.length === 0) return [];
+  const SEP = '|||';
+  const joined = arr.join(SEP);
+  const translatedJoined = await translateText(joined, target, source);
+  if (translatedJoined === joined) {
+    const perItem = await Promise.all(arr.map(x => translateText(x, target, source)));
+    return perItem;
+  }
+  return translatedJoined.split(SEP).map(s => s.trim());
+}
+
 export default function ClothingAIUpload() {
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+
+  // תוצאות מקור באנגלית (לשמירה וללוגיקה)
   const [result, setResult] = useState(null);
+
+  // תוצאות מתורגמות לתצוגה בעברית בלבד
+  const [resultHe, setResultHe] = useState(null);
+  const [heReady, setHeReady] = useState(false); // מציגים רק כשזה true
+
   const [loading, setLoading] = useState(false);
 
   const [typedText, setTypedText] = useState("");
@@ -18,7 +106,7 @@ export default function ClothingAIUpload() {
   const idxRef = useRef(0);
 
   useEffect(() => {
-    setTypedText(""); // אתחול נקי
+    setTypedText("");
     idxRef.current = 0;
     const interval = setInterval(() => {
       const i = idxRef.current;
@@ -32,10 +120,41 @@ export default function ClothingAIUpload() {
     return () => clearInterval(interval);
   }, []);
 
+  // תרגום שקט: לא מציגים תוצאות עד שהעברית מוכנה
+  useEffect(() => {
+    let mounted = true;
+    const doTranslate = async () => {
+      setHeReady(false);
+      setResultHe(null);
+      if (!result) return;
+      try {
+        const [typeHe, colorsHe, styleHe, detailsHe, lengthHe, waistlineHe] = await Promise.all([
+          translateList(result.type, 'he', 'auto'),
+          translateList(result.colors, 'he', 'auto'),
+          translateList(result.style, 'he', 'auto'),
+          translateList(result.details, 'he', 'auto'),
+          translateList(result.length, 'he', 'auto'),
+          translateList(result.waistline, 'he', 'auto'),
+        ]);
+        if (!mounted) return;
+        setResultHe({
+          type: typeHe, colors: colorsHe, style: styleHe,
+          details: detailsHe, length: lengthHe, waistline: waistlineHe
+        });
+      } finally {
+        if (mounted) setHeReady(true);
+      }
+    };
+    doTranslate();
+    return () => { mounted = false; };
+  }, [result]);
+
   const resetSelection = (message) => {
     setImageFile(null);
     setPreviewUrl(null);
     setResult(null);
+    setResultHe(null);
+    setHeReady(false);
     if (message) alert(message);
   };
 
@@ -45,6 +164,8 @@ export default function ClothingAIUpload() {
       setImageFile(file);
       setPreviewUrl(URL.createObjectURL(file));
       setResult(null);
+      setResultHe(null);
+      setHeReady(false);
     }
   };
 
@@ -58,13 +179,7 @@ export default function ClothingAIUpload() {
       const response = await axios.post(
         'https://cloudapi.lykdat.com/v1/detection/tags',
         formData,
-        {
-          headers: {
-            // לא מגדירים Content-Type ידנית עם FormData — Axios מוסיף boundary לבד
-            'x-api-key': API_KEY
-          },
-          timeout: 30000
-        }
+        { headers: { 'x-api-key': API_KEY }, timeout: 30000 }
       );
 
       const data = response?.data?.data || {};
@@ -84,54 +199,32 @@ export default function ClothingAIUpload() {
         waistline: extractLabels("waistline")
       };
 
-      // ===== סינון מחמיר: מתקבל רק בגד או אקססוריז ללבישה =====
-      // 1) לפחות פריט אחד עם confidence≥0.6
+      // סינון מחמיר
       const strongItems = (items || []).filter(i => (i?.confidence ?? 0) >= 0.6);
-      if (strongItems.length === 0) {
-        return resetSelection("נא לבחור בגד או פריט לבוש");
-      }
+      if (strongItems.length === 0) return resetSelection("נא לבחור בגד או פריט לבוש");
 
-      // 2) בדיקת התאמה לרשימת ביגוד/אקססוריז (כולל עברית)
       const validClothingKeywords = [
-        // בגדים עיקריים
         "shirt","t-shirt","top","blouse","dress","gown","skirt","pants","trousers","jeans",
         "shorts","coat","jacket","sweater","cardigan","hoodie","overcoat","suit","blazer",
         "vest","sweatshirt","tracksuit","legging","tights",
-        // הנעלה ותיקים
         "shoe","shoes","sneakers","boots","heels","sandals","flip-flops","bag","handbag","backpack","tote","purse",
-        // אקססוריז/תכשיטים/ראש/עיניים
         "sunglasses","glasses","eyeglasses","frames","earrings","necklace","bracelet","ring","jewelry","watch","brooch",
         "scarf","hat","cap","beanie","beret","belt","tie","bow tie","gloves",
-        // עברית
-        "חולצה","טי-שירט","טישרט","שמלה","חצאית","מכנס","מכנסיים","ג׳ינס","ג'ינס","מכנסיים קצרים",
-        "מעיל","ז׳קט","ז'קט","סוודר","קרדיגן","קפוצ׳ון","קפוצ'ון","חליפה","וסט","טרנינג","טייץ",
-        "נעל","נעליים","סניקרס","מגפיים","עקבים","סנדלים","כפכפים","תיק","תיק גב","תיק יד",
-        "שעון","צמיד","עגיל","עגילים","טבעת","שרשרת","תכשיט","תכשיטים","סיכה",
-        "צעיף","כובע","כפפות","חגורה","עניבה","פפיון",
-        "משקפי שמש","משקפי ראייה","משקפיים"
+        "חולצה","שמלה","חצאית","מכנס","מכנסיים","ג׳ינס","ג'ינס","מעיל","ז׳קט","סוודר","קרדיגן","קפוצ׳ון",
+        "חליפה","וסט","טרנינג","טייץ","נעל","נעליים","סניקרס","מגפיים","סנדלים","תיק","שעון","עגילים","שרשרת","צעיף","כובע"
       ].map(x => x.toLowerCase());
 
       const isClothingKeyword = (name) =>
         validClothingKeywords.some(k => String(name || "").toLowerCase().includes(k));
 
       const clothingStrong = strongItems.filter(i => isClothingKeyword(i?.name));
+      if (clothingStrong.length === 0) return resetSelection("אירעה שגיאה בזיהוי הבגד");
+      if (clothingStrong.length !== 1) return resetSelection("יש להעלות פריט לבוש אחד בלבד בתמונה");
 
-      // אם אין בכלל פריטי לבוש (למשל זוהה "person" בלבד)
-      if (clothingStrong.length === 0) {
-        return resetSelection("אירעה שגיאה בזיהוי הבגד");
-      }
-
-      // ===== דרישה חדשה: תמונה עם יותר מפריט לבוש אחד => הודעה =====
-      if (clothingStrong.length !== 1) {
-        return resetSelection("יש להעלות פריט לבוש אחד בתמונה ");
-      }
-      // ===== סוף סינון =====
-
-      setResult(simplified);
+      setResult(simplified); // נשמר באנגלית, אך לא יוצג עד שתהיה עברית מוכנה
       await saveClothingLocallyAndToFirestore(imageFile, simplified);
 
     } catch (e) {
-      // שגיאות טכניות (לא קשורות לסינון "לא בגד")
       const status = e?.response?.status;
       const msg = e?.response?.data ? JSON.stringify(e.response.data) : e.message;
       console.error("API Error:", status, msg);
@@ -177,6 +270,11 @@ export default function ClothingAIUpload() {
     reader.readAsDataURL(imageFile);
   };
 
+  const renderList = (arr) => {
+    const list = Array.isArray(arr) ? arr.filter(Boolean) : [];
+    return list.length ? list.join(', ') : '—';
+  };
+
   return (
     <div className="aiu-page" dir="rtl">
       {/* שכבות רקע */}
@@ -215,16 +313,16 @@ export default function ClothingAIUpload() {
             <Link to="/wardrobe" className="btn btn-ghost">מעבר לארון שלי</Link>
           </div>
 
-          {result && (
+          {/* מציגים תוצאות רק כשהעברית מוכנה */}
+          {heReady && resultHe && (
             <div className="aiu-result">
               <h3 className="aiu-result-title">תוצאות זיהוי</h3>
               <ul className="aiu-list">
-                <li><strong>Type:</strong> {result.type.join(', ') || '—'}</li>
-                <li><strong>Colors:</strong> {result.colors.join(', ') || '—'}</li>
-                <li><strong>Style:</strong> {result.style.join(', ') || '—'}</li>
-                <li><strong>Details:</strong> {result.details.join(', ') || '—'}</li>
-                <li><strong>Length:</strong> {result.length.join(', ') || '—'}</li>
-                <li><strong>Waistline:</strong> {result.waistline.join(', ') || '—'}</li>
+                <li><strong>סוג:</strong> {renderList(resultHe.type)}</li>
+                <li><strong>צבעים:</strong> {renderList(resultHe.colors)}</li>
+                <li><strong>סגנון:</strong> {renderList(resultHe.style)}</li>
+                <li><strong>פרטים:</strong> {renderList(resultHe.details)}</li>
+                <li><strong>אורך:</strong> {renderList(resultHe.length)}</li>
               </ul>
             </div>
           )}
