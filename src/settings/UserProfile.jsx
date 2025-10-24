@@ -109,18 +109,6 @@ export default function UserProfile() {
               <div className="label">מגדר</div>
               <div className="value">{userData.gender || '—'}</div>
             </div>
-
-            {/* <div className="profile-field swatch-field">
-              <div className="label">צבע גוף</div>
-              <div className="value">
-                <span
-                  className="bodycolor-swatch"
-                  style={{ backgroundColor: userData.bodyColor || '#eee' }}
-                  title={userData.bodyColor || ''}
-                />
-                <span className="swatch-code">{userData.bodyColor || '—'}</span>
-              </div>
-            </div> */}
           </div>
 
           <div className="profile-actions">
@@ -128,11 +116,7 @@ export default function UserProfile() {
             <Link to="/change_password" className="fc-btn fc-btn--one">שינוי סיסמה</Link>
           </div>
         </section>
-
-        <section className="glass-card style-card">
-          <h3 className="style-title">העדפות סגנון</h3>
           <MyStyle />
-        </section>
       </main>
     </div>
   );

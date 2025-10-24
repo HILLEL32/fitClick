@@ -270,7 +270,7 @@ export default function AiChat({ anchorItemId: anchorFromProps }) {
       const it = byId[anchorItemId];
       const role = classifySlot(it);
       const niceName = (toArr(it.type)[0] || "פריט");
-      setPrompt(`התאם לוק שלם סביב ${niceName} (id=${it.id}) לעבודה/יציאה לפי הצורך, עם התאמת צבעים מדויקת. הוסף נעליים/כובע רק אם זה משפר את הסט.`);
+      setPrompt(`התאם לוק שלם לעבודה/יציאה לפי הצורך, עם התאמת צבעים מדויקת. הוסף נעליים/כובע רק אם זה משפר את הסט.`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [anchorItemId, byId]);
