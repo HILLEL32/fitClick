@@ -15,7 +15,7 @@ export default function UserProfile() {
   const idxRef = useRef(0);
 
   useEffect(() => {
-    setTypedText("");       
+    setTypedText("");
     idxRef.current = 0;
 
     const interval = setInterval(() => {
@@ -116,7 +116,7 @@ export default function UserProfile() {
             <Link to="/change_password" className="fc-btn fc-btn--one">שינוי סיסמה</Link>
           </div>
         </section>
-          <MyStyle />
+        <MyStyle />
       </main>
     </div>
   );
