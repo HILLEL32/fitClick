@@ -5,7 +5,7 @@ import { auth, db } from "../../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import '../../css/ClothingAIUpload.css';
 
-const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98"; 
+const API_KEY = "0eb14ea8c68d4baa1348ee3e9969f5693be9518b0befae4b81acfc717513cb98";
 
 export default function ClothingAIUpload() {
   const [imageFile, setImageFile] = useState(null);
@@ -18,24 +18,26 @@ export default function ClothingAIUpload() {
   const idxRef = useRef(0);
 
   useEffect(() => {
-    setTypedText("");         // אתחול נקי
+    setTypedText(""); // אתחול נקי
     idxRef.current = 0;
-
     const interval = setInterval(() => {
       const i = idxRef.current;
       if (i < fullText.length) {
-        // לא מצרפים ל־state הקודם—פשוט חותכים את הטקסט עד האינדקס
         setTypedText(fullText.slice(0, i + 1));
         idxRef.current = i + 1;
       } else {
         clearInterval(interval);
       }
     }, 50);
-
     return () => clearInterval(interval);
-    // שים לב: אין תלותים—רצים פעם אחת בלבד
   }, []);
 
+  const resetSelection = (message) => {
+    setImageFile(null);
+    setPreviewUrl(null);
+    setResult(null);
+    if (message) alert(message);
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -83,16 +85,10 @@ export default function ClothingAIUpload() {
       };
 
       // ===== סינון מחמיר: מתקבל רק בגד או אקססוריז ללבישה =====
-
-      // 1) חובה: שיהיו items עם ביטחון סביר (לפחות פריט אחד confidence≥0.6)
+      // 1) לפחות פריט אחד עם confidence≥0.6
       const strongItems = (items || []).filter(i => (i?.confidence ?? 0) >= 0.6);
       if (strongItems.length === 0) {
-        // אין בגד מזוהה — גם אם יש צבעים/labels כלליים
-        setImageFile(null);
-        setPreviewUrl(null);
-        setResult(null);
-        alert("נא לבחור בגד או פריט לבוש");
-        return;
+        return resetSelection("נא לבחור בגד או פריט לבוש");
       }
 
       // 2) בדיקת התאמה לרשימת ביגוד/אקססוריז (כולל עברית)
@@ -115,23 +111,25 @@ export default function ClothingAIUpload() {
         "משקפי שמש","משקפי ראייה","משקפיים"
       ].map(x => x.toLowerCase());
 
-      const itemNames = strongItems.map(i => String(i?.name || "").toLowerCase());
-      const isClothingOrAccessory = itemNames.some(n =>
-        validClothingKeywords.some(k => n.includes(k))
-      );
+      const isClothingKeyword = (name) =>
+        validClothingKeywords.some(k => String(name || "").toLowerCase().includes(k));
 
-      if (!isClothingOrAccessory) {
-        setImageFile(null);
-        setPreviewUrl(null);
-        setResult(null);
-        alert("אירעה שגיאה בזיהוי הבגד");
-        return;
+      const clothingStrong = strongItems.filter(i => isClothingKeyword(i?.name));
+
+      // אם אין בכלל פריטי לבוש (למשל זוהה "person" בלבד)
+      if (clothingStrong.length === 0) {
+        return resetSelection("אירעה שגיאה בזיהוי הבגד");
       }
 
+      // ===== דרישה חדשה: תמונה עם יותר מפריט לבוש אחד => הודעה =====
+      if (clothingStrong.length !== 1) {
+        return resetSelection("יש להעלות פריט לבוש אחד בתמונה ");
+      }
       // ===== סוף סינון =====
 
       setResult(simplified);
       await saveClothingLocallyAndToFirestore(imageFile, simplified);
+
     } catch (e) {
       // שגיאות טכניות (לא קשורות לסינון "לא בגד")
       const status = e?.response?.status;
@@ -187,7 +185,6 @@ export default function ClothingAIUpload() {
 
       <header className="container-xl aiu-hero">
         <h1 className="aiu-heading">העלאת בגד לזיהוי</h1>
-
         <p className="aiu-sub">{typedText}</p>
       </header>
 
@@ -233,10 +230,6 @@ export default function ClothingAIUpload() {
           )}
         </section>
       </main>
-
-      <footer className="container-xl">
-        <Link to="/app_home" className="btn floating-button">חזרה לדף הבית</Link>
-      </footer>
     </div>
   );
 }

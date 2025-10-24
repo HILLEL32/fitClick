@@ -89,8 +89,6 @@ export default function Sign_up() {
         {message && <div className="su-alert">{message}</div>}
       </div>
 
-      {/* כפתור תחתון עקבי */}
-      <Link to="/" className="btn back-btn">חזרה לעמוד הראשי</Link>
     </div>
   );
 }

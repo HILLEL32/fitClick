@@ -221,3 +221,51 @@
   .features{ grid-template-columns:1fr }
   .cta-row{ flex-direction:column }
 }
+/*שיהיו רווחים נורמלים*/
+.inline-spaces {
+  white-space: pre;       
+}
+/* ===== גלילה אחת לכל המסך ===== */
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;   /* מבטל פס גלילה אופקי בכל מקום */
+  overflow-y: auto;     /* פס גלילה יחיד – על ה־body */
+  scroll-behavior: auto;/* בלי גלילה אוטומטית חלקה */
+  overscroll-behavior: none;
+}
+
+/* ודאו שלא נוצר פס גלילה פנימי ברכיבי תוכן */
+.home-wrap,
+.glass,
+.features,
+.card.feature,
+.marquee {
+  overflow: visible;    /* שלא יילכד גלילה בתוך הרכיב */
+}
+.inline-spaces {
+  display: flex;
+  justify-content: space-evenly; /* רווחים שווים וגדולים יותר */
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  max-width: 1200px;
+  margin: 1.5rem auto;
+  font-weight: 700;
+  color: #8a5d4b;
+  text-align: center;
+  gap: 7rem; /* רווח נוסף בין פריטים */
+}
+
+.inline-spaces span::after {
+  content: " · ";
+  margin-inline-start: 8px;
+  font-weight: 400;
+  opacity: 0.6;
+}
+
+.inline-spaces span:last-child::after {
+  content: "";
+}
+
+

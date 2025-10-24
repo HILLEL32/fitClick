@@ -5,6 +5,7 @@ import { auth } from '../firebase/firebase';
 import { useNavigate, Link } from 'react-router-dom';
 import '../css/Log_in.css'; // קובץ העיצוב החדש
 
+
 export default function Log_in() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,13 +17,13 @@ export default function Log_in() {
       alert('התחברת בהצלחה!');
       navigate('/app_home');
     } catch (error) {
-      alert('אירעה שגיאה: ' + error.message);
+      alert(' נסה שוב: ' + error.message);
     }
   };
 
   const handleForgotPassword = async () => {
     if (!email) {
-      alert('נא להזין כתובת מייל קודם');
+      alert('יש למלא כתובת מייל');
       return;
     }
     try {
@@ -66,7 +67,7 @@ export default function Log_in() {
 
           <div className="actions">
             <button onClick={handleLogin} className="btn btn-auth-primary">
-              Log In
+              התחברות
             </button>
 
             <button onClick={handleForgotPassword} className="btn btn-ghost">
@@ -74,15 +75,12 @@ export default function Log_in() {
             </button>
 
             <Link to="/change_password" className="btn btn-ghost">
-              שינוי סיסמה (למחוברים)
+              שינוי סיסמה 
             </Link>
           </div>
         </div>
 
       </div>
-        <Link to="/" className="btn floating-button">
-          חזרה לעמוד הראשי
-        </Link>
     </div>
   );
 }

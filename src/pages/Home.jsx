@@ -70,16 +70,16 @@ export default function Home() {
           </p>
 
           <div className="cta-row">
-            <Link to="/log_in" className="btn btn-cta">log in</Link>
-            <Link to="/sign_up" className="btn btn-cta alt">sign up</Link>
-            <Link to="/admin_signup" className="btn btn-cta alt">sign up for Admin</Link>
+            <Link to="/log_in" className="btn btn-cta">כניסה</Link>
+            <Link to="/sign_up" className="btn btn-cta alt">הרשמה</Link>
+            <Link to="/admin_signup" className="btn btn-cta alt">כניסת מנהלים</Link>
           </div>
 
           {/* באדג׳ים קטנים חיים */}
           <div className="badges">
-            <div className="badge live">AI Ready</div>
-            <div className="badge glow">Smart Matching</div>
-            <div className="badge soft">Personal Style</div>
+            <div className="badge live"> שילוב של AI</div>
+            <div className="badge glow">התאמה חכמה</div>
+            <div className="badge soft">סגנון אישי</div>
           </div>
         </div>
       </section>
@@ -87,9 +87,15 @@ export default function Home() {
       {/* סרט נע עדין */}
       <div className="marquee">
         <div className="marquee-track">
-          <span>לוק יומי · שילובי צבעים · ייעוץ עונתי · ספורט/אלגנט · ארון חכם · </span>
-          <span>לוק יומי · שילובי צבעים · ייעוץ עונתי · ספורט/אלגנט · ארון חכם · </span>
-          <span>לוק יומי · שילובי צבעים · ייעוץ עונתי · ספורט/אלגנט · ארון חכם · </span>
+          {/* <span>לוק יומי · שילובי צבעים · ייעוץ עונתי · ספורט/אלגנט · ארון חכם · </span>
+          <span>לוק יומי · שילובי צבעים · ייעוץ עונתי · ספורט/אלגנט · ארון חכם · </span> */}
+          <div class="inline-spaces">
+            <span>לוק יומי </span>
+            <span>שילובי צבעים</span>
+            <span>ייעוץ עונתי</span>
+            <span>ספורט/אלגנט</span>
+            <span>ארון חכם</span>
+          </div>
         </div>
       </div>
 
@@ -127,10 +133,10 @@ export default function Home() {
       </section>
 
       {/* קישורי CTA כפולים גם בסוף כדי שלא נגלול חזרה */}
-      <div className="cta-row tail">
+      {/* <div className="cta-row tail">
         <Link to="/log_in" className="btn btn-cta">log in</Link>
         <Link to="/sign_up" className="btn btn-cta alt">sign up</Link>
-      </div>
+      </div> */}
 
       {/* דקורציות רקע צפות */}
       <div className="blob b1" />

@@ -134,10 +134,6 @@ export default function UserProfile() {
           <MyStyle />
         </section>
       </main>
-
-      <footer className="container-xl">
-        <Link to="/app_home" className="btn floating-button">חזרה לדף הבית</Link>
-      </footer>
     </div>
   );
 }

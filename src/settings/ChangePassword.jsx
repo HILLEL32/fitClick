@@ -85,14 +85,14 @@ export default function ChangePassword() {
             value={confirmPwd}
             onChange={(e) => setConfirmPwd(e.target.value)}
             className="cp-input"
-            placeholder="הזיני שוב את הסיסמה"
+            placeholder="יש להזין סיסמה שוב"
           />
 
           <div className="cp-actions">
             <button onClick={handleChangePassword} className="btn btn-cta">
               עדכון סיסמה
             </button>
-            <Link to="/app_home" className="btn btn-ghost">
+            <Link to="/user_profile" className="btn btn-ghost">
               חזרה
             </Link>
           </div>
@@ -100,7 +100,6 @@ export default function ChangePassword() {
       </div>
 
       {/* כפתור תחתון עקבי (אופציונלי) */}
-      <Link to="/" className="btn back-btn">חזרה לעמוד הראשי</Link>
     </div>
   );
 }

@@ -10,8 +10,7 @@ export default function EditProfile() {
   const [userData, setUserData] = useState({
     username: '',
     phone: '',
-    gender: '',
-    bodyColor: '#f5d3b3'
+    gender: ''
   });
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(true);
@@ -66,7 +65,7 @@ export default function EditProfile() {
         username: userData.username,
         phone: userData.phone,
         gender: userData.gender,
-        bodyColor: userData.bodyColor
+        email: userData.email
       });
       setMessage('הפרופיל עודכן בהצלחה!');
     } catch (error) {
@@ -123,6 +122,15 @@ export default function EditProfile() {
               onChange={handleChange}
             />
 
+            <label className="form-label edit-label"> אימייל</label>
+            <input
+              type="email"
+              name="mail"
+              className="form-control fc-input"
+              value={userData.email}
+              onChange={handleChange}
+            />
+
             <label className="form-label edit-label">מגדר</label>
             <select
               name="gender"
@@ -136,25 +144,7 @@ export default function EditProfile() {
               <option value="נקבה">נקבה</option>
               <option value="אחר">אחר / לא לציין</option>
             </select>
-            {/* 
-            <label className="form-label edit-label">גוון עור</label>
-            <div className="color-row">
-              <input
-                type="color"
-                name="bodyColor"
-                className="form-control form-control-color fc-color"
-                value={userData.bodyColor}
-                onChange={handleChange}
-                title="בחר צבע גוף"
-              />
-              <span
-                className="bodycolor-swatch"
-                style={{ backgroundColor: userData.bodyColor || '#eee' }}
-                title={userData.bodyColor || ''}
-              />
-              <code className="color-code">{userData.bodyColor}</code>
-            </div> */}
-
+           
             <div className="actions">
               <button type="submit" className="btn btn-auth-primary">שמור שינויים</button>
               <Link to="/user_profile" className="btn btn-ghost">ביטול</Link>
@@ -164,10 +154,6 @@ export default function EditProfile() {
           {message && <div className="alert alert-info mt-2">{message}</div>}
         </section>
       </main>
-
-      <footer className="container-xl">
-        <Link to="/app_home" className="btn floating-button">חזרה לדף הבית</Link>
-      </footer>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap');
 
-/* 🎨 משתני צבעים ועיצוב כללי */
+/* משתני צבעים ועיצוב כללי */
 :root {
   --brand: #B5693A;
   --brand-700: #8C4320;
@@ -20,36 +20,57 @@
   --r-md: 14px;
 }
 
-/* 🧱 בסיס כללי */
+/* בסיס כללי */
 * {
   box-sizing: border-box;
 }
 
-html, body {
-  height: 100%;
+html {
+  scroll-behavior: smooth;
+  /* גלילה חלקה */
+}
+
+html,
+body {
   margin: 0;
+  padding: 0;
+  height: auto;
+  min-height: 100%;
   font-family: 'Rubik', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, 'Noto Sans Hebrew', sans-serif;
   color: var(--text);
   background:
-    radial-gradient(1200px 600px at 80% -10%, var(--accent-100) 0%, rgba(255,214,219,0) 60%),
-    radial-gradient(900px 420px at 10% 110%, #ffe5d1 0%, rgba(255,229,209,0) 60%),
+    radial-gradient(1200px 600px at 80% -10%, var(--accent-100) 0%, rgba(255, 214, 219, 0) 60%),
+    radial-gradient(900px 420px at 10% 110%, #ffe5d1 0%, rgba(255, 229, 209, 0) 60%),
     linear-gradient(135deg, var(--bg) 0%, #fff 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: cover;
+  overscroll-behavior: contain;
+
+
+  /* ✅ רק גלילה אחת כללית */
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
-/* 🌸 דף הבית עם רקע חי */
+/* ✅ ביטול מוחלט של גלילה פנימית */
+#root,
+.App,
 .apphome-page {
-  min-height: 100vh;
+  height: auto;
+  min-height: 100%;
+  overflow: visible !important;
+}
+
+/* דף הבית */
+.apphome-page {
   display: flex;
   flex-direction: column;
   position: relative;
   padding: clamp(1.2rem, 3vw, 2rem);
 }
 
-/* 🪶 שכבת טקסטורה עדינה */
+/* שכבת טקסטורה עדינה */
 .apphome-overlay {
   position: fixed;
   inset: 0;
@@ -61,11 +82,16 @@ html, body {
 }
 
 @keyframes floatTexture {
-  from { transform: translate(0, 0); }
-  to { transform: translate(120px, 80px); }
+  from {
+    transform: translate(0, 0);
+  }
+
+  to {
+    transform: translate(120px, 80px);
+  }
 }
 
-/* 💧 בלובים זזים */
+/* בלובים זזים */
 .blob {
   position: absolute;
   filter: blur(18px);
@@ -104,11 +130,18 @@ html, body {
 }
 
 @keyframes blob {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(20px, -30px) scale(1.08); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  50% {
+    transform: translate(20px, -30px) scale(1.08);
+  }
 }
 
-/* 📦 קונטיינר מרכזי */
+/* קונטיינר מרכזי */
 .container-xl {
   width: min(1100px, 94vw);
   margin: 0 auto;
@@ -116,7 +149,7 @@ html, body {
   z-index: 1;
 }
 
-/* 🏷️ כותרת עליונה */
+/* כותרת עליונה */
 .apphome-hero {
   text-align: center;
   margin-top: min(3vh, 24px);
@@ -147,7 +180,7 @@ html, body {
   animation: fadeInUp .9s ease .15s both;
 }
 
-/* 🧊 כרטיס זכוכית */
+/* כרטיס זכוכית */
 .glass-card {
   background: rgba(255, 255, 255, .62);
   border: 1px solid var(--border);
@@ -159,28 +192,30 @@ html, body {
 }
 
 @keyframes popIn {
-  from { opacity: 0; transform: translateY(10px) scale(.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.apphome-card {
-  margin-top: clamp(.5rem, 1.6vw, 1rem);
-}
-
-.apphome-title {
-  margin: 0 0 1rem;
-  text-align: center;
-  font-weight: 800;
-  color: #5a4137;
-  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
-}
-
-/* 🔘 כפתורים */
+/* כפתורים */
 .apphome-actions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -188,7 +223,9 @@ html, body {
 }
 
 @media (max-width: 860px) {
-  .apphome-actions { grid-template-columns: 1fr; }
+  .apphome-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 .fc-btn {
@@ -217,16 +254,26 @@ html, body {
 }
 
 @keyframes buttonGradient {
-  from { background-position: 0% 50%; }
-  to { background-position: 100% 50%; }
+  from {
+    background-position: 0% 50%;
+  }
+
+  to {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes floatUp {
-  from { transform: translateY(0); }
-  to { transform: translateY(-6px); }
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-6px);
+  }
 }
 
-/* 🖋️ אפקט כתיבה */
+/* אפקט כתיבה */
 .typewriter {
   display: inline-block;
   border-left: 3px solid var(--accent);
@@ -236,14 +283,27 @@ html, body {
 }
 
 @keyframes blinkCursor {
-  from { border-color: transparent; }
-  to { border-color: var(--accent); }
+  from {
+    border-color: transparent;
+  }
+
+  to {
+    border-color: var(--accent);
+  }
 }
 
-/* 🎨 וריאציות צבע לכפתורים */
-.fc-btn--one { background: linear-gradient(135deg, #B5693A, #E78A90); }
-.fc-btn--two { background: linear-gradient(135deg, #E78A90, #FF9D66); }
-.fc-btn--three { background: linear-gradient(135deg, #D18C5B, #B5693A); }
+/* וריאציות צבע לכפתורים */
+.fc-btn--one {
+  background: linear-gradient(135deg, #B5693A, #E78A90);
+}
+
+.fc-btn--two {
+  background: linear-gradient(135deg, #E78A90, #FF9D66);
+}
+
+.fc-btn--three {
+  background: linear-gradient(135deg, #D18C5B, #B5693A);
+}
 
 .fc-btn:focus {
   outline: 2px solid #ffd6db;
