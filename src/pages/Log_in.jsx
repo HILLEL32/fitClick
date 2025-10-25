@@ -17,7 +17,7 @@ export default function Log_in() {
       alert('התחברת בהצלחה!');
       navigate('/app_home');
     } catch (error) {
-      alert(' נסה שוב: ' + error.message);
+      alert('אימייל או סיסמה שגויים');
     }
   };
 

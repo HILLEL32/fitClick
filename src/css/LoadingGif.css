@@ -1,0 +1,29 @@
+/*לא טופל*/
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.65);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+.loading-img {
+  width: min(160px, 40vw);
+  height: auto;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.loading-inline {
+  display: inline-grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 32px;
+  vertical-align: middle;
+}
+
+.loading-img--inline {
+  width: 28px;
+  height: 28px;
+}

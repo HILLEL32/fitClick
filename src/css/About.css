@@ -1,0 +1,306 @@
+/* ===== בסיס כללי – שומר על משתני הצבעים שלך ===== */
+.about--formal {
+  --bg: var(--bg, #F8F4F2);
+  --surface: var(--surface, #FFFFFF);
+  --text: var(--text, #1E1E1E);
+  --muted: rgba(0,0,0,.65);
+  --border: var(--border, #EAD9D2);
+  --brand: var(--brand, #B5693A);
+  --brand-700: var(--brand-700, #8C4320);
+  --accent: var(--accent, #E78A90);
+  --accent-50: var(--accent-50, #FFF1F4);
+  --shadow-md: var(--shadow-md, 0 6px 18px rgba(0,0,0,.08));
+  --shadow-lg: var(--shadow-lg, 0 14px 30px rgba(0,0,0,.12));
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+}
+
+/* ===== מבנה עמוד וקונטיינר ===== */
+.about-container {
+  width: min(1100px, 92%);
+  margin-inline: auto;
+}
+
+.about-section { padding: clamp(28px, 5vw, 48px) 0; }
+
+.section-head {
+  margin-bottom: 14px;
+  text-align: right;
+}
+
+.eyebrow,
+.section-kicker {
+  display: inline-block;
+  font-size: .95rem;
+  color: var(--brand-700);
+  letter-spacing: .3px;
+  background: color-mix(in oklab, var(--accent-50) 70%, transparent);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.about-title {
+  margin: 10px 0 6px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  font-size: clamp(28px, 3.2vw, 42px);
+}
+
+.about-subtitle {
+  font-size: clamp(16px, 1.8vw, 19px);
+  color: var(--muted);
+}
+
+/* ===== HERO רשמי ונקי ===== */
+.about-hero--formal {
+  position: relative;
+  padding: clamp(40px, 7vw, 80px) 0;
+  background:
+    radial-gradient(70rem 24rem at 110% -10%, color-mix(in oklab, var(--accent), transparent 82%), transparent),
+    radial-gradient(60rem 26rem at -10% 120%, color-mix(in oklab, var(--brand), transparent 85%), transparent);
+}
+.about-hero__content { text-align: right; max-width: 760px; margin-inline-start: auto; }
+
+/* ===== קו הפרדה אלגנטי ===== */
+.section-divider {
+  height: 12px;
+  background:
+    linear-gradient(to right,
+      transparent,
+      color-mix(in oklab, var(--border), transparent 20%) 15% 85%,
+      transparent);
+  mask: linear-gradient(to bottom, transparent, #000 35%, #000 65%, transparent);
+}
+
+/* ===== גריד שני טורים מאוזן ===== */
+.grid-two {
+  display: grid;
+  grid-template-columns: 1.1fr .9fr;
+  gap: clamp(16px, 4vw, 28px);
+  align-items: start;
+}
+@media (max-width: 900px) { .grid-two { grid-template-columns: 1fr; } }
+
+/* ===== טקסט ותיבת ציטוט "רשמית" ===== */
+.copy p { margin: 8px 0; }
+
+.pullquote {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-md);
+}
+.pullquote blockquote {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.pullquote figcaption {
+  margin-top: 6px;
+  font-size: .9rem;
+  color: var(--muted);
+}
+
+/* ===== רשימת “מה אנחנו מציעים” – נקייה ומודגשת ===== */
+.bullets {
+  list-style: none;
+  padding: 0; margin: 8px 0 0;
+}
+.bullets li {
+  display: flex; gap: 6px; align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px dashed color-mix(in oklab, var(--border), transparent 25%);
+}
+.bullets li:last-child { border-bottom: none; }
+.bullets strong { color: var(--brand-700); }
+.note { margin-top: 10px; color: var(--muted); }
+
+/* ===== שלבים — רשמי, ממוספר ===== */
+.steps {
+  list-style: none; counter-reset: stp; padding: 0; margin: 6px 0 0;
+}
+.steps li {
+  position: relative; padding-inline-start: 44px; margin: 14px 0;
+}
+.steps li::before {
+  counter-increment: stp; content: counter(stp);
+  position: absolute; inset-inline-start: 0; top: -2px;
+  width: 28px; height: 28px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--brand);
+  color: #fff; font-weight: 700;
+  box-shadow: 0 6px 16px color-mix(in oklab, var(--brand), transparent 70%);
+}
+.steps h3 {
+  margin: 0 0 4px; font-size: 1.05rem; font-weight: 700; letter-spacing: .2px;
+}
+.steps p { margin: 0; color: var(--muted); }
+
+/* ===== צור קשר – רשמי ===== */
+.contact-row {
+  display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(16px, 4vw, 28px);
+  align-items: start;
+}
+@media (max-width: 900px) { .contact-row { grid-template-columns: 1fr; } }
+
+.contact-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow-md);
+  text-align: right;
+}
+.contact-actions {
+  display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px;
+}
+.btn-solid, .btn-outline {
+  display: inline-block; text-decoration: none;
+  padding: 10px 16px; border-radius: 12px; font-weight: 700;
+  transition: opacity .2s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.btn-solid {
+  background: var(--brand); color: #fff; border: 1px solid var(--brand);
+  box-shadow: 0 6px 16px color-mix(in oklab, var(--brand), transparent 72%);
+}
+.btn-solid:hover { opacity: .92; box-shadow: 0 10px 24px color-mix(in oklab, var(--brand), transparent 60%); }
+
+.btn-outline {
+  background: transparent; color: var(--brand-700); border: 1.5px solid var(--brand);
+}
+.btn-outline:hover { background: var(--accent-50); }
+
+.meta {
+  list-style: none; padding: 0; margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.meta li {
+  display: flex; gap: 8px; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid color-mix(in oklab, var(--border), transparent 20%);
+}
+.meta li:last-child { border-bottom: none; }
+.meta-key { color: var(--muted); }
+
+/* נגישות – העדפת הפחתת אנימציות */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+/* =========================
+   וריאציה לעמוד About
+   ========================= */
+
+/* גוון רקע מעט שונה + בלובים חמים */
+.about-variant .b1 { background:#ffe3e8; }
+.about-variant .b2 { background:#ffe0c7; }
+.about-variant .b3 { background:#e4c2a5; }
+.about-variant .body-overlay { opacity:.06; } /* טקסטורה עדינה יותר */
+
+/* HERO: יישור לימין, הייררכיה רשמית */
+.hero--about { place-items: stretch; }
+.hero-inner--about {
+  text-align: right;
+  margin-inline: auto;
+  max-width: 1100px;
+}
+.hero-inner--about .brand { color: var(--brand); text-shadow: none; }
+.hero-inner--about .subline { color: #5f504b; }
+
+/* כפתור Outline ל־About */
+.btn-cta-outline {
+  background: transparent;
+  color: var(--brand-700) !important;
+  border: 2px solid var(--brand);
+  box-shadow: none;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+.btn-cta-outline:hover {
+  background: var(--accent-50);
+  transform: translateY(-2px);
+}
+
+/* באדג'ים בסגנון outline מזוהה */
+.about-variant .badge {
+  background: #fff;
+  color: var(--brand-700);
+  border: 2px solid #efdcd5;
+  box-shadow: none;
+}
+.about-variant .badge.live,
+.about-variant .badge.glow,
+.about-variant .badge.soft {
+  background: #fff;
+  color: var(--brand-700);
+  border-color: #e9cfc7;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+/* מרקי שקט יותר */
+.about-variant .marquee {
+  background: #fff;
+  border-block-color: #efded8;
+}
+.about-variant .marquee-track {
+  color: #775c54;
+  animation-duration: 28s; /* איטי יותר */
+}
+
+/* זכוכית עם פס זהב דק מימין */
+.about-variant .glass {
+  position: relative;
+  box-shadow: var(--shadow-md);
+  background: rgba(255,255,255,.72);
+}
+.about-variant .glass::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0; /* פס בצד ימין ב-RTL */
+  width: 5px;
+  border-top-left-radius: var(--r-xl);
+  border-bottom-left-radius: var(--r-xl);
+  background: linear-gradient(180deg, var(--gold), color-mix(in oklab, var(--gold), transparent 35%));
+  opacity: .75;
+}
+
+/* כותרות זכוכית מדודות יותר */
+.about-variant .glass h3 {
+  color: var(--brand-700);
+  letter-spacing: .2px;
+}
+
+/* רשימת bullets בעיצוב מינימליסטי */
+.about-variant .bullets {
+  padding-inline-start: 1rem;
+}
+.about-variant .bullets li {
+  margin: .3rem 0;
+  color: #5f504b;
+}
+.about-variant .bullets strong {
+  color: var(--brand-700);
+}
+
+/* רשימת קשר – קישור דיסקרטי */
+.about-variant .contact-list a {
+  border-bottom: 1px dotted rgba(0,0,0,.25);
+}
+.about-variant .contact-list a:hover {
+  border-bottom-color: var(--brand);
+}
+
+/* פוטר: טיפוגרפיה מעט קטנה + ריווח */
+.about-variant footer .inline-spaces {
+  gap: 4rem;           /* קטן יותר מהברירת מחדל */
+  font-weight: 600;    /* פחות “צועק” */
+  color: #7a6158;
+}

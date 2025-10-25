@@ -5,7 +5,8 @@ import axios from 'axios';
 import { auth, db } from "../../firebase/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import '../../css/ClothingAIUpload.css';
-
+import LoadingGif from '../../component/LoadingGIF';
+// לא טופל לוגו הטעינה
 const API_KEY = import.meta.env.VITE_LYKDAT_KEY;
 
 // ===== תרגום אוטומטי עם Fallback =====
@@ -19,7 +20,7 @@ const loadLocalCache = () => {
   catch { return {}; }
 };
 const saveLocalCache = (obj) => {
-  try { localStorage.setItem('he-translate-cache', JSON.stringify(obj)); } catch {}
+  try { localStorage.setItem('he-translate-cache', JSON.stringify(obj)); } catch { }
 };
 let localCache = loadLocalCache();
 
@@ -59,7 +60,7 @@ async function translateText(q, target = 'he', source = 'auto') {
           const t = await providerLibreTranslate(q, target, source);
           memCache.set(key, t); localCache[key] = t; saveLocalCache(localCache);
           return t;
-        } catch {}
+        } catch { }
       }
       const t2 = await providerMyMemory(q, target, source === 'auto' ? 'en' : source);
       memCache.set(key, t2); localCache[key] = t2; saveLocalCache(localCache);
@@ -91,6 +92,7 @@ async function translateList(list, target = 'he', source = 'auto') {
 export default function ClothingAIUpload() {
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
+
 
   // תוצאות מקור באנגלית (לשמירה וללוגיקה)
   const [result, setResult] = useState(null);
@@ -204,14 +206,14 @@ export default function ClothingAIUpload() {
       if (strongItems.length === 0) return resetSelection("נא לבחור בגד או פריט לבוש");
 
       const validClothingKeywords = [
-        "shirt","t-shirt","top","blouse","dress","gown","skirt","pants","trousers","jeans",
-        "shorts","coat","jacket","sweater","cardigan","hoodie","overcoat","suit","blazer",
-        "vest","sweatshirt","tracksuit","legging","tights",
-        "shoe","shoes","sneakers","boots","heels","sandals","flip-flops","bag","handbag","backpack","tote","purse",
-        "sunglasses","glasses","eyeglasses","frames","earrings","necklace","bracelet","ring","jewelry","watch","brooch",
-        "scarf","hat","cap","beanie","beret","belt","tie","bow tie","gloves",
-        "חולצה","שמלה","חצאית","מכנס","מכנסיים","ג׳ינס","ג'ינס","מעיל","ז׳קט","סוודר","קרדיגן","קפוצ׳ון",
-        "חליפה","וסט","טרנינג","טייץ","נעל","נעליים","סניקרס","מגפיים","סנדלים","תיק","שעון","עגילים","שרשרת","צעיף","כובע"
+        "shirt", "t-shirt", "top", "blouse", "dress", "gown", "skirt", "pants", "trousers", "jeans",
+        "shorts", "coat", "jacket", "sweater", "cardigan", "hoodie", "overcoat", "suit", "blazer",
+        "vest", "sweatshirt", "tracksuit", "legging", "tights",
+        "shoe", "shoes", "sneakers", "boots", "heels", "sandals", "flip-flops", "bag", "handbag", "backpack", "tote", "purse",
+        "sunglasses", "glasses", "eyeglasses", "frames", "earrings", "necklace", "bracelet", "ring", "jewelry", "watch", "brooch",
+        "scarf", "hat", "cap", "beanie", "beret", "belt", "tie", "bow tie", "gloves",
+        "חולצה", "שמלה", "חצאית", "מכנס", "מכנסיים", "ג׳ינס", "ג'ינס", "מעיל", "ז׳קט", "סוודר", "קרדיגן", "קפוצ׳ון",
+        "חליפה", "וסט", "טרנינג", "טייץ", "נעל", "נעליים", "סניקרס", "מגפיים", "סנדלים", "תיק", "שעון", "עגילים", "שרשרת", "צעיף", "כובע"
       ].map(x => x.toLowerCase());
 
       const isClothingKeyword = (name) =>

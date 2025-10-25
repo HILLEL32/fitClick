@@ -28,6 +28,8 @@ import AdminSignUp from './pages/admin/AdminSignUp'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminThanks from './pages/admin/AdminThanks'
 import AdminUsers from './pages/admin/AdminUsers'
+import LoadingGif from './component/LoadingGIF'
+import About from './component/About'
 
 function App() {
   return (
@@ -53,6 +55,8 @@ function App() {
           <Route path="/change_password" element={<ChangePassword />} />
           <Route path="/My_style" element={<MyStyle />} />
           <Route path="/ai_chat" element={<AiChat />} />
+          <Route path="/loading_gif" element={<LoadingGif />} />
+          <Route path="/about" element={<About />} />
 
           {/* --- Admin public pages --- */}
           <Route path="/admin_login" element={<AdminLogin />} />

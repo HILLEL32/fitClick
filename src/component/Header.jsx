@@ -47,9 +47,11 @@ export default function Header() {
           {!user || isSimplePage ? (
             // === מצב: אין משתמש מחובר (או שנמצאים בדף כניסה/הרשמה) ===
             <>
+              <Link to="/about" className="nav-link">אודות</Link>
               <Link to="/" className="nav-link">דף הבית</Link>
               <Link to="/log_in" className="nav-link">כניסה</Link>
               <Link to="/sign_up" className="nav-btn nav-btn-primary">הרשמה</Link>
+
             </>
           ) : (
             // === מצב: משתמש מחובר ===
