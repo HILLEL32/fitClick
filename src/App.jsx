@@ -30,6 +30,7 @@ import AdminThanks from './pages/admin/AdminThanks'
 import AdminUsers from './pages/admin/AdminUsers'
 import LoadingGif from './component/LoadingGIF'
 import About from './component/About'
+import Stores from './features/clothing/Stores'
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
           <Route path="/ai_chat" element={<AiChat />} />
           <Route path="/loading_gif" element={<LoadingGif />} />
           <Route path="/about" element={<About />} />
+          <Route path="/stores" element={<Stores />} />
 
           {/* --- Admin public pages --- */}
           <Route path="/admin_login" element={<AdminLogin />} />

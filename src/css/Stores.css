@@ -1,0 +1,92 @@
+:root{
+  --brand: var(--brand, #B5693A);
+  --surface: var(--surface, #FFFFFF);
+  --text: var(--text, #1E1E1E);
+}
+
+/* מעטפת הפס */
+.brands-wrap{
+  position: relative;
+  background: transparent;      /* שקוף – בלי מסגרת חומה */
+  overflow: hidden;
+  padding: 1rem 0;
+}
+
+/* אפקט "אינסופי" – שכבת דהייה בצדדים */
+.brands-wrap::before,
+.brands-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100px;                 /* רוחב אפקט הדהייה */
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.brands-wrap::before {
+  left: 0;
+  background: linear-gradient(to right, var(--surface) 10%, transparent 90%);
+}
+.brands-wrap::after {
+  right: 0;
+  background: linear-gradient(to left, var(--surface) 10%, transparent 90%);
+}
+
+/* המסילה עצמה */
+.brands-track{
+  display: inline-flex;
+  gap: 1.2rem;
+  align-items: center;
+  animation: marqueeMove 28s linear infinite;
+  will-change: transform;
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.brands-track.paused{ animation-play-state: paused; }
+
+@keyframes marqueeMove{
+  from { transform: translate3d(0,0,0); }
+  to   { transform: translate3d(-50%,0,0); }
+}
+
+/* כפתור/לוגו בודד */
+.brand-chip{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  background: #fff;
+  border: none;                 /* אין מסגרת בכלל */
+  border-radius: 50%;           /* מעגלי – נראה טבעי ורך */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.brand-chip:hover,
+.brand-chip:focus-visible{
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  outline: none;
+}
+
+/* התמונה עצמה */
+.brand-chip img{
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  display: block;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform: translateZ(0);
+}
+
+/* לא צריך טקסט מתחת ללוגו כרגע */
+.brand-chip span{ display: none; }
+
+/* משתמשים שמעדיפים בלי אנימציה */
+@media (prefers-reduced-motion: reduce){
+  .brands-track{ animation: none; }
+}

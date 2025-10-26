@@ -7,6 +7,7 @@ import EditClothing from './EditClothing';
 import ClothingAIUpload from './ClothingAIUpload';
 import '../../css/Wardrobe.css';
 import AiChat from '../../AI/AiChat';
+import Stores from './Stores'
 
 function Typewriter({ lines = [], typingSpeed = 45, pause = 1200 }) {
   const [idx, setIdx] = useState(0);
@@ -239,6 +240,7 @@ export default function Wardrobe() {
 
   return (
     <div className="wardrobe-wrapper" dir="rtl">
+      <Stores/>
       <div className="container">
         <h2 className="wardrobe-heading text-center mb-4">הארון שלי</h2>
 
