@@ -7,6 +7,8 @@ import {
 import { toast } from "react-toastify";
 import '../../css/AdminUsers.css';
 
+// ⬅️ חדש
+import AdminItemsDetectedChart from "../../component/AdminItemsDetectedChart";
 const PAGE_SIZE = 20;
 
 export default function AdminUsers() {
@@ -120,98 +122,102 @@ export default function AdminUsers() {
   return (
     <div className="admin-users p-4 max-w-6xl mx-auto">
 
-    <div className="p-4 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">ניהול משתמשים</h1>
+      <div className="p-4 max-w-6xl mx-auto">
+        <h1 className="text-2xl font-bold mb-4">ניהול משתמשים</h1>
 
-      {/* <form onSubmit={onSearch} className="flex gap-2 mb-4">
-        <input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="חיפוש לפי אימייל"
-          className="border rounded px-3 py-2 flex-1"
-        />
-        <button className="bg-black text-white px-4 py-2 rounded">חפש</button>
-      </form> */}
+        {/* ⬇️ חדש: גרף "בגדים שזוהו בכל יום" */}
+        <div className="mb-10 border rounded p-4 bg-white">
+          <AdminItemsDetectedChart />
+        </div>
 
-      <div className="overflow-auto border rounded">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="text-right p-2">אימייל</th>
-              <th className="text-right p-2">תפקיד</th>
-              <th className="text-right p-2">נחסם?</th>
-              <th className="text-right p-2">נוצר</th>
-              <th className="text-right p-2">פעולות</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(u => (
-              <tr key={u.id} className="border-t">
-                <td className="p-2">{u.email || "-"}</td>
-                <td className="p-2">{u.role || "user"}</td>
-                <td className="p-2">{u.isBlocked ? "כן" : "לא"}</td>
-                <td className="p-2">{u.createdAt?.toDate ? u.createdAt.toDate().toLocaleString() : "-"}</td>
-                <td className="p-2">
-                  <div className="flex gap-2">
-                    {u.role === "admin" ? (
-                      <button
-                        type="button"
-                        onClick={() => setRole(u.id, "user")}
-                        className="px-3 py-1 border rounded"
-                        title="הורדה ממנהל"
-                      >
-                        הורד מנהל
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => setRole(u.id, "admin")}
-                        className="px-3 py-1 border rounded"
-                        title="קדם למנהל"
-                      >
-                        קדם למנהל
-                      </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => toggleBlock(u.id, u.isBlocked)}
-                      className="px-3 py-1 border rounded"
-                      title={u.isBlocked ? "שחרר חסימה" : "חסום משתמש"}
-                    >
-                      {u.isBlocked ? "הורד חסימה" : "חסום"}
-                    </button>
-                  </div>
-                </td>
+        {/* <form onSubmit={onSearch} className="flex gap-2 mb-4">
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="חיפוש לפי אימייל"
+            className="border rounded px-3 py-2 flex-1"
+          />
+          <button className="bg-black text-white px-4 py-2 rounded">חפש</button>
+        </form> */}
+
+        <div className="overflow-auto border rounded">
+          <table className="min-w-full text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="text-right p-2">אימייל</th>
+                <th className="text-right p-2">תפקיד</th>
+                <th className="text-right p-2">נחסם?</th>
+                <th className="text-right p-2">נוצר</th>
+                <th className="text-right p-2">פעולות</th>
               </tr>
-            ))}
-            {!loading && rows.length === 0 && (
-              <tr><td colSpan={5} className="p-4 text-center text-gray-500">אין נתונים</td></tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {rows.map(u => (
+                <tr key={u.id} className="border-t">
+                  <td className="p-2">{u.email || "-"}</td>
+                  <td className="p-2">{u.role || "user"}</td>
+                  <td className="p-2">{u.isBlocked ? "כן" : "לא"}</td>
+                  <td className="p-2">{u.createdAt?.toDate ? u.createdAt.toDate().toLocaleString() : "-"}</td>
+                  <td className="p-2">
+                    <div className="flex gap-2">
+                      {u.role === "admin" ? (
+                        <button
+                          type="button"
+                          onClick={() => setRole(u.id, "user")}
+                          className="px-3 py-1 border rounded"
+                          title="הורדה ממנהל"
+                        >
+                          הורד מנהל
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setRole(u.id, "admin")}
+                          className="px-3 py-1 border rounded"
+                          title="קדם למנהל"
+                        >
+                          קדם למנהל
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => toggleBlock(u.id, u.isBlocked)}
+                        className="px-3 py-1 border rounded"
+                        title={u.isBlocked ? "שחרר חסימה" : "חסום משתמש"}
+                      >
+                        {u.isBlocked ? "הורד חסימה" : "חסום"}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {!loading && rows.length === 0 && (
+                <tr><td colSpan={5} className="p-4 text-center text-gray-500">אין נתונים</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
 
-      <div className="flex items-center justify-between mt-4">
-          {/* <button
-            type="button"
-            onClick={onPrev}
-            className="px-3 py-2 border rounded disabled:opacity-50"
-            disabled={pageStack.length <= 1 || loading}
-          >
-            ← הקודם
-          </button>
-          {loading && <span>טוען…</span>}
-          <button
-            type="button"
-            onClick={onNext}
-            className="px-3 py-2 border rounded disabled:opacity-50"
-            disabled={!hasNext || loading}
-          >
-            הבא →
-          </button> */}
+        <div className="flex items-center justify-between mt-4">
+            {/* <button
+              type="button"
+              onClick={onPrev}
+              className="px-3 py-2 border rounded disabled:opacity-50"
+              disabled={pageStack.length <= 1 || loading}
+            >
+              ← הקודם
+            </button>
+            {loading && <span>טוען…</span>}
+            <button
+              type="button"
+              onClick={onNext}
+              className="px-3 py-2 border rounded disabled:opacity-50"
+              disabled={!hasNext || loading}
+            >
+              הבא →
+            </button> */}
+        </div>
       </div>
     </div>
-    </div>
-
   );
 }

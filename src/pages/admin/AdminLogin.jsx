@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import "../../css/AdminSignUp.css"; // ממחזר את עיצוב ההרשמה
+import "../../css/AdminSignUp.css"; // ממחזר את עיצוב ההרשמה (כולל @import './_loader.css')
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -12,7 +12,7 @@ export default function AdminLogin() {
   const [busy, setBusy] = useState(false);
 
   const nav = useNavigate();
-  const { state } = useLocation(); // הודעה מדף ההרשמה
+  const { state } = useLocation();
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -29,7 +29,6 @@ export default function AdminLogin() {
         password
       );
 
-      // בדיקת תפקיד ב־Firestore
       const userRef = doc(db, "users", cred.user.uid);
       const snap = await getDoc(userRef);
 
@@ -44,7 +43,6 @@ export default function AdminLogin() {
         throw new Error("אין לך הרשאת מנהל.");
       }
 
-      // ✅ מסלול תואם ל-App.jsx: /admin_dashboard
       nav("/admin_dashboard");
     } catch (err) {
       setError(err?.message || "שגיאה בהתחברות");
@@ -55,6 +53,12 @@ export default function AdminLogin() {
 
   return (
     <div className="su-page" dir="rtl">
+      {busy && (
+        <div className="loading-overlay" role="status" aria-live="polite">
+          <span className="loader" aria-label="מתחבר..."></span>
+        </div>
+      )}
+
       <div className="su-overlay" />
       <div className="blob b1" />
       <div className="blob b2" />
@@ -63,10 +67,7 @@ export default function AdminLogin() {
       <section className="glass-card">
         <h1 className="su-title">כניסת מנהלים</h1>
 
-        {/* הודעת הצלחה מדף ההרשמה (לא חובה) */}
         {state?.msg && <div className="su-alert success">{state.msg}</div>}
-
-        {/* הודעת שגיאה */}
         {error && <div className="su-alert">{error}</div>}
 
         <form className="su-form" onSubmit={onSubmit}>
@@ -79,6 +80,7 @@ export default function AdminLogin() {
             onChange={(e) => setEmail(e.target.value)}
             autoComplete="username"
             required
+            disabled={busy}
           />
 
           <label className="su-label">סיסמה</label>
@@ -90,6 +92,7 @@ export default function AdminLogin() {
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="current-password"
               required
+              disabled={busy}
             />
             <button
               type="button"
@@ -97,6 +100,7 @@ export default function AdminLogin() {
               onClick={() => setShowPwd((v) => !v)}
               aria-label={showPwd ? "הסתר סיסמה" : "הצג סיסמה"}
               title={showPwd ? "הסתר סיסמה" : "הצג סיסמה"}
+              disabled={busy}
             >
               {showPwd ? "🙈" : "👁️"}
             </button>
@@ -108,7 +112,11 @@ export default function AdminLogin() {
         </form>
 
         <div className="meta-links">
-          <Link to="/admin_signup" className="back-btn">
+          <Link
+            to="/admin_signup"
+            className={`back-btn ${busy ? 'disabled-link' : ''}`}
+            aria-disabled={busy ? 'true' : 'false'}
+          >
             אין לך חשבון מנהל? הרשמה
           </Link>
         </div>

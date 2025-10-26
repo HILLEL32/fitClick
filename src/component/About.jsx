@@ -64,7 +64,7 @@ export default function AboutPage() {
             </section>
             <br />
 
-            {/* “איך זה עובד” – כרטיס זכוכית עם רשימת צעדים */}
+            {/* “איך זה עובד”  */}
             <section className="glass" aria-labelledby="how-title">
                 <h3 id="how-title">איך זה עובד</h3>
                 <ul className="bullets">
@@ -73,7 +73,7 @@ export default function AboutPage() {
                 </ul>
             </section>
 
-            {/* צור קשר – כרטיס זכוכית עם פרטים אישיים */}
+            {/*צור קשר */}
             <section className="glass" aria-labelledby="contact-title">
                 <h3 id="contact-title">צור קשר</h3>
                 <p>אשמח לשמוע מכם! לשאלות, הערות או הצעות לשיפור:</p>
@@ -82,7 +82,7 @@ export default function AboutPage() {
                     <li><b>שם:</b> הלל דניאל</li>
                     <li>
                         <b>מייל:</b>{" "}
-                        <a href="mailto:your-email@example.com">your-email@example.com</a>
+                        <a href="mailto:your-email@example.com">xxx@gmail.com</a>
                     </li>
                     <li>
                         <b>טלפון:</b>{" "}
@@ -96,12 +96,10 @@ export default function AboutPage() {
                 </div>
             </section>
 
-            {/* בלובים דקורטיביים לפי התבנית */}
             <div className="blob b1" aria-hidden />
             <div className="blob b2" aria-hidden />
             <div className="blob b3" aria-hidden />
 
-            {/* FOOTER תחתון — המידע שביקשת להעביר לשורה התחתונה */}
             <footer aria-label="פרטי מערכת">
                 <div className="inline-spaces">
                     <span>שפה: עברית · RTL</span>

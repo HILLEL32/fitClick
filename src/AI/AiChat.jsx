@@ -604,6 +604,14 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
           {loadingAsk ? "מבקש מה-AI..." : "בקש לוק מהארון שלי"}
         </button>
 
+
+         {loadingAsk && (
+           <div className="inline-loader-row" aria-live="polite" role="status">
+             <span className="loader loader--sm" aria-label="מבקש מה-AI..."></span>
+             <span className="inline-loader-text">מבקש מה-AI…</span>
+           </div>
+         )}
+
         {/* סטטוסים */}
         {loadingWardrobe && <div className="mt-3 aichat-status">טוען את הארון...</div>}
         {err && <div className="alert aichat-alert aichat-alert-danger mt-3">{err}</div>}

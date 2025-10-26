@@ -83,3 +83,11 @@
   font-weight: 600;
   margin-left: 10px;
 }
+.user-role {
+  font-size: 0.85rem;
+  color: var(--brand-700);
+  margin-top: 0.2rem;
+  text-align: right;
+  font-weight: 500;
+}
+

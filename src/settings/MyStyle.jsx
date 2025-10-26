@@ -1,5 +1,4 @@
-// src/pages/MyStyle.jsx  (או איפה שאצלך)
-// שמרי את הלוגיקה כמו שהיא — רק עטפתי בעיצוב ותתי־קומפוננטות קטנות
+// src/pages/MyStyle.jsx
 import { useEffect, useState } from "react";
 import {
   initUserProfileIfNeeded,
@@ -8,33 +7,46 @@ import {
 } from "../api/UserApi";
 import "../css/MyStyle.css";
 
+/* --- מיפויי תצוגה בעברית (לתוויות) --- */
+const COLOR_LABEL = {
+  black: "שחור",
+  white: "לבן",
+  navy: "כחול כהה",
+  beige: "בז'",
+  brown: "חום",
+  green: "ירוק",
+  blue: "כחול",
+  red: "אדום",
+  yellow: "צהוב",
+  pink: "ורוד",
+  purple: "סגול",
+  gray: "אפור",
+};
+
+const KEYWORD_LABEL = {
+  casual: "יומיומי",
+  classic: "קלאסי",
+  streetwear: "אופנת רחוב",
+  boho: "בוהו",
+  elegant: "אלגנטי",
+  sport: "ספורטיבי",
+  modest: "צנוע",
+  preppy: "מתוקתק",
+  minimal: "מינימליסטי",
+};
+
+const DRESSCODE_LABEL = {
+  everyday: "יומיומי",
+  work: "לעבודה",
+  religious: "דתי / צנוע",
+  evening: "ערב / אלגנטי",
+  sport: "ספורטיבי",
+};
+
 const PRESETS = {
-  keywords: [
-    "casual",
-    "classic",
-    "streetwear",
-    "boho",
-    "elegant",
-    "sport",
-    "modest",
-    "preppy",
-    "minimal",
-  ],
-  dressCodes: ["everyday", "work", "religious", "evening", "sport"],
-  colors: [
-    "black",
-    "white",
-    "navy",
-    "beige",
-    "brown",
-    "green",
-    "blue",
-    "red",
-    "yellow",
-    "pink",
-    "purple",
-    "gray",
-  ],
+  keywords: Object.keys(KEYWORD_LABEL),
+  dressCodes: Object.keys(DRESSCODE_LABEL),
+  colors: Object.keys(COLOR_LABEL),
 };
 
 export default function MyStyle() {
@@ -42,9 +54,9 @@ export default function MyStyle() {
   const [bio, setBio] = useState("");
   const [keywords, setKeywords] = useState([]);
   const [disliked, setDisliked] = useState([]);
-  const [dressCode, setDressCode] = useState(null);
-  const [colorsFav, setColorsFav] = useState([]);
-  const [colorsAvoid, setColorsAvoid] = useState([]);
+  const [dressCode, setDressCode] = useState(null); // נשמר באנגלית
+  const [colorsFav, setColorsFav] = useState([]);   // נשמר באנגלית
+  const [colorsAvoid, setColorsAvoid] = useState([]); // נשמר באנגלית
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
 
@@ -53,12 +65,24 @@ export default function MyStyle() {
       try {
         await initUserProfileIfNeeded();
         const s = await getUserStyle();
+
+        // --- המרות לאחור אם נשמרו בעברית בעבר ---
+        const inv = (obj) =>
+          Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k]));
+        const INV_COLOR = inv(COLOR_LABEL);
+        const INV_KEYWORD = inv(KEYWORD_LABEL);
+        const INV_DRESS = inv(DRESSCODE_LABEL);
+
+        const mapArr = (arr, invMap) =>
+          Array.isArray(arr) ? arr.map((x) => invMap[x] || x) : [];
+        const mapOne = (val, invMap) => (val ? invMap[val] || val : null);
+
         setBio(s.bio || "");
-        setKeywords(s.keywords || []);
-        setDisliked(s.disliked || []);
-        setDressCode(s.dressCode ?? null);
-        setColorsFav(s.colorsFav || []);
-        setColorsAvoid(s.colorsAvoid || []);
+        setKeywords(mapArr(s.keywords || [], INV_KEYWORD));   // → אנגלית
+        setDisliked(s.disliked || []);                        // טקסט חופשי
+        setDressCode(mapOne(s.dressCode ?? null, INV_DRESS)); // → אנגלית
+        setColorsFav(mapArr(s.colorsFav || [], INV_COLOR));   // → אנגלית
+        setColorsAvoid(mapArr(s.colorsAvoid || [], INV_COLOR));
       } catch (e) {
         setErr(e.message || String(e));
       } finally {
@@ -67,8 +91,11 @@ export default function MyStyle() {
     })();
   }, []);
 
-  const toggle = (arr, setArr, v) =>
-    setArr(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+  // toggle פונקציונלי
+  const toggle = (setArr, v) =>
+    setArr((prev) =>
+      prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]
+    );
 
   const onSave = async (e) => {
     e.preventDefault();
@@ -77,11 +104,11 @@ export default function MyStyle() {
     try {
       await updateUserStyle({
         bio,
-        keywords,
+        keywords,     // באנגלית
         disliked,
-        dressCode,
-        colorsFav,
-        colorsAvoid,
+        dressCode,    // באנגלית
+        colorsFav,    // באנגלית
+        colorsAvoid,  // באנגלית
       });
       setMsg("נשמר!");
     } catch (e) {
@@ -117,16 +144,21 @@ export default function MyStyle() {
       <div className="mystyle-section">
         <div className="mystyle-label">מאפייני סגנון</div>
         <div className="chip-row">
-          {PRESETS.keywords.map((k) => (
-            <button
-              type="button"
-              key={k}
-              onClick={() => toggle(keywords, setKeywords, k)}
-              className={`chip ${keywords.includes(k) ? "chip--on" : ""}`}
-            >
-              {k}
-            </button>
-          ))}
+          {PRESETS.keywords.map((k) => {
+            const on = keywords.includes(k);
+            return (
+              <button
+                type="button"
+                key={k}
+                onClick={() => toggle(setKeywords, k)}
+                aria-pressed={on}
+                className={`chip ${on ? "chip--on" : ""}`}
+                title={KEYWORD_LABEL[k]}
+              >
+                {KEYWORD_LABEL[k]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -160,7 +192,7 @@ export default function MyStyle() {
             <option value="">(ללא)</option>
             {PRESETS.dressCodes.map((dc) => (
               <option value={dc} key={dc}>
-                {dc}
+                {DRESSCODE_LABEL[dc]}
               </option>
             ))}
           </select>
@@ -171,20 +203,22 @@ export default function MyStyle() {
       <div className="mystyle-section">
         <div className="mystyle-label">צבעים אהובים</div>
         <div className="chip-row">
-          {PRESETS.colors.map((c) => (
-            <button
-              type="button"
-              key={c}
-              onClick={() => toggle(colorsFav, setColorsFav, c)}
-              className={`chip chip--color ${
-                colorsFav.includes(c) ? "chip--on" : ""
-              }`}
-              data-color={c}
-              title={c}
-            >
-              {c}
-            </button>
-          ))}
+          {PRESETS.colors.map((c) => {
+            const on = colorsFav.includes(c);
+            return (
+              <button
+                type="button"
+                key={c}
+                onClick={() => toggle(setColorsFav, c)}
+                aria-pressed={on}
+                className={`chip chip--color ${on ? "chip--on" : ""}`}
+                data-color={c}
+                title={COLOR_LABEL[c]}
+              >
+                {COLOR_LABEL[c]}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -192,20 +226,22 @@ export default function MyStyle() {
       <div className="mystyle-section">
         <div className="mystyle-label">צבעים להימנע</div>
         <div className="chip-row">
-          {PRESETS.colors.map((c) => (
-            <button
-              type="button"
-              key={c}
-              onClick={() => toggle(colorsAvoid, setColorsAvoid, c)}
-              className={`chip chip--avoid ${
-                colorsAvoid.includes(c) ? "chip--on" : ""
-              }`}
-              data-color={c}
-              title={c}
-            >
-              {c}
-            </button>
-          ))}
+          {PRESETS.colors.map((c) => {
+            const on = colorsAvoid.includes(c);
+            return (
+              <button
+                type="button"
+                key={c}
+                onClick={() => toggle(setColorsAvoid, c)}
+                aria-pressed={on}
+                className={`chip chip--avoid ${on ? "chip--on" : ""}`}
+                data-color={c}
+                title={COLOR_LABEL[c]}
+              >
+                {COLOR_LABEL[c]}
+              </button>
+            );
+          })}
         </div>
       </div>
 

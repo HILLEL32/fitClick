@@ -5,6 +5,7 @@ import '../css/AppHome.css';
 import { auth, db } from '../firebase/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
+
 export default function AppHome() {
   const [username, setUsername] = useState('');
 const [typedText, setTypedText] = useState("");

@@ -1,118 +1,117 @@
-/* ===== עיצוב מסך הרשמת מנהל ===== */
-.su-page{
-  min-height:100dvh;
-  display:flex; flex-direction:column;
-  position:relative; overflow:hidden;
-  padding: clamp(1.2rem, 3vw, 2rem);
-  background:
-    radial-gradient(1200px 600px at 80% -10%, var(--accent-100) 0%, rgba(255,214,219,0) 60%),
-    radial-gradient(900px 420px at 10% 110%, #ffe5d1 0%, rgba(255,229,209,0) 60%),
-    linear-gradient(135deg, var(--bg) 0%, #fff 100%);
+/* ============================================================
+   AdminSignUp.css — עיצוב מסכי הרשמה / כניסה למנהלים
+   ============================================================ */
+
+/* טעינת אנימציית טעינה משותפת */
+@import './_loader.css';
+
+/* הודעת הצלחה */
+.su-alert.success {
+  background: #e6f7ee;
+  color: #1a7f46;
+  border: 1px solid #bfe8cf;
 }
 
-/* שכבת טקסטורה עדינה */
-.su-overlay{
-  position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.08;
-  background-image:url("https://www.transparenttextures.com/patterns/fabric-of-squares.png");
-  animation:floatTexture 30s linear infinite;
+/* שדה עם כפתור עזר (הצגת סיסמה) */
+.with-addon {
+  position: relative;
+  padding-right: 0 !important;
 }
-@keyframes floatTexture{ from{transform:translate(0,0)} to{transform:translate(120px,80px)} }
 
-/* בלובים */
-.blob{
-  position:absolute; filter:blur(18px); opacity:.35; z-index:0; pointer-events:none;
-  mix-blend-mode:multiply; border-radius:50%;
+.input-addon-btn {
+  position: absolute;
+  inset-inline-end: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.8;
 }
-.b1{ width:420px; height:420px; background:#ffd9de; right:-140px; top:8%; animation:blob 18s ease-in-out infinite }
-.b2{ width:360px; height:360px; background:#ffcaa5; left:-140px; bottom:10%; animation:blob 22s ease-in-out infinite reverse }
-.b3{ width:300px; height:300px; background:#d3a17e; right:10%; bottom:-120px; animation:blob 26s ease-in-out infinite }
-@keyframes blob{ 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(20px,-30px) scale(1.08)} }
+.input-addon-btn:hover { opacity: 1; }
 
-/* כרטיס זכוכית מרכזי */
-.glass-card{
-  position:relative; z-index:2;
-  width:min(480px, 94vw);
-  background:rgba(255,255,255,.62);
-  border:1px solid var(--border);
+/* הכרטיס המרכזי – מונע גלישה מחוץ לגבולות */
+.glass-card {
+  position: relative;
+  overflow: hidden; /* מונע מהלינק לגלוש החוצה */
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg, 0 22px 50px rgba(181,105,58,.18));
+  background: rgba(255,255,255,0.65);
   backdrop-filter: blur(8px);
-  border-radius:var(--r-xl);
-  box-shadow:var(--shadow-lg);
-  padding:clamp(1.2rem, 3.2vw, 2rem);
-  margin:auto;
-  animation:popIn .7s ease-out both;
-}
-@keyframes popIn{ from{opacity:0; transform:translateY(10px) scale(.98)} to{opacity:1; transform:translateY(0) scale(1)} }
-
-.su-title{
-  margin:0 0 1rem; text-align:center; font-weight:900;
-  font-size:clamp(1.8rem, 3.8vw, 2.3rem);
-  color:var(--brand-700); letter-spacing:.5px;
-  text-shadow:0 8px 22px rgba(231,138,144,.35);
+  padding: 2rem;
 }
 
-/* טופס ההרשמה */
-.su-form{ display:grid; gap:.8rem; }
-.su-label{ font-weight:800; color:#6d5b54; margin-bottom:.2rem; display:block }
-.fc-input{
-  border:1.5px solid var(--border);
-  border-radius:16px;
-  padding:.9rem 1rem;
-  background:#fff; font-size:1rem;
-  outline:none;
-  transition:border-color .18s, box-shadow .18s;
-  box-shadow:0 6px 16px rgba(181,105,58,.06);
-}
-.fc-input:focus{
-  border-color:var(--accent);
-  box-shadow:0 12px 28px rgba(231,138,144,.25);
+/* אזור הלינק בתחתית הכרטיס – בתוך ה-glass-card */
+.glass-card > .meta-links {
+  width: 100%;
+  max-width: 520px;      /* להתאים לרוחב הטופס */
+  margin: 1rem auto 0;   /* ריווח מהכפתור */
+  padding: .25rem 0;
+  background: transparent;
+  display: flex;
+  justify-content: center;
+  gap: .75rem;
 }
 
-/* כפתור הרשמה */
-.btn{
-  border:none; cursor:pointer; font-weight:800; letter-spacing:.12em;
-  border-radius:16px; padding:.9rem 1.5rem;
-  transition:.18s; text-transform:uppercase;
-}
-.btn-cta{
-  background:linear-gradient(135deg, var(--brand), var(--accent));
-  color:#fff !important;
-  box-shadow:0 12px 30px rgba(245,81,5,.22);
-  background-size:200% 200%;
-  animation:buttonGradient 5s ease infinite;
-}
-.btn-cta:hover{
-  /* הורדתי transform כדי שהכפתור לא יקפוץ */
-  filter:brightness(1.08);
-}
-@keyframes buttonGradient{ from{background-position:0% 50%} to{background-position:100% 50%} }
-
-/* הודעת שגיאה */
-.su-alert{
-  margin-top:1rem; text-align:center;
-  background:#fff5f6;
-  border:1.5px solid #ffd6db;
-  color:#5a4137;
-  border-radius:16px;
-  padding:.85rem 1rem;
-  box-shadow:var(--shadow-md);
+/* הלינק עצמו ("אין לך חשבון מנהל? הרשמה" / "כבר יש חשבון מנהל? כניסה") */
+.glass-card .back-btn {
+  display: inline-block;
+  font-size: 1rem;       /* 👈 לשנות גודל כאן (0.9rem קטן יותר / 1.2rem גדול יותר) */
+  font-weight: 600;
+  color: var(--brand, #B5693A);
+  text-decoration: none;
+  line-height: 1.2;
+  transition: color .2s ease, opacity .2s ease;
+  opacity: 0.95;
 }
 
-/* כפתור חזרה */
-.back-btn{
-  display:block; text-align:center;
-  margin:1.2rem auto 0;
-  background:#ffffff;
-  color:#8a5d4b !important;
-  border:1.5px solid var(--border);
-  box-shadow:var(--shadow-md);
-  border-radius:16px;
-  padding:.9rem 1.4rem;
-  text-decoration:none;
-  font-weight:700;
+.glass-card .back-btn:hover {
+  color: var(--brand-700, #8C4320);
+  text-decoration: underline;
+  opacity: 1;
 }
-.back-btn:hover{ background:#fff8f9; filter:brightness(1.05); }
 
-/* רספונסיביות */
-@media (max-width:560px){
-  .btn, .btn-cta{ width:100% }
+/* כשהמסך עסוק (busy) – מנטרלים קליקים ומחלישים */
+.glass-card .back-btn.disabled-link {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* טעינת ספינר קטנה בעמוד מנהלים בלבד */
+.su-page > .loading-overlay .loader {
+  height: 32px;
+  width: 32px;
+}
+.su-page > .loading-overlay .loader:before,
+.su-page > .loading-overlay .loader:after {
+  height: 14px;
+  width: 14px;
+}
+
+/* כפתור ההרשמה / התחברות */
+.btn-cta {
+  display: inline-block;
+  width: 100%;
+  padding: 0.9rem 1.4rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--brand, #B5693A), var(--accent, #E78A90));
+  border: none;
+  border-radius: 14px;
+  box-shadow: var(--shadow-md, 0 12px 28px rgba(181,105,58,.14));
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg, 0 22px 50px rgba(181,105,58,.18));
+}
+
+.btn-cta:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }

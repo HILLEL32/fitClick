@@ -19,6 +19,9 @@
   padding:clamp(1.2rem, 3.2vw, 2rem);
 }
 
+/* למנוע חסימות קליק אם יש שכבות דקורטיביות */
+.mystyle, .mystyle * { pointer-events:auto; }
+
 .fc-btn{
   border:none; cursor:pointer; font-weight:900; letter-spacing:.12em;
   border-radius:16px; padding:.9rem 1.3rem; transition:.18s;
@@ -62,9 +65,13 @@
   transition:.18s, transform .18s;
 }
 .chip:hover{ transform:translateY(-2px); background:#ffe9ee; }
+
+/* ✅ חיזוק מצב נבחר – שינוי מורגש */
 .chip--on{
   color:#fff; border-color:transparent;
   background:linear-gradient(135deg, #B5693A, #E78A90);
+  outline:2px solid #B5693A;      /* תוספת בולטת */
+  transform:translateY(-2px);     /* הדגשה קלה */
 }
 
 /* צביעת צ'יפים צבעוניים (נקודה קטנה לפני הטקסט) */
@@ -102,4 +109,7 @@
 .mystyle-msg.err{ color:#b23a48 }
 
 /* מצב טעינה קטן */
-.style-loader{ padding:1rem 1.2rem; background:#fff8f9; border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow-md); }
+.style-loader{
+  padding:1rem 1.2rem; background:#fff8f9; border:1px solid var(--border);
+  border-radius:12px; box-shadow:var(--shadow-md);
+}
