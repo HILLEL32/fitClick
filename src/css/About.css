@@ -256,11 +256,11 @@
 }
 
 /* זכוכית עם פס זהב דק מימין */
-.about-variant .glass {
+/* .about-variant .glass {
   position: relative;
   box-shadow: var(--shadow-md);
   background: rgba(255,255,255,.72);
-}
+} */
 .about-variant .glass::before {
   content: "";
   position: absolute;

@@ -1,4 +1,5 @@
-/* ===== Overlay למסך מלא (למסכי התחברות/מעברים גדולים) ===== */
+/*  Overlay למסך מלא 
+(למסכי התחברות/מעברים גדולים  */
 .loading-overlay {
   position: fixed;
   inset: 0;
@@ -94,10 +95,10 @@
 }
 
 /* אופציונלי: פחות אנימציה למשתמשים שרוצים */
-@media (prefers-reduced-motion: reduce) {
+/* @media (prefers-reduced-motion: reduce) {
   .loader,
   .loader:before,
   .loader:after {
     animation: none !important;
   }
-}
+} */
