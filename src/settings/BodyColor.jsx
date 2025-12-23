@@ -1,3 +1,5 @@
+// לא בשימוש!!!!!!!!!!!!!!!!!!!!!!!!-----
+
 import React, { useState } from 'react';
 import '../css/design.css';
 import { Link } from 'react-router-dom';

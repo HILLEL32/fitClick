@@ -149,8 +149,14 @@ export default function Wardrobe() {
   useEffect(() => {
     const fetchClothingItems = async () => {
       const user = auth.currentUser;
-      if (!user) { setLoading(false); return; }
-      const q = query(collection(db, 'clothingItems'), where('uid', '==', user.uid));
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+      const q = query(
+        collection(db, 'clothingItems'),
+        where('uid', '==', user.uid)
+      );
       const querySnapshot = await getDocs(q);
       const items = [];
       for (let i = 0; i < querySnapshot.docs.length; i++) {
@@ -163,7 +169,16 @@ export default function Wardrobe() {
     fetchClothingItems();
   }, []);
 
-  const getImageDataUrl = (item) => (item?.imageId ? localStorage.getItem(item.imageId) : null);
+  // const getImageDataUrl = (item) => (item?.imageId ? localStorage.getItem(item.imageId) : null);
+  const getImageDataUrl = (item) => {
+    // חדש – תמונה מ-Firebase Storage
+    if (item?.imageUrl) return item.imageUrl;
+
+    // ישן – תמיכה בבגדים שנשמרו בעבר
+    if (item?.imageId) return localStorage.getItem(item.imageId);
+
+    return null;
+  };
 
   const handleDelete = async (item) => {
     if (!item?.id) return;
@@ -236,11 +251,12 @@ export default function Wardrobe() {
     }
   };
 
-  if (loading) return <div className="container mt-5 text-center">טוען ארון...</div>;
+  if (loading)
+    return <div className="container mt-5 text-center">טוען ארון...</div>;
 
   return (
     <div className="wardrobe-wrapper" dir="rtl">
-      <Stores/>
+      <Stores />
       <div className="container">
         <h2 className="wardrobe-heading text-center mb-4">הארון שלי</h2>
 
@@ -351,8 +367,12 @@ export default function Wardrobe() {
         {/* רשת כל הבגדים */}
         <div className="row">
           {clothingItems.map((item) => {
-            const imageDataUrl = getImageDataUrl(item);
+            const imageDataUrl = item.imageUrl;
             const isDeleting = deletingId === item.id;
+
+            console.log("ITEM IMAGE URL:", item.imageUrl);
+
+
             return (
               <div className="col-md-4 mb-4" key={item.id}>
                 <div className="wardrobe-card h-100">
@@ -373,13 +393,12 @@ export default function Wardrobe() {
                   </div>
 
                   <div className="card-footer wardrobe-card-footer d-flex gap-2">
-                    {/* <button className="btn btn-primary" onClick={() => handleFindMatches(item)}>מצא התאמות</button> */}
                     <Link
                       className="btn btn-outline-primary"
                       to={`/ai_chat?anchor=${encodeURIComponent(item.id)}`}
                       aria-label="בקש לוק סביב הפריט (AI)"
                     >
-                      בקש/י לוק סביב הפריט (AI)
+                      לוק סביב הפריט (AI)
                     </Link>
 
                     <button className="btn btn-edit" onClick={() => handleOpenEdit(item)}>

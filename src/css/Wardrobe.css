@@ -236,10 +236,19 @@ body {
 
 /* לינק AI */
 .btn.btn-outline-primary {
+  display: inline-flex;    /* מאפשר שליטה טובה יותר במיקום הטקסט */
+  align-items: center;     /* מרכז את הטקסט אנכית */
+  justify-content: center; /* מרכז את הטקסט אופקית */
+  
+  padding: 10px 20px;      /* נותן "אוויר" לטקסט שלא ייגע בקצוות */
+  min-width: fit-content;  /* מבטיח שהכפתור יגדל לפי הטקסט */
+  white-space: nowrap;
   color: var(--brand-700);
   background: #ffffff;
   border: 1.5px solid var(--border);
   box-shadow: var(--shadow-md);
+  
+  
 }
 
 .btn.btn-outline-primary:hover {

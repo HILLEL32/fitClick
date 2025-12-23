@@ -48,12 +48,11 @@ body {
   overscroll-behavior: contain;
 
 
-  /* ✅ רק גלילה אחת כללית */
+  /* רק גלילה אחת כללית */
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-/* ✅ ביטול מוחלט של גלילה פנימית */
 #root,
 .App,
 .apphome-page {

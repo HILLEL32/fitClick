@@ -90,10 +90,6 @@ export default function AboutPage() {
                     </li>
                     <li><b>מוסד לימודים:</b> מכללת אריאל – הנדסאי תוכנה וסייבר</li>
                 </ul>
-
-                <div className="cta-row tail">
-                    <a className="btn btn-cta" href="mailto:your-email@example.com">שליחת מייל</a>
-                </div>
             </section>
 
             <div className="blob b1" aria-hidden />

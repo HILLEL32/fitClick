@@ -207,9 +207,13 @@ export default function AiChat({ anchorItemId: anchorFromProps }) {
   const availableModels = [
     { id: "openai-gpt4o-mini", name: "OpenAI GPT-4o Mini (מומלץ)", api: "openai" }
   ];
+  // זה טעות- מעכשיו יש לנו שימוש בסטורג, הלוקל לא רלוונטי
+  // const getImageDataUrl = (item) =>
+  //   item?.imageId ? localStorage.getItem(item.imageId) : null;
+  // ---------------------------------------------------------------------
 
-  const getImageDataUrl = (item) =>
-    item?.imageId ? localStorage.getItem(item.imageId) : null;
+  const getImageUrl = (item) => item?.imageUrl || item?.imageBase64 || null;
+
 
   // ========== useEffect 1: טעינת הארון ==========
   useEffect(() => {
@@ -225,6 +229,9 @@ export default function AiChat({ anchorItemId: anchorFromProps }) {
         }
         const items = await getWardrobe(user.uid);
         setWardrobe(items || []);
+
+        console.log("Wardrobe sample:", items?.[0]);
+
       } catch (e) {
         setErr("שגיאה בטעינת הארון: " + (e?.message || e));
       } finally {
@@ -331,12 +338,33 @@ closestColor: requested=<requestedBase>, chosen=<chosenBase>.
 - autumn: light jacket/cardigan, long-sleeve shirt, jeans/chinos, closed shoes.
 - spring: light layers, blouse, midi skirt, breathable fabrics.
 
+סדר עדיפויות מחייב בעת בחירה:
+1) בקשת משתמש מפורשת
+2) צבעים
+3) עונה
+4) occasion
+5) סגנון
+
+
 אילוצים:
 - אין לשלב "sport" עם "elegant" אלא אם המשימה דורשת.
 - אם occasion= "sport":
   * בחר/י top, bottom ו-shoes אך ורק מפריטים שסגנונם כולל "sport".
   * אם אין פריטים כאלה בארון, החזר/י null בסלוטים המתאימים והוסף/י אותם ל-"missingItems".
 - השתמש/י אך ורק ב-IDs שקיימים ב-wardrobe.
+
+- אין לשלב פריטים עם דוגמאות/הדפסים שונים באותו לוק (למשל: חולצת משבצות עם חצאית פרחונית או בגד תחתון המשלב כמה צבעים).
+- מותר לכל היותר פריט אחד "מקושקש/מודפס" בכל הלוק (Patterned item).
+- אם יש פריט מקושקש שנבחר (למשל העוגן), כל שאר הפריטים חייבים להיות חלקים (ללא דוגמה) ובצבעים תואמים.
+- אם המשתמש ביקש במפורש שילוב של כמה דוגמאות שונות, ציין/י זאת ב-"violations" והחזר/י לוק עם דוגמה אחת בלבד.
+- כל הפריטים בלוק חייבים להשתייך לאותו קו סגנוני כללי.
+- אין לשלב פריטים מקווי סגנון שונים גם אם הצבעים תואמים.
+
+- אם קיים Anchor, הוא קובע את קו הסגנון הכללי.
+- אין לבחור פריט שסגנונו סותר את העוגן.
+
+- אם אין התאמה שעומדת בכל החוקים, החזר/י null בסלוטים הרלוונטיים.
+
 
 ${styleSummary}
 
@@ -494,7 +522,7 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
         (Array.isArray(response.selected.extras) && response.selected.extras.includes(mustId));
 
       if (!appearsIn) {
-        warnings.push("⚠️ הפריט שנבחר כעוגן לא שובץ בסט כפי שהתבקש.");
+        warnings.push("⚠️ הפריט שנבחר לא שובץ בסט כפי שהתבקש.");
       }
     }
 
@@ -605,12 +633,12 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
         </button>
 
 
-         {loadingAsk && (
-           <div className="inline-loader-row" aria-live="polite" role="status">
-             <span className="loader loader--sm" aria-label="מבקש מה-AI..."></span>
-             <span className="inline-loader-text">מבקש מה-AI…</span>
-           </div>
-         )}
+        {loadingAsk && (
+          <div className="inline-loader-row" aria-live="polite" role="status">
+            <span className="loader loader--sm" aria-label="מבקש מה-AI..."></span>
+            <span className="inline-loader-text">מבקש מה-AI…</span>
+          </div>
+        )}
 
         {/* סטטוסים */}
         {loadingWardrobe && <div className="mt-3 aichat-status">טוען את הארון...</div>}
@@ -669,7 +697,8 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                           <strong>{slot}</strong>
                         </div>
                         <div className="card-body text-center">
-                          {getImageDataUrl(item) ? (
+                        {/* לא רלוונטי ----------------------------------------------*/}
+                          {/* {getImageDataUrl(item) ? (
                             <img
                               src={getImageDataUrl(item)}
                               alt={slot}
@@ -679,7 +708,21 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                             <div className="aichat-card-fallback rounded mb-2">
                               <span className="text-muted">אין תמונה</span>
                             </div>
+                          )} */}
+                        {/* לא רלוונטי ----------------------------------------------*/}
+
+                          {getImageUrl(item) ? (
+                            <img
+                              src={getImageUrl(item)}
+                              alt={slot}
+                              className="img-fluid rounded mb-2 aichat-card-img"
+                            />
+                          ) : (
+                            <div className="aichat-card-fallback rounded mb-2">
+                              <span className="text-muted">אין תמונה</span>
+                            </div>
                           )}
+
                           <div className="small aichat-meta">
                             <div><strong>סוג:</strong> {(item.type || []).join(", ") || "—"}</div>
                             <div><strong>צבעים:</strong> {(item.colors || []).join(", ") || "—"}</div>
@@ -699,8 +742,10 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                 <div className="d-flex flex-wrap gap-2">
                   {picked.selected.extras.map((id) => {
                     const item = byId[id];
-                    if (!item) return null;
-                    const url = getImageDataUrl(item);
+                    if (!item) 
+                      return null;
+                    const url = getImageUrl(item);
+
                     return (
                       <div key={id} className="aichat-extra-tile text-center">
                         {url ? (

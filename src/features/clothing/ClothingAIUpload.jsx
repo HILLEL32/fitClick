@@ -1,4 +1,3 @@
-// src/features/clothing/ClothingAIUpload.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -15,6 +14,16 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import "../../css/ClothingAIUpload.css";
+
+// 🔹 ADD: helper to store image itself (Base64)
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 const API_KEY = import.meta.env.VITE_LYKDAT_KEY;
 
@@ -34,7 +43,7 @@ const loadLocalCache = () => {
 const saveLocalCache = (obj) => {
   try {
     localStorage.setItem("he-translate-cache", JSON.stringify(obj));
-  } catch {}
+  } catch { }
 };
 let localCache = loadLocalCache();
 
@@ -87,7 +96,7 @@ async function translateText(q, target = "he", source = "auto") {
           localCache[key] = t;
           saveLocalCache(localCache);
           return t;
-        } catch {}
+        } catch { }
       }
       const t2 = await providerMyMemory(
         q,
@@ -109,19 +118,54 @@ async function translateText(q, target = "he", source = "auto") {
   return promise;
 }
 
+// ===== עזרי תרגום (למניעת תרגום מרוח) =====
+function countSep(str, sep) {
+  if (!str) return 0;
+  const escaped = sep.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return (str.match(new RegExp(escaped, "g")) || []).length;
+}
+
+function normalizeHe(str) {
+  return (str || "").replace(/\s+/g, " ").trim();
+}
+
 async function translateList(list, target = "he", source = "auto") {
   const arr = Array.isArray(list) ? list.filter(Boolean) : [];
   if (arr.length === 0) return [];
+
   const SEP = "|||";
+  const canBatch = Boolean(TRANSLATE_URL); // batch רק אם יש LibreTranslate
+
+  // אם אין LibreTranslate → תרגום פר-פריט (MyMemory לא אמין ב-batch)
+  if (!canBatch) {
+    const perItem = await Promise.all(
+      arr.map((x) => translateText(x, target, source))
+    );
+    return perItem.map(normalizeHe);
+  }
+
+  // ניסיון batch
   const joined = arr.join(SEP);
   const translatedJoined = await translateText(joined, target, source);
-  if (translatedJoined === joined) {
-    const perItem = await Promise.all(arr.map((x) => translateText(x, target, source)));
-    return perItem;
+
+  const sepOk =
+    countSep(joined, SEP) === countSep(translatedJoined, SEP);
+
+  // אם המפריד "נשבר" → fallback לפר-פריט
+  if (!sepOk || translatedJoined === joined) {
+    const perItem = await Promise.all(
+      arr.map((x) => translateText(x, target, source))
+    );
+    return perItem.map(normalizeHe);
   }
-  return translatedJoined.split(SEP).map((s) => s.trim());
+
+  // הצליח batch
+  return translatedJoined
+    .split(SEP)
+    .map((s) => normalizeHe(s));
 }
 
+//-------------------------------------------------------
 export default function ClothingAIUpload() {
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -194,8 +238,9 @@ export default function ClothingAIUpload() {
       setHeReady(false);
     }
   };
+  
 
-  // ✅ פונקציה חדשה: שומרת ל-Firebase Storage ול-Firestore
+  //  פונקציה חדשה: שומרת ל-Firebase Storage ול-Firestore
   async function saveClothingToFirestore(file, metadata) {
     const user = auth.currentUser;
     if (!user) {
@@ -203,19 +248,27 @@ export default function ClothingAIUpload() {
       return;
     }
 
+    // 🔹 ADD: convert image to Base64 (backup)
+    const imageBase64 = await fileToBase64(file);
     const timestamp = Date.now();
     const safeName = file.name?.replace(/\s+/g, "_") || "file.jpg";
     const path = `clothing/${user.uid}/${timestamp}-${safeName}`;
+    
 
-    // 1️⃣ העלאה ל-Firebase Storage
+
+    // 1 העלאה ל-Firebase Storage
     const storageRef = ref(storage, path);
     await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(storageRef);
 
-    // 2️⃣ שמירה ב-Firestore
+console.log("DOWNLOAD URL:", downloadURL);
+
+
+    //  שמירה ב-Firestore
     const clothingDoc = {
       uid: user.uid,
       imageUrl: downloadURL,
+      imageBase64, // 🔹 ADD: fallback image
       storagePath: path,
       type: metadata.type || [],
       colors: metadata.colors || [],
@@ -227,11 +280,12 @@ export default function ClothingAIUpload() {
     };
 
     await setDoc(doc(db, "clothingItems", `${timestamp}-${safeName}`), clothingDoc);
-    alert("הבגד נוסף לארון שלך בהצלחה 🎉");
+    alert("הבגד נוסף לארון שלך בהצלחה");
   }
 
   const uploadToLykdat = async () => {
-    if (!imageFile) return alert("בחרי תמונה קודם");
+    if (!imageFile)
+      return alert("בחרי תמונה קודם");
     setLoading(true);
     const formData = new FormData();
     formData.append("image", imageFile);
@@ -247,6 +301,7 @@ export default function ClothingAIUpload() {
       const labels = data.labels || [];
       const items = data.items || [];
       const colors = data.colors || [];
+  
 
       const extractLabels = (cat) =>
         labels.filter((l) => l.classification === cat).map((l) => l.name);
@@ -271,6 +326,8 @@ export default function ClothingAIUpload() {
       if (strongItems.length === 0) return alert("נא לבחור בגד או פריט לבוש");
 
       setResult(simplified);
+      console.log("DETECTED:", simplified);
+
       await saveClothingToFirestore(imageFile, simplified);
     } catch (e) {
       console.error("API Error:", e);
@@ -284,6 +341,12 @@ export default function ClothingAIUpload() {
     const list = Array.isArray(arr) ? arr.filter(Boolean) : [];
     return list.length ? list.join(", ") : "—";
   };
+
+
+
+
+
+
 
   return (
     <div className="aiu-page" dir="rtl">
@@ -357,12 +420,12 @@ export default function ClothingAIUpload() {
                 <li>
                   <strong>סגנון:</strong> {renderList(resultHe.style)}
                 </li>
-                <li>
-                  <strong>פרטים:</strong> {renderList(resultHe.details)}
-                </li>
-                <li>
-                  <strong>אורך:</strong> {renderList(resultHe.length)}
-                </li>
+                {/* <li>
+                    <strong>פרטים:</strong> {renderList(resultHe.details)}
+                  </li>
+                  <li>
+                    <strong>אורך:</strong> {renderList(resultHe.length)}
+                  </li> */}
               </ul>
             </div>
           )}

@@ -8,7 +8,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyB0OkEbl7FZNlE7NrF0Gyyzhvv9fBn8aIU",
   authDomain: "fitclick-ce1e7.firebaseapp.com",
   projectId: "fitclick-ce1e7",
-  storageBucket: "fitclick-ce1e7.firebasestorage.app",
+  storageBucket: "fitclick-ce1e7.firebasestorage.app", 
   messagingSenderId: "923064269329",
   appId: "1:923064269329:web:efa04bf19872c8c628cfb0",
   measurementId: "G-DQ648N8P2P"

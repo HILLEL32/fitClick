@@ -1,3 +1,5 @@
+/* דף ראשי */
+
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap');
 
 :root {
@@ -131,6 +133,10 @@
   align-items: center;
   margin-top: 1rem;
 }
+.cta-row .btn {
+  flex: 0 0 180px;   /* כל כפתור אותו רוחב */
+  height: 56px;
+}
 
 /* .cta-row.tail{ margin: 1.6rem 0 2.6rem; } */
 
@@ -144,6 +150,13 @@
   padding: .95rem 1.6rem;
   transition: .18s;
   text-transform: uppercase;
+  width: 180px;
+  /* אותו רוחב לכולם */
+  height: 56px;
+  /* אותו גובה לכולם */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-cta {
@@ -211,6 +224,7 @@
   text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
   box-shadow: 0 8px 22px rgba(209, 132, 0, .28);
 }
+
 /* "התאמה חכמה" */
 .badge.glow {
   background: linear-gradient(135deg, #FFB6C1, #E67389);
@@ -219,6 +233,7 @@
   text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
   box-shadow: 0 8px 22px rgba(226, 93, 125, .28);
 }
+
 /* "סגנון אישי" */
 .badge.soft {
   background: linear-gradient(135deg, #9DD7FF, #4CA3E0);
@@ -227,6 +242,7 @@
   text-shadow: 0 1px 1px rgba(0, 0, 0, .25);
   box-shadow: 0 8px 22px rgba(61, 145, 199, .28);
 }
+
 /* כשהעכבר עליו - יבהיר אותו */
 .badge.live:hover,
 .badge.glow:hover,
@@ -314,6 +330,7 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
+
 /* כרטיות בתחתית הדף */
 .card.feature {
   background: #ffffff;
@@ -354,6 +371,7 @@
 .float {
   animation: floatUp 3s ease-in-out infinite alternate
 }
+
 /*נענוע*/
 .wobble {
   animation: wobble 2.2s ease-in-out infinite
@@ -467,6 +485,8 @@
   }
 }
 
+/* משנה את הגודל מסך בהתאם */
+
 /* רספונסיביות */
 @media (max-width: 900px) {
   .features {
@@ -482,11 +502,6 @@
   .cta-row {
     flex-direction: column
   }
-}
-
-/*שיהיו רווחים נורמלים*/
-.inline-spaces {
-  white-space: pre;
 }
 
 /* ===== גלילה אחת לכל המסך ===== */

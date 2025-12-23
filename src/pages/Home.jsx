@@ -109,7 +109,7 @@ export default function Home() {
         <ul className="bullets">
           <li>זיהוי צבעים וסגנונות מתוך התמונות שלך</li>
           <li>התאמות אוטומטיות עם הסבר ולמה זה עובד</li>
-          <li>עוגן סביב פריט מסוים מהארון</li>
+          <li>לוק שלם סביב פריט מסוים מהארון</li>
         </ul>
       </section>
 
@@ -118,7 +118,7 @@ export default function Home() {
         <article className="card feature">
           <div className="icon float">🎨</div>
           <h4>צבעים חכמים</h4>
-          <p>התאמות על בסיס פלטות וריאציות (בהיר/כהה/ניטרלי).</p>
+          <p>שילובי בגדים והתאמות לפי קבוצות צבעים שונות (בהיר/כהה/ניטרלי).</p>
         </article>
         <article className="card feature">
           <div className="icon wobble">🧠</div>
@@ -127,7 +127,7 @@ export default function Home() {
         </article>
         <article className="card feature">
           <div className="icon bob">🧥</div>
-          <h4>Anchor Item</h4>
+          <h4>פריט מפתח</h4>
           <p>בוחרים פריט מפתח – אנחנו מסדרים את כל הלוק סביבו.</p>
         </article>
       </section>
