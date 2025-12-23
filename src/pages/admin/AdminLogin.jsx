@@ -82,29 +82,20 @@ export default function AdminLogin() {
             required
             disabled={busy}
           />
+          <label className="form-label login-label mt-2">סיסמה</label>
 
-          <label className="su-label">סיסמה</label>
-          <div className="fc-input with-addon">
+          <div className="pwd-wrap" dir="rtl">
             <input
-              className="fc-input"
               type={showPwd ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="form-control fc-input"
+              placeholder="••••••••"
+              disabled={busy}
               autoComplete="current-password"
-              required
-              disabled={busy}
             />
-            <button
-              type="button"
-              className="input-addon-btn"
-              onClick={() => setShowPwd((v) => !v)}
-              aria-label={showPwd ? "הסתר סיסמה" : "הצג סיסמה"}
-              title={showPwd ? "הסתר סיסמה" : "הצג סיסמה"}
-              disabled={busy}
-            >
-              {showPwd ? "🙈" : "👁️"}
-            </button>
           </div>
+
 
           <button type="submit" className="btn btn-cta" disabled={busy}>
             {busy ? "מתחבר..." : "התחברות"}
