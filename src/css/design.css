@@ -255,8 +255,8 @@
   overflow: hidden;
   border-block: 1px solid #efdcd5;
   background: #fffafa;
-  margin: .8rem 0 1.4rem;
-  position: relative;
+  margin: .4rem 0 .6rem;
+    position: relative;
   z-index: 2;
 }
 
@@ -264,10 +264,11 @@
 .marquee-track {
   display: inline-block;
   white-space: nowrap;
-  padding: .6rem 0;
+  padding: .2rem 0;
   animation: marquee 22s linear infinite;
   color: #8a5d4b;
   font-weight: 700;
+  
 }
 
 .marquee .marquee-track span {
