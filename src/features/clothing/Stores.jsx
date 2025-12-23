@@ -2,21 +2,22 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import "../../css/Stores.css";
 
 // לוגואים מתוך src/photos
-import zaraLogo from "../../photos/zara.png";
-import mangoLogo from "../../photos/mango.jpeg";
+import zaraLogo from "../../photos/zara4.svg";
+import mangoLogo from "../../photos/mango2.png";
 import castroLogo from "../../photos/castro.svg";
 import tamnoonLogo from "../../photos/tamnoon.png";
-import sheinLogo from "../../photos/shein.jpeg";
+import sheinLogo from "../../photos/shein2.png";
 import renuarLogo from "../../photos/renuar.png";
 import placeholderImg from "../../photos/man.png"; // פלייסהולדר
+
 
 const BRANDS = [
   { name: "ZARA", url: "https://www.zara.com", logo: zaraLogo },
   { name: "MANGO", url: "https://shop.mango.com", logo: mangoLogo },
   { name: "CASTRO", url: "https://www.castro.com", logo: castroLogo },
-  { name: "TAMNOON", url: "https://www.tamnoon.co.il", logo: tamnoonLogo },
+  { name: "TAMNOON", url: "https://tamnoon.com", logo: tamnoonLogo },
   { name: "SHEIN", url: "https://www.shein.com", logo: sheinLogo },
-  { name: "RENUAR", url: "https://www.renuar.co.il", logo: renuarLogo },
+  { name: "RENUAR", url: "https://renuar.co.il", logo: renuarLogo },
 ];
 
 export default function BrandsMarquee() {

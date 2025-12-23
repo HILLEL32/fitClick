@@ -7,20 +7,20 @@ import {
 
 
 
-function startOfDay(d) { const x = new Date(d); x.setHours(0,0,0,0); return x; }
+function startOfDay(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; }
 function last7Days() {
   const days = []; const today = startOfDay(new Date());
   for (let i = 6; i >= 0; i--) { const d = new Date(today); d.setDate(today.getDate() - i); days.push(d); }
   return days;
 }
 function toKey(d) {
-  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,"0"), dd = String(d.getDate()).padStart(2,"0");
+  const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), dd = String(d.getDate()).padStart(2, "0");
   return `${y}-${m}-${dd}`;
 }
 
 export default function AdminItemsDetectedChart({ onlyUid }) {
   const [data, setData] = useState([]);
-  const since = useMemo(() => { const d = new Date(); d.setDate(d.getDate()-6); d.setHours(0,0,0,0); return d; }, []);
+  const since = useMemo(() => { const d = new Date(); d.setDate(d.getDate() - 6); d.setHours(0, 0, 0, 0); return d; }, []);
 
   useEffect(() => {
     (async () => {
@@ -49,16 +49,16 @@ export default function AdminItemsDetectedChart({ onlyUid }) {
   return (
     <div style={{ width: "100%", height: 300 }}>
       <h3 style={{ marginBottom: 12 }}>  זיהוי בגדים כולל פר יום
-</h3>
+      </h3>
       <ResponsiveContainer>
         <LineChart data={data} margin={{ top: 10, right: 20, bottom: 20, left: 0 }}>
-            
+
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="day" />
           <YAxis allowDecimals={false} />
           <Tooltip />
-          <Line type="monotone" dataKey="count" stroke="#B5693A"  strokeWidth={3}   activeDot={{ r: 5 }}
- />
+          <Line type="monotone" dataKey="count" stroke="#B5693A" strokeWidth={3} activeDot={{ r: 5 }}
+          />
         </LineChart>
       </ResponsiveContainer>
     </div>

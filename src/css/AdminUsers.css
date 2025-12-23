@@ -177,3 +177,78 @@
   .admin-users form button{ padding: .65rem .85rem; }
   .admin-users thead th, .admin-users td{ padding: .6rem .55rem; }
 }
+
+.actions-group{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  justify-content: center; /* אם בא לך מיושר שמאלה: flex-start */
+}
+
+.action-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 36px;
+  min-width: 110px;     /* אחידות */
+  padding: 0 12px;
+
+  border-radius: 10px;
+  border: 1.5px solid var(--border, #e6e6e6);
+  background: #fff;
+
+  color: #b26a3f;
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  transition: transform .08s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+}
+
+.action-btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 26px rgba(0,0,0,.10);
+}
+
+/* וריאציות */
+.action-btn--primary{
+  background: #b26a3f;
+  border-color: #b26a3f;
+  color: #fff;
+}
+
+.action-btn--outline{
+  background: #fff;
+  color: #b26a3f;
+  border-color: rgba(178, 106, 63, 0.35);
+}
+
+.action-btn--soft{
+  background: rgba(178, 106, 63, 0.08);
+  border-color: rgba(178, 106, 63, 0.25);
+  color: #b26a3f;
+}
+
+.action-btn--ghost{
+  background: #fff;
+  border-color: var(--border, #e6e6e6);
+  color: var(--brand-700, #2a5bd7); /* תואם ללינק */
+}
+
+/* ממרכז את הטקסט של הכותרת והתוכן */
+.actions-col{
+  text-align: center !important;
+  vertical-align: middle;
+}
+
+/* ממרכז את קבוצת הכפתורים בתוך התא */
+.actions-col .actions-group{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+

@@ -139,7 +139,7 @@ export default function AdminDashboard() {
       <header className="glass-card admin-header">
         <div className="admin-header__titles">
           <h2 className="apphome-title" style={{ margin: 0 }}>ממשק מנהל</h2>
-          <div className="apphome-sub">סטטיסטיקות מהירות, גרף זיהויים ומשתמשים אחרונים</div>
+          <div className="apphome-sub">סטטיסטיקות, גרף זיהויים ומשתמשים אחרונים</div>
         </div>
         <div className="admin-header__actions">
           <Link className="adm-link" to="/admin_users">ניהול משתמשים</Link>
@@ -203,7 +203,7 @@ export default function AdminDashboard() {
                 <table className="admin-table" aria-label="טבלת משתמשים אחרונים">
                   <thead>
                     <tr>
-                      <th>שם תצוגה</th>
+                      <th>שם משתמש </th>
                       <th>אימייל</th>
                       <th>UID</th>
                       <th>פעולות</th>
@@ -216,9 +216,7 @@ export default function AdminDashboard() {
                         <td>{u.email || "—"}</td>
                         <td className="uid">{u.id}</td>
                         <td>
-                          <Link className="table-action" to={`/admin_users/${u.id}/wardrobe`}>
-                            עריכת ארון
-                          </Link>
+                          <Link className="table-action wardrobe-btn" to={`/wardrobe?uid=${u.id}`}>עריכת ארון</Link>
                         </td>
                       </tr>
                     ))}

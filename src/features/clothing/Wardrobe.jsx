@@ -1,13 +1,17 @@
 // src/features/wardrobe/Wardrobe.jsx
 import React, { useEffect, useState } from 'react';
 import { auth, db } from '../../firebase/firebase';
-import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { Link } from 'react-router-dom';
+import { collection, query, where, getDocs, deleteDoc, doc, getDoc } from 'firebase/firestore';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import EditClothing from './EditClothing';
 import ClothingAIUpload from './ClothingAIUpload';
 import '../../css/Wardrobe.css';
 import AiChat from '../../AI/AiChat';
 import Stores from './Stores'
+
+import { onAuthStateChanged } from 'firebase/auth';
+
+
 
 function Typewriter({ lines = [], typingSpeed = 45, pause = 1200 }) {
   const [idx, setIdx] = useState(0);
@@ -134,6 +138,15 @@ function scoreMatch(base, candidate) {
 }
 
 export default function Wardrobe() {
+  const navigate = useNavigate();
+
+  const [sp] = useSearchParams();
+  const uidFromUrl = sp.get('uid'); // אם מגיעים מהאדמין: /wardrobe?uid=XXXX
+
+  const [viewerUid, setViewerUid] = useState(null);      // מי מחובר בפועל
+  const [targetUid, setTargetUid] = useState(null);      // הארון שאנחנו טוענים
+  const [accessErr, setAccessErr] = useState('');        // שגיאת הרשאות
+
   const [clothingItems, setClothingItems] = useState([]);
   const [selectedShirt, setSelectedShirt] = useState(null);
   const [selectedPants, setSelectedPants] = useState(null);
@@ -146,37 +159,139 @@ export default function Wardrobe() {
   const [baseItem, setBaseItem] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
 
+
+
+  // 1) Resolve target uid (admin override)
+  //------------------------------------------------------------------------------------
+  // useEffect(() => {
+  //   const resolveTarget = async () => {
+  //     setLoading(true);
+  //     setAccessErr('');
+
+  //     const user = auth.currentUser;
+  //     if (!user) {
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     setViewerUid(user.uid);
+
+  //     // ברירת מחדל - הארון של המשתמש המחובר
+  //     if (!uidFromUrl || uidFromUrl === user.uid) {
+  //       setTargetUid(user.uid);
+  //       return;
+  //     }
+
+  //     // אם יש uid שונה ב-URL -> רק אדמין יכול
+  //     try {
+  //       const meSnap = await getDoc(doc(db, 'users', user.uid));
+  //       const role = meSnap.exists() ? (meSnap.data().role || 'user') : 'user';
+
+  //       if (role !== 'admin') {
+  //         setAccessErr('אין הרשאה לצפות בארון של משתמש אחר.');
+  //         setTargetUid(null);
+  //         setLoading(false);
+  //         return;
+  //       }
+
+  //       setTargetUid(uidFromUrl);
+  //     } catch (e) {
+  //       console.error(e);
+  //       setAccessErr('שגיאה בבדיקת הרשאות.');
+  //       setTargetUid(null);
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   resolveTarget();
+  // }, [uidFromUrl]);
+  // ------------------------------------------------------------------------------------
+
+  // 1) Resolve target uid (admin override)
   useEffect(() => {
-    const fetchClothingItems = async () => {
-      const user = auth.currentUser;
+    setLoading(true);
+    setAccessErr('');
+
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (!user) {
+        setViewerUid(null);
+        setTargetUid(null);
         setLoading(false);
         return;
       }
-      const q = query(
-        collection(db, 'clothingItems'),
-        where('uid', '==', user.uid)
-      );
-      const querySnapshot = await getDocs(q);
-      const items = [];
-      for (let i = 0; i < querySnapshot.docs.length; i++) {
-        const d = querySnapshot.docs[i];
-        items.push(normalizeItemFields({ id: d.id, ...d.data() }));
+
+      setViewerUid(user.uid);
+
+      // ברירת מחדל - הארון של המשתמש המחובר
+      if (!uidFromUrl || uidFromUrl === user.uid) {
+        setTargetUid(user.uid);
+        setLoading(false);
+        return;
       }
-      setClothingItems(items);
-      setLoading(false);
+
+      // אם יש uid שונה ב-URL -> רק אדמין יכול
+      try {
+        const meSnap = await getDoc(doc(db, 'users', user.uid));
+        const role = meSnap.exists() ? (meSnap.data().role || 'user') : 'user';
+
+        if (role !== 'admin') {
+          setAccessErr('אין הרשאה לצפות בארון של משתמש אחר.');
+          setTargetUid(null);
+          setLoading(false);
+          return;
+        }
+
+        setTargetUid(uidFromUrl);
+        setLoading(false);
+      } catch (e) {
+        console.error(e);
+        setAccessErr('שגיאה בבדיקת הרשאות.');
+        setTargetUid(null);
+        setLoading(false);
+      }
+    });
+
+    return () => unsub();
+  }, [uidFromUrl, db]);
+
+
+  // 2) Load clothing items for targetUid
+  useEffect(() => {
+    const fetchClothingItems = async () => {
+      if (!targetUid) {
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const qRef = query(
+          collection(db, 'clothingItems'),
+          where('uid', '==', targetUid)
+        );
+
+        const querySnapshot = await getDocs(qRef);
+        const items = [];
+        for (let i = 0; i < querySnapshot.docs.length; i++) {
+          const d = querySnapshot.docs[i];
+          items.push(normalizeItemFields({ id: d.id, ...d.data() }));
+        }
+
+        setClothingItems(items);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
     };
+
     fetchClothingItems();
-  }, []);
+  }, [targetUid, db]);
 
   // const getImageDataUrl = (item) => (item?.imageId ? localStorage.getItem(item.imageId) : null);
   const getImageDataUrl = (item) => {
-    // חדש – תמונה מ-Firebase Storage
     if (item?.imageUrl) return item.imageUrl;
-
-    // ישן – תמיכה בבגדים שנשמרו בעבר
     if (item?.imageId) return localStorage.getItem(item.imageId);
-
     return null;
   };
 
@@ -254,11 +369,26 @@ export default function Wardrobe() {
   if (loading)
     return <div className="container mt-5 text-center">טוען ארון...</div>;
 
+  if (accessErr) {
+    return (
+      <div className="container mt-5 text-center" dir="rtl">
+        <div style={{ color: "#b00", marginBottom: 12 }}>{accessErr}</div>
+        <button className="btn btn-outline-secondary" type="button" onClick={() => navigate(-1)}>
+          חזרה
+        </button>
+      </div>
+    );
+  }
+
+  const viewingOtherUser = !!uidFromUrl && !!viewerUid && uidFromUrl !== viewerUid;
+
   return (
     <div className="wardrobe-wrapper" dir="rtl">
       <Stores />
       <div className="container">
-        <h2 className="wardrobe-heading text-center mb-4">הארון שלי</h2>
+        <h2 className="wardrobe-heading text-center mb-4">
+          {viewingOtherUser ? 'ארון משתמש' : 'הארון שלי'}
+        </h2>
 
         <div className="wardrobe-tips glass-card">
           <div className="tips-line">
@@ -281,6 +411,7 @@ export default function Wardrobe() {
           <Link to="/app_home" className="btn btn-home-ghost">חזרה לדף הבית</Link>
           <Link to="/clothing_ai" className="btn btn-add">הוסף בגד לארון</Link>
         </div>
+
         <div className="ai-chat-clean-container">
           <AiChat />
         </div>
@@ -371,7 +502,6 @@ export default function Wardrobe() {
             const isDeleting = deletingId === item.id;
 
             console.log("ITEM IMAGE URL:", item.imageUrl);
-
 
             return (
               <div className="col-md-4 mb-4" key={item.id}>
