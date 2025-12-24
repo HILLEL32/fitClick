@@ -97,6 +97,7 @@ export default function MyStyle() {
       prev.includes(v) ? prev.filter((x) => x !== v) : [...prev, v]
     );
 
+  // שמירת העדפת המשתמש ב־Firestore 
   const onSave = async (e) => {
     e.preventDefault();
     setMsg("");
@@ -104,11 +105,11 @@ export default function MyStyle() {
     try {
       await updateUserStyle({
         bio,
-        keywords,     // באנגלית
+        keywords,     
         disliked,
-        dressCode,    // באנגלית
-        colorsFav,    // באנגלית
-        colorsAvoid,  // באנגלית
+        dressCode,    
+        colorsFav,   
+        colorsAvoid,  
       });
       setMsg("נשמר!");
     } catch (e) {

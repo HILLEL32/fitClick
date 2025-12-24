@@ -159,6 +159,47 @@ export default function Wardrobe() {
   const [baseItem, setBaseItem] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
 
+  const TYPE_TRANSLATION = {
+  shirt: "חולצה",
+  top: "חולצה",
+  blouse: "חולצה",
+  "t-shirt": "חולצה",
+  tee: "חולצה",
+  pants: "מכנסיים",
+  jeans: "ג'ינס",
+  skirt: "חצאית",
+  dress: "שמלה",
+  jacket: "ג'קט",
+  coat: "מעיל",
+  sweater: "סוודר",
+  hoodie: "קפוצ'ון",
+};
+
+const COLOR_TRANSLATION = {
+  white: "לבן",
+  black: "שחור",
+  gray: "אפור",
+  grey: "אפור",
+  blue: "כחול",
+  pink: "ורוד",
+  brown: "חום",
+  beige: "בז'",
+  green: "ירוק",
+};
+
+const STYLE_TRANSLATION = {
+  elegant: "אלגנטי",
+  casual: "יומיומי",
+  sport: "ספורטיבי",
+  formal: "רשמי",
+};
+
+function translateArray(arr, dict) {
+  if (!Array.isArray(arr)) return [];
+  return arr.map(v => dict[v] || v);
+}
+
+
 
 
   // 1) Resolve target uid (admin override)
@@ -516,7 +557,8 @@ export default function Wardrobe() {
 
                   <div className="card-body">
                     <h5 className="card-title">
-                      <strong>סוג</strong>: {item.type && item.type.join(', ') || '—'}
+                      {/* <strong>סוג</strong>: {item.type && item.type.join(', ') || '—'} */}
+                      <strong>סוג</strong>: {translateArray(item.type, TYPE_TRANSLATION).join(', ') || '—'}
                     </h5>
                     <p className="card-text"><strong>צבעים</strong> : {item.colors && item.colors.join(', ') || '—'}</p>
                     <p className="card-text"><strong>סגנון</strong> : {item.style && item.style.join(', ') || '—'}</p>

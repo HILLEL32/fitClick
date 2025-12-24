@@ -61,16 +61,31 @@ const ITEM_MAP = {
 };
 
 // פירוק בקשת המשתמש לדרישות (צבעים/פריטים/סגנונות)
+// פירוק בקשת המשתמש לדרישות (צבעים/פריטים/סגנונות/תנאים)
 const parseUserRequest = (text) => {
   const requirements = { colors: [], items: [], styles: [], occasions: [] };
+  const t = text || "";
+
   Object.keys(COLOR_MAP).forEach((he) => {
-    if ((text || "").includes(he)) requirements.colors.push(COLOR_MAP[he]);
+    if (t.includes(he)) requirements.colors.push(COLOR_MAP[he]);
   });
+
   Object.keys(ITEM_MAP).forEach((he) => {
-    if ((text || "").includes(he)) requirements.items.push(ITEM_MAP[he]);
+    if (t.includes(he)) requirements.items.push(ITEM_MAP[he]);
   });
+
+  // זיהוי מזג אוויר / תנאי סביבה
+  // if (/גשום|גשם|יום גשמים|סערה|רטוב|שלוליות/.test(t)) {
+  //   requirements.occasions.push("rainy");
+  // }
+
+  // if (/חורף|חורפי|קר|מעיל|סוודר/.test(t)) {
+  //   requirements.occasions.push("cold");
+  // }
+
   return requirements;
 };
+
 
 // נרמול ערכים למערך
 const toArr = (v) => (Array.isArray(v) ? v : v ? [v] : []);
@@ -359,6 +374,7 @@ closestColor: requested=<requestedBase>, chosen=<chosenBase>.
 - אם המשתמש ביקש במפורש שילוב של כמה דוגמאות שונות, ציין/י זאת ב-"violations" והחזר/י לוק עם דוגמה אחת בלבד.
 - כל הפריטים בלוק חייבים להשתייך לאותו קו סגנוני כללי.
 - אין לשלב פריטים מקווי סגנון שונים גם אם הצבעים תואמים.
+- אין להחזיר פריט הסותר את בקשת המשתמש (לדוגמא:אם המשתמש ביקש "לוק משרדי" אין להחזיר נעלי ריצה.)
 
 - אם קיים Anchor, הוא קובע את קו הסגנון הכללי.
 - אין לבחור פריט שסגנונו סותר את העוגן.
@@ -648,7 +664,7 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
         )}
 
         {/* אזהרות ולידציה */}
-        {validationWarnings.length > 0 && (
+        {/* {validationWarnings.length > 0 && (
           <div className="aichat-alert aichat-alert-warn mt-3">
             <strong>⚠️ שים לב:</strong>
             <ul className="mb-0 mt-2">
@@ -657,7 +673,7 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
               ))}
             </ul>
           </div>
-        )}
+        )} */}
 
         {/* תצוגת הסט שנבחר */}
         {picked && (
@@ -697,19 +713,6 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                           <strong>{slot}</strong>
                         </div>
                         <div className="card-body text-center">
-                        {/* לא רלוונטי ----------------------------------------------*/}
-                          {/* {getImageDataUrl(item) ? (
-                            <img
-                              src={getImageDataUrl(item)}
-                              alt={slot}
-                              className="img-fluid rounded mb-2 aichat-card-img"
-                            />
-                          ) : (
-                            <div className="aichat-card-fallback rounded mb-2">
-                              <span className="text-muted">אין תמונה</span>
-                            </div>
-                          )} */}
-                        {/* לא רלוונטי ----------------------------------------------*/}
 
                           {getImageUrl(item) ? (
                             <img
@@ -774,7 +777,7 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
             )}
 
             {/* פריטים חסרים */}
-            {picked.missingItems && picked.missingItems.length > 0 && (
+            {/* {picked.missingItems && picked.missingItems.length > 0 && (
               <div className="mt-3 aichat-alert aichat-alert-info">
                 <strong>פריטים שלא נמצאו בארון:</strong>
                 <ul className="mb-0 mt-2">
@@ -783,9 +786,9 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                   ))}
                 </ul>
               </div>
-            )}
+            )} */}
 
-            {/* הערות התאמה / חריגות */}
+            {/* הערות התאמה / חריגות
             {picked.violations && picked.violations.length > 0 && (
               <div className="mt-3 aichat-alert aichat-alert-secondary">
                 <strong>הערות התאמה/חריגות:</strong>
@@ -795,7 +798,7 @@ ${anchor ? `Anchor (חייב להיכלל בהרכב):
                   ))}
                 </ul>
               </div>
-            )}
+            )} */}
           </div>
         )}
       </div>

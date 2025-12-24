@@ -238,7 +238,7 @@ export default function ClothingAIUpload() {
       setHeReady(false);
     }
   };
-  
+
 
   //  פונקציה חדשה: שומרת ל-Firebase Storage ול-Firestore
   async function saveClothingToFirestore(file, metadata) {
@@ -253,7 +253,7 @@ export default function ClothingAIUpload() {
     const timestamp = Date.now();
     const safeName = file.name?.replace(/\s+/g, "_") || "file.jpg";
     const path = `clothing/${user.uid}/${timestamp}-${safeName}`;
-    
+
 
 
     // 1 העלאה ל-Firebase Storage
@@ -261,7 +261,7 @@ export default function ClothingAIUpload() {
     await uploadBytes(storageRef, file);
     const downloadURL = await getDownloadURL(storageRef);
 
-console.log("DOWNLOAD URL:", downloadURL);
+    console.log("DOWNLOAD URL:", downloadURL);
 
 
     //  שמירה ב-Firestore
@@ -301,13 +301,18 @@ console.log("DOWNLOAD URL:", downloadURL);
       const labels = data.labels || [];
       const items = data.items || [];
       const colors = data.colors || [];
-  
+
 
       const extractLabels = (cat) =>
         labels.filter((l) => l.classification === cat).map((l) => l.name);
 
+      const normalizeType = (types) =>
+        types.map((t) => (t.toLowerCase() === "top" ? "shirt" : t));
+
       const simplified = {
-        type: [...new Set(items.filter((i) => i.confidence > 0.6).map((i) => i.name))],
+        type: normalizeType(
+          [...new Set(items.filter((i) => i.confidence > 0.6).map((i) => i.name))]
+        ),
         colors: colors.filter((c) => c.confidence > 0.2).map((c) => c.name),
         style: [
           ...extractLabels("silhouette"),
@@ -321,6 +326,8 @@ console.log("DOWNLOAD URL:", downloadURL);
         length: extractLabels("length"),
         waistline: extractLabels("waistline"),
       };
+
+
 
       const strongItems = (items || []).filter((i) => (i?.confidence ?? 0) >= 0.6);
       if (strongItems.length === 0) return alert("נא לבחור בגד או פריט לבוש");

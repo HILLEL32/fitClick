@@ -32,10 +32,11 @@ body {
 .wardrobe-wrapper {
   position: relative;
   min-height: 100vh;
-  padding: clamp(1.2rem,3vw,2rem);
+  padding: clamp(1.2rem, 3vw, 2rem);
   margin-top: 0 !important;
   overflow-x: hidden;
-  background: #F8F4F2 !important; /* רקע אחיד בהיר */
+  background: #F8F4F2 !important;
+  /* רקע אחיד בהיר */
   isolation: isolate;
 }
 
@@ -181,9 +182,11 @@ body {
 .wardrobe-card-img {
   width: 100%;
   height: 260px;
-  object-fit: cover;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
+  object-fit: contain;
+  /* border-top-left-radius: 20px;
+  border-top-right-radius: 20px; */
+    background: #fff;      /* רקע נקי לשוליים */
+ 
 }
 
 .wardrobe-card-fallback {
@@ -201,6 +204,9 @@ body {
 }
 
 .card-footer.wardrobe-card-footer {
+  overflow: hidden;
+  /* מונע יציאה מגבולות הכרטיס */
+  flex-wrap: wrap;
   border-top: 1px solid var(--border);
   display: flex;
   gap: .5rem;
@@ -227,6 +233,8 @@ body {
   color: #b23a48 !important;
   border: 1.5px solid #f3c4cb;
   box-shadow: var(--shadow-md);
+  white-space: nowrap;
+  margin-left: auto;
 }
 
 .btn-delete:hover {
@@ -236,19 +244,24 @@ body {
 
 /* לינק AI */
 .btn.btn-outline-primary {
-  display: inline-flex;    /* מאפשר שליטה טובה יותר במיקום הטקסט */
-  align-items: center;     /* מרכז את הטקסט אנכית */
-  justify-content: center; /* מרכז את הטקסט אופקית */
-  
-  padding: 10px 20px;      /* נותן "אוויר" לטקסט שלא ייגע בקצוות */
-  min-width: fit-content;  /* מבטיח שהכפתור יגדל לפי הטקסט */
+  display: inline-flex;
+  /* מאפשר שליטה טובה יותר במיקום הטקסט */
+  align-items: center;
+  /* מרכז את הטקסט אנכית */
+  justify-content: center;
+  /* מרכז את הטקסט אופקית */
+
+  padding: 10px 20px;
+  /* נותן "אוויר" לטקסט שלא ייגע בקצוות */
+  min-width: fit-content;
+  /* מבטיח שהכפתור יגדל לפי הטקסט */
   white-space: nowrap;
   color: var(--brand-700);
   background: #ffffff;
   border: 1.5px solid var(--border);
   box-shadow: var(--shadow-md);
-  
-  
+
+
 }
 
 .btn.btn-outline-primary:hover {

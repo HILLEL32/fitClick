@@ -8,9 +8,9 @@ import { doc, getDoc } from 'firebase/firestore';
 
 export default function AppHome() {
   const [username, setUsername] = useState('');
-const [typedText, setTypedText] = useState("");
-const fullText = "היועץ הדיגיטלי לסטייל שלך — העלה/י פריטים, קבל/י שילובים חכמים, וצא/י כל יום בלוק מנצח.";
-const idxRef = useRef(0);
+  const [typedText, setTypedText] = useState("");
+  const fullText = "היועץ הדיגיטלי לסטייל שלך — העלה/י פריטים, קבל/י שילובים חכמים, וצא/י כל יום בלוק מנצח.";
+  const idxRef = useRef(0);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -26,24 +26,24 @@ const idxRef = useRef(0);
     return () => unsubscribe();
   }, []);
 
-useEffect(() => {
-  setTypedText("");         // אתחול נקי
-  idxRef.current = 0;
+  useEffect(() => {
+    setTypedText("");         // אתחול נקי
+    idxRef.current = 0;
 
-  const interval = setInterval(() => {
-    const i = idxRef.current;
-    if (i < fullText.length) {
-      // לא מצרפים ל־state הקודם—פשוט חותכים את הטקסט עד האינדקס
-      setTypedText(fullText.slice(0, i + 1));
-      idxRef.current = i + 1;
-    } else {
-      clearInterval(interval);
-    }
-  }, 50);
+    const interval = setInterval(() => {
+      const i = idxRef.current;
+      if (i < fullText.length) {
+        // לא מצרפים ל־state הקודם—פשוט חותכים את הטקסט עד האינדקס
+        setTypedText(fullText.slice(0, i + 1));
+        idxRef.current = i + 1;
+      } else {
+        clearInterval(interval);
+      }
+    }, 50);
 
-  return () => clearInterval(interval);
-  // שים לב: אין תלותים—רצים פעם אחת בלבד
-}, []);
+    return () => clearInterval(interval);
+    // שים לב: אין תלותים—רצים פעם אחת בלבד
+  }, []);
   return (
     <div className="apphome-page" dir="rtl">
       {/* שכבת טקסטורה ועדינות */}
